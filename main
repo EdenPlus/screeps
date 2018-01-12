@@ -37,8 +37,43 @@ module.exports.loop = function () {
             {memory: {role: 'upgrader'}});
     }
     
+    var pathsToSources = [];
+    var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
+    
+    var buildQueue = [];
+    var maxConSites = 3;
+    
+    console.log("Old: " + Game.spawns['Spawn1'].memory.buildQueue.length);
+    if (Game.spawns['Spawn1'].room.controller.level >= 2) {
+        for (var a in sources) {
+            pathsToSources.push(PathFinder.search(Game.spawns['Spawn1'].pos, {pos: sources[a], range: 1}));
+        }
+        for (var b in pathsToSources) {
+            buildPath(pathsToSources[b].path, STRUCTURE_CONTAINER);
+        }
+    }
+    
+    function buildPath (path, end) {
+        for(var a in path) {
+            if (a < path.length) {
+                Game.spawns['Spawn1'].memory.buildQueue.push(path[a].x, path[a].y, STRUCTURE_ROAD);
+            }
+            if (a == path.length) {
+                Game.spawns['Spawn1'].memory.buildQueue.push(path[a].x, path[a].y, end);
+            }
+        }
+    }
+    
+    console.log("New: " + Game.spawns['Spawn1'].memory.buildQueue.length);
+    console.log(Game.spawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length);
+    
+    if (Game.spawns['Spawn1'].memory.buildQueue.length > 0 && Game.spawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length < maxConSites) {
+        Game.spawns['Spawn1'].room.createConstructionSite(Game.spawns['Spawn1'].memory.buildQueue[0].x, Game.spawns['Spawn1'].memory.buildQueue[0].y, Game.spawns['Spawn1'].memory.buildQueue[0].type);
+        Game.spawns['Spawn1'].memory.buildQueue.shift();
+    }
     
     /* Restructure this to draw a path to sources, build miner, and build a container */
+    /*
     var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
     var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
     
@@ -62,7 +97,7 @@ module.exports.loop = function () {
             }
         }
     }
-    
+    */
     if(Game.spawns['Spawn1'].spawning) { 
         var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
         Game.spawns['Spawn1'].room.visual.text(
