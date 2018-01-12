@@ -37,21 +37,11 @@ module.exports.loop = function () {
             {memory: {role: 'upgrader'}});
     }
     
-    var pathsToSources = [];
+    //var pathsToSources = [];
     var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
     
-    var buildQueue = [];
+    //var buildQueue = [];
     var maxConSites = 3;
-    
-    console.log("Old: " + Game.spawns['Spawn1'].memory.buildQueue.length);
-    if (Game.spawns['Spawn1'].room.controller.level >= 2) {
-        for (var a in sources) {
-            pathsToSources.push(PathFinder.search(Game.spawns['Spawn1'].pos, {pos: sources[a], range: 1}));
-        }
-        for (var b in pathsToSources) {
-            buildPath(pathsToSources[b].path, STRUCTURE_CONTAINER);
-        }
-    }
     
     function buildPath (path, end) {
         for(var a in path) {
@@ -62,6 +52,17 @@ module.exports.loop = function () {
                 Game.spawns['Spawn1'].memory.buildQueue.push(path[a].x, path[a].y, end);
             }
         }
+    }
+    
+    console.log("Old: " + Game.spawns['Spawn1'].memory.buildQueue.length);
+    if (Game.spawns['Spawn1'].room.controller.level >= 2 && !Game.spawns['Spawn1'].memory.sourcesPathed) {
+        for (var a in sources) {
+            Game.spawns['Spawn1'].sourcePaths.push(PathFinder.search(Game.spawns['Spawn1'].pos, {pos: sources[a], range: 1}));
+        }
+        for (var b in Game.spawns['Spawn1'].sourcePaths) {
+            buildPath(Game.spawns['Spawn1'].sourcePaths[b].path, STRUCTURE_CONTAINER);
+        }
+        Game.spawns['Spawn1'].memory.sourcesPathed = true;
     }
     
     console.log("New: " + Game.spawns['Spawn1'].memory.buildQueue.length);
