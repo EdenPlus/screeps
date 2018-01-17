@@ -1,0 +1,299 @@
+var maintainCreeps = {
+    
+    run: function() {
+        
+        var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_CONTAINER;
+            }
+        });
+        
+        var constructionSites = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
+        
+        const WORKERPART = [WORK, CARRY, CARRY, MOVE, MOVE];
+        const TRANSFERPART = [CARRY, CARRY, MOVE];
+        
+        function bodyCost(body) {
+            var cost = 0;
+            for (let i in body) {
+                if (body[i] == WORK) {
+                    cost += 100;
+                } else if (body[i] == CARRY || body[i] == MOVE) {
+                    cost += 50;
+                }
+            }
+            return cost;
+        }
+
+        const HARVESTERMAX = 8;
+        const WORKERMAX = Math.ceil(30 / (Game.rooms['sim'].energyCapacityAvailable / bodyCost(WORKERPART)));
+        const UPGRADERMAX = 1;
+        const FILLERMAX = 1;
+        const FIGHTERMAX = 0;
+        const HEALERMAX = 0;
+        const TRANSFERMAX = Math.ceil(Math.floor(1.75 * _.filter(Game.creeps, (creep) => creep.memory.role == 'miner').length) / (Game.rooms['sim'].energyCapacityAvailable / (3 * bodyCost(TRANSFERPART))));
+        const MINERMAX = containers.length;
+        
+        for (var name in Memory.creeps) {
+            if (!Game.creeps[name]) {
+                delete Memory.creeps[name];
+            }
+        }
+        
+        function makeCreep(body, role) {
+            
+            let spawns = Game.spawns;
+            
+            for (let x in spawns) {
+//                console.log(spawns[x].canCreateCreep(body,role));
+                if (spawns[x].canCreateCreep(body,{role: role}) == 0) {
+//                    console.log('We can make that!');
+                    console.log('New '+role+': '+spawns[x].createCreep(body,{role: role}));
+                    break;
+                }
+            }
+            
+            return 'No Spawns Available';
+        }
+        
+        function makeWorker() {
+            var body = [];
+            var multiplier = Math.floor(Game.rooms['sim'].energyCapacityAvailable / 300);
+            
+            for (let i = 0; i < multiplier; i++) {
+                //console.log(i);
+                if (body.length + WORKERPART.length <= 50) {
+                    body = body.concat(WORKERPART);
+                }
+            }
+            
+            while (bodyCost(body) + 200 <= Game.rooms['sim'].energyCapacityAvailable && body.length + 3 <= 50) {
+                body = body.concat([WORK, CARRY, MOVE]);
+            }
+            
+            makeCreep(body,'builder');
+        }
+        
+        function makeTransfer() {
+            var body = [];
+            var multiplier = Math.floor(Game.rooms['sim'].energyCapacityAvailable / 150);
+            
+            for (let i = 0; i < multiplier; i++) {
+//                console.log(i);
+                if (body.length + TRANSFERPART.length <= 50) {
+                    body = body.concat(TRANSFERPART);
+                } else {
+                    break;
+                }
+            }
+            
+            makeCreep(body,'transfer');
+            
+        }
+
+        var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
+        var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
+        var numHarvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
+        var numWorkers = _.filter(Game.creeps, (creep) => (
+            creep.memory.role == 'builder' ||
+            creep.memory.role == 'repairer'
+            )).length;
+        var transfers = _.filter(Game.creeps, (creep) => creep.memory.role == 'transfer');
+        var fillers = _.filter(Game.creeps, (creep) => creep.memory.role == 'filler');
+        var numUpgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
+        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
+        
+        if (miners.length > MINERMAX) {
+            miners[miners.length - 1].memory.job = miners[0].memory.job;
+        }
+        
+                // calculate energy in containers
+        var containerEnergy = 0;
+        var needTransfer = false;
+        if (containers.length) {
+            for (let x in containers) {
+                containerEnergy += containers[x].store.energy;
+                if (containers[x].store.energy == 2001) {
+                    var needTransfer = true;
+                }
+            }
+        }
+        
+        if (needTransfer) {
+            if (containerEnergy < containers.length * 1500) {
+                needTransfer = false;
+            }
+        }
+        
+        // Creep Report
+        if (!(Game.time % 10)) {
+            if (numWorkers != WORKERMAX ||
+                numUpgraders != UPGRADERMAX ||
+                miners.length != MINERMAX ||
+                transfers.length != TRANSFERMAX ||
+                fillers.length != FILLERMAX ||
+                (containers.length == 0 && numHarvesters < HARVESTERMAX)) {
+                    
+                console.log('  -=======  CREEP REPORT  =======-  ');
+                console.log(numHarvesters+'/'+HARVESTERMAX+' harvesters.');
+                console.log(numWorkers+'/'+WORKERMAX+' workers.');
+                console.log(numUpgraders+'/'+UPGRADERMAX+' upgraders.');
+                console.log(fillers.length+'/'+FILLERMAX+' fillers.');
+                console.log(miners.length+'/'+MINERMAX+' miners.');
+                console.log(transfers.length+'/'+TRANSFERMAX+' transfers.');
+                
+            } else {
+                console.log('All creep levels at max.')
+            }
+        }
+        //*/
+        
+        if (Game.rooms['sim'].energyCapacityAvailable >= 550 &&
+            (miners.length < containers.length ||
+            transfers.length < TRANSFERMAX ||
+            (numFighters < FIGHTERMAX && Game.rooms['sim'].energyCapacityAvailable >= 800 && Game.rooms['sim'].find(FIND_HOSTILE_CREEPS).length)) ||
+            miners.length == 0 && numHarvesters < HARVESTERMAX) {
+                
+            Memory.status = 'paused';
+        } else {
+            Memory.status = 'unpaused';
+        }
+        
+        if ((miners.length == 0 || transfers.length == 0) && (containers.length) && Game.rooms['sim'].controller.level > 1) {
+                for (var name in Game.creeps) {
+                    var creep = Game.creeps[name];
+                    
+                    if (creep.memory.role == 'builder') {
+                        creep.memory.role = 'harvester';
+                        console.log(creep.name+' converted from an upgrader to a harvester.');
+                    }
+                }
+                
+        }
+        
+        if (numUpgraders < UPGRADERMAX && Game.rooms['sim'].controller.level < 8) {
+            
+            var workers = _.filter(Game.creeps, (creep) => (
+            creep.memory.role == 'builder' ||
+            creep.memory.role == 'repairer'
+            ));
+            
+            if (workers.length) {
+                workers[0].memory.role = 'upgrader';
+                console.log(workers[0].name+' converted from a worker to an upgrader.');
+            }
+        }
+        
+        if (fillers.length < FILLERMAX && Game.rooms['sim'].storage) {
+            
+            var workers = _.filter(Game.creeps, (creep) => (
+            creep.memory.role == 'transfer'
+            ));
+            
+            if (workers.length) {
+                workers[0].memory.role = 'filler';
+                console.log(workers[0].name+' converted from a transfer to a filler.');
+            }
+        }
+        
+        if (Game.rooms['sim'].energyAvailable >= 800 &&
+            numFighters < FIGHTERMAX) {
+                
+            makeCreep([
+                MOVE,  MOVE,  MOVE,  MOVE,                                  // MOVE    4 x  50 = 200
+                RANGED_ATTACK, RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK                                // RANGED: 4 x 150 = 600
+                ],'fighter');                                     // Total:            800
+        }
+        
+        if (Game.rooms['sim'].energyCapacityAvailable >= 800 &&
+            Game.rooms['sim'].energyAvailable == Game.rooms['sim'].energyCapacityAvailable &&
+            containerEnergy >= 3000 &&
+            numHealers < HEALERMAX) {
+                
+            makeCreep([
+                TOUGH, TOUGH,                                               // TOUGH : 2 x  20 =  40
+                MOVE,  MOVE,
+                MOVE,  MOVE,                                                // MOVE  : 4 x  50 = 200
+                HEAL, HEAL                                                  // HEAL  : 2 x 250 = 500
+                ], 'healer');                                      // Total:            740
+        }
+        
+        
+        if (numFighters < FIGHTERMAX && Game.rooms['sim'].energyAvailable >= (2700 + 1000)) {
+            console.log('New Fighter: '+makeCreep([
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,              
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,                          // TOUGH:  20 x  10 =  200
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,                           // MOVE    20 x  50 = 1000
+                RANGED_ATTACK, RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK,                               // RANGED: 10 x 150 = 1500
+                ],'fighter'));                                     // Total:             2700
+        }
+        
+        if (numHealers < HEALERMAX && Game.rooms['sim'].energyAvailable >= (2700 + 1000)) {
+            console.log('New Healer: '+makeCreep([
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,              
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+                TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,                          // TOUGH: 20 x  10 =  200
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,                           // MOVE:  20 x  50 = 1000
+                HEAL, HEAL,
+                HEAL, HEAL,
+                HEAL, HEAL,                                                 // HEAL:   6 x 250 = 1500
+                ],'healer'));                                      // Total:            2700
+        }
+        
+        if (numHarvesters == HARVESTERMAX && numWorkers < WORKERMAX && Game.rooms['sim'].energyAvailable >= 300 && Game.rooms['sim'].energyCapacityAvailable < 500){
+            makeWorker();
+        }
+        
+        if ((miners.length < MINERMAX || (miners.length && miners.length == MINERMAX && miners[0].ticksToLive < 125)) && Game.rooms['sim'].energyAvailable >= 550) {
+            makeCreep([
+                WORK, WORK, WORK, WORK, WORK,                               // WORK:   5 x 100 =  500
+                MOVE                                                        // MOVE:   1 x  50 =   50
+                ],'miner');                                       // Total:             550
+        } else
+        // Extra Transfer help when containers filling up
+        if ((needTransfer) || transfers.length < TRANSFERMAX || ((fillers.length && fillers[0].ticksToLive < 80) && transfers.length == TRANSFERMAX)) {
+            makeTransfer();
+        } else if ((numWorkers < WORKERMAX && Game.rooms['sim'].energyAvailable == Game.rooms['sim'].energyCapacityAvailable) || (Game.rooms['sim'].storage && Game.rooms['sim'].storage.store.energy > 915000)) {
+            makeWorker();
+        }
+        
+        if ((miners.length == 0) &&
+            numHarvesters < HARVESTERMAX &&
+            Game.rooms['sim'].energyAvailable >= 300 &&
+            Game.rooms['sim'].energyAvailable < 550) {
+            makeCreep([
+                WORK, WORK,                                                 // WORK:   2 x 100 =  200
+                CARRY,                                                      // CARRY:  1 x  50 =   50
+                MOVE                                                        // MOVE:   1 x  50 =   50
+                ],'harvester');                                   // Total:             300
+        }
+        
+        //*/
+        
+        /*/ Make Bigger Transfers
+        if (transfers.length < TRANSFERMAX && Game.rooms['sim'].energyAvailable >= 900) {
+            console.log('New Bigger Transfer: '+makeCreep([
+                CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+                CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,                   // CARRY: 12 x  50 =  600
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,  MOVE                     // MOVE:   6 x  50 =  300
+                ],{role : 'transfer'}));                                    // Total:             900
+        }
+        //*/
+    }
+}
+
+module.exports = maintainCreeps;
