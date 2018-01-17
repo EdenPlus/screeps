@@ -1,0 +1,32 @@
+var roleTower = {
+    run: function(tower) {
+        
+        var enemies = tower.room.find(FIND_HOSTILE_CREEPS);
+        
+        var damages = Memory.repairSites;
+        
+        var injuries = _.filter(Game.creeps, (creep) => creep.hits < creep.hitsMax);
+        
+        var injFighters = _.filter(Game.creeps, (creep) => (creep.memory.role == 'fighter' && creep.hits < creep.hitsMax));
+        
+        var ramparts = _.filter(Game.structures, (rampart) => (rampart.structureType == STRUCTURE_RAMPART && rampart.hits < 100000));
+        
+        if (injFighters.length) {
+            tower.heal(injFighters[0]);
+        } else if (enemies.length) {
+            tower.attack(enemies[0]);
+        } else if (injuries.length) {
+            tower.heal(injuries[0]);
+        } else if (ramparts.length && Memory.status != 'paused') {
+            tower.repair(ramparts[0]);
+        } else if (tower.room.energyAvailable == tower.room.energyCapacityAvailable
+            && damages.length
+            && Memory.status != 'paused'
+            && (!tower.room.storage || tower.room.storage.store.energy > 1000)) {
+            tower.repair(Game.getObjectById(damages[0]));
+        }
+        
+    }
+}
+
+module.exports = roleTower;
