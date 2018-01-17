@@ -1,126 +1,166 @@
+var maintainCreeps = require('func.maintainCreeps');
+var maintainStructures = require('func.maintainStructures');
 var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleUpgrader = require('role.upgrader');
+var roleRepairer = require('role.repairer');
 var roleMiner = require('role.miner');
+var roleTransfer = require('role.transfer');
+var roleFiller = require('role.filler');
+var roleTower = require('role.tower');
+var roleFighter = require('role.fighter');
+var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
     
-    for(var name in Memory.creeps) {
-        if(!Game.creeps[name]) {
-            delete Memory.creeps[name];
-            console.log('Clearing non-existing creep memory:', name);
-        }
-    }
+    const TICKSTOREPORT = 10;
     
-    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-    
-    if(harvesters.length < 2) {
-        var newName = 'Harvester' + Game.time;
-        console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName, 
-            {memory: {role: 'harvester'}});
-    }
-    
-    if(builders.length < 2) {
-        var newName = 'Builder' + Game.time;
-        console.log('Spawning new builder: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName, 
-            {memory: {role: 'builder'}});
-    }
-    
-    if(upgraders.length < 2) {
-        var newName = 'Upgrader' + Game.time;
-        console.log('Spawning new upgrader: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName, 
-            {memory: {role: 'upgrader'}});
-    }
-    
-    //var pathsToSources = [];
-    var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
-    
-    //var buildQueue = [];
-    var maxConSites = 3;
-    
-    function buildPath (path, end) {
-        for(var a in path) {
-            if (a < path.length) {
-                Game.spawns['Spawn1'].memory.buildQueue.push(path[a].x, path[a].y, STRUCTURE_ROAD);
-            }
-            if (a == path.length) {
-                Game.spawns['Spawn1'].memory.buildQueue.push(path[a].x, path[a].y, end);
+    if (!(Game.time % TICKSTOREPORT)) {
+
+        console.log('  -=======  STATE REPORT  =======-   ');
+        
+        console.log('Star Date: '+Game.time);
+        console.log('Work Status: '+Memory.status);
+        console.log('Controller Level: '+Game.rooms['sim'].controller.level);
+        
+        var progressBar = '[';
+        var progressBarLength = 29;
+        for (let x = 0; x < progressBarLength; x++) {
+            if (x == Math.floor(progressBarLength/2)) {
+                progressBar+=(Game.rooms['sim'].controller.progress/Game.rooms['sim'].controller.progressTotal * 100).toFixed(1)+'%';
+            } else if (x/progressBarLength < Game.rooms['sim'].controller.progress/Game.rooms['sim'].controller.progressTotal) {
+                progressBar+='=';
+            } else {
+                progressBar+=' ';
             }
         }
-    }
-    
-    console.log("Old: " + Game.spawns['Spawn1'].memory.buildQueue.length);
-    if (Game.spawns['Spawn1'].room.controller.level >= 2 && !Game.spawns['Spawn1'].memory.sourcesPathed) {
-        for (var a in sources) {
-            Game.spawns['Spawn1'].memory.sourcePaths.push(PathFinder.search(Game.spawns['Spawn1'].pos, {pos: sources[a], range: 1}));
-        }
-        for (var b in Game.spawns['Spawn1'].memory.sourcePaths) {
-            buildPath(Game.spawns['Spawn1'].memory.sourcePaths[b].path, STRUCTURE_CONTAINER);
-        }
-        Game.spawns['Spawn1'].memory.sourcesPathed = true;
-    }
-    
-    console.log("New: " + Game.spawns['Spawn1'].memory.buildQueue.length);
-    console.log(Game.spawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length);
-    
-    if (Game.spawns['Spawn1'].memory.buildQueue.length > 0 && Game.spawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length < maxConSites) {
-        Game.spawns['Spawn1'].room.createConstructionSite(Game.spawns['Spawn1'].memory.buildQueue[0].x, Game.spawns['Spawn1'].memory.buildQueue[0].y, Game.spawns['Spawn1'].memory.buildQueue[0].type);
-        Game.spawns['Spawn1'].memory.buildQueue.shift();
-    }
-    
-    /* Restructure this to draw a path to sources, build miner, and build a container */
-    /*
-    var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-    var sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
-    
-    if (miners.length < sources.length) {
-        for (var a in sources) {
-            var mined = false;
-            var curSourceId = sources[a].id;
-            for (var b in miners) {
-                if (Game.getObjectById(miners[b].memory.sourceId).id == curSourceId) {
-                    mined = true;
-                }
-            }
+        progressBar += ']';
+        
+        console.log('Progess: '+Game.rooms['sim'].controller.progress+'/'+Game.rooms['sim'].controller.progressTotal+
+//            ' = '+(Game.rooms['sim'].controller.progress/Game.rooms['sim'].controller.progressTotal * 100).toFixed(1)+'%' + 
+            ' '+progressBar);
             
-            if (!mined) {
-                if(!Game.spawns['Spawn1'].spawning) {
-                    var newName = "Miner" + Game.time;
-                    console.log('Spawning new miner: ' + newName);
-                    Game.spawns['Spawn1'].spawnCreep([WORK,MOVE], newName, 
-                        {memory: {role: 'miner', sourceId: curSourceId}});
-                }
+        if (Game.rooms['sim'].controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[Game.rooms['sim'].controller.level]) {
+            console.log('Ticks to downgrade: '+Game.rooms['sim'].controller.ticksToDowngrade);
+        }
+        
+        if (!Memory.seconds) {
+            Memory.seconds = 0;
+        }
+        
+        var seconds = new Date().getSeconds();
+        
+        if (0 > (seconds - Memory.seconds)) {
+            console.log(seconds + 60 - Memory.seconds+' seconds since last update.');
+            console.log('Speed: '+(TICKSTOREPORT / (seconds + 60 - Memory.seconds)).toFixed(2)+' ticks per second.');
+            console.log('Speed: '+((seconds + 60 - Memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
+        } else {
+        
+            console.log(seconds - Memory.seconds+' seconds since last update.');
+            console.log('Speed: '+(TICKSTOREPORT / (seconds - Memory.seconds)).toFixed(2)+' ticks per second.');
+            console.log('Speed: '+((seconds - Memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
+
+        }
+        
+        Memory.seconds = seconds;
+        
+        
+        var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_CONTAINER;
+            }
+        });
+        
+        if (!Memory.repairSites) {
+            Memory.repairSites = [];
+        }
+        
+        if (Memory.repairSites.length) {
+            console.log(Memory.repairSites.length+' structures are damaged.')
+        }
+        
+        
+        console.log('Room Energy: '+Game.rooms['sim'].energyAvailable+'/'+Game.rooms['sim'].energyCapacityAvailable+' = '+
+        Math.floor((Game.rooms['sim'].energyAvailable/Game.rooms['sim'].energyCapacityAvailable) * 100) // Percent
+        +"%");
+        
+        
+        if (containers.length) {
+        
+            if (Game.rooms['sim'].storage) {
+                containers = containers.concat(Game.rooms['sim'].storage);
+            }
+        
+            for (let x in containers) {
+                console.log(containers[x]+' has '+containers[x].store.energy);
             }
         }
     }
-    */
-    if(Game.spawns['Spawn1'].spawning) { 
-        var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
-        Game.spawns['Spawn1'].room.visual.text(
-            '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Spawn1'].pos.x + 1, 
-            Game.spawns['Spawn1'].pos.y, 
-            {align: 'left', opacity: 0.8});
+    
+    // Records what tick count each level was reached.
+    if (!Memory.levelTime) {
+        Memory.levelTime = [];
+    } else if (!Memory.levelTime[Game.rooms['sim'].controller.level]) {
+        Memory.levelTime[Game.rooms['sim'].controller.level] =
+            { level: Game.rooms['sim'].controller.level, time: Game.time}
+    } //Uncomment for level tick record
+    
+    maintainCreeps.run();
+    
+    maintainStructures.run();
+    
+    var towers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return structure.structureType == STRUCTURE_TOWER;
+        }
+    });
+    
+    for (let x in towers) {
+        roleTower.run(towers[x]);
     }
     
-    for(var name in Game.creeps) {
+    for (var name in Game.creeps) {
         var creep = Game.creeps[name];
-        if(creep.memory.role == 'harvester') {
+        
+//        creep.suicide();
+        
+        if (creep.memory.role == 'healer') {
+            roleHealer.run(creep);
+        }
+        if (creep.memory.role == 'fighter') {
+            delete creep.memory.job;
+            roleFighter.run(creep);
+        }
+        if (creep.memory.role == 'harvester') {
+//            creep.suicide();
             roleHarvester.run(creep);
         }
-        if(creep.memory.role == 'upgrader') {
-            roleUpgrader.run(creep);
-        }
-        if(creep.memory.role == 'builder') {
+        if (creep.memory.role == 'builder') {
+//            creep.suicide();
             roleBuilder.run(creep);
         }
-        if(creep.memory.role == 'miner') {
+        if (creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+        if (creep.memory.role == 'repairer') {
+            roleRepairer.run(creep);
+//            creep.memory.job = false;
+        }
+        if (creep.memory.role == 'miner') {
+            //creep.suicide();
             roleMiner.run(creep);
+        }
+        if (creep.memory.role == 'transfer') {
+//            delete creep.memory.job;
+            roleTransfer.run(creep);
+//            creep.suicide();
+        }
+        if (creep.memory.role == 'filler') {
+//            delete creep.memory.job;
+            roleFiller.run(creep);
+        }
+        if (creep.memory.role == 'test pilot') {
+            creep.moveTo(0,25);
         }
     }
 }
