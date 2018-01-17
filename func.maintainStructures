@@ -1,0 +1,278 @@
+var maintainStructures = {
+    
+    run: function() {
+        
+        const MAXSITES = 3;
+        
+        var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
+        var extensions = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_EXTENSION);
+        var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_CONTAINER;
+            }
+        });
+        var sources = Game.rooms['sim'].find(FIND_SOURCES);
+        
+        Memory.constructionSites = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
+        var sites =  Memory.constructionSites.length;
+        
+        var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
+        var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
+        var numTowers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
+        
+        // function for determining the location of the next extension
+        function getNextSite() {
+            return new RoomPosition(spawns[0].pos.x - 1, spawns[0].pos.y + 1, spawns[0].pos.roomName);
+        }
+        
+        if (!Memory.repairSites) {
+            Memory.repairSites = [];
+        }
+        
+        if (!(Game.time % 100) && !sites) {
+             var repairSites = Game.rooms['sim'].find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    if (Game.rooms['sim'].find(FIND_HOSTILE_CREEPS).length) {
+                        return (structure.hits < (structure.hitsMax * .5) && structure.structureType != STRUCTURE_RAMPART);
+                    } else {
+                        return (structure.hits < (structure.hitsMax * .5) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
+                    }
+                }
+            });
+            
+            Memory.repairSites = [];
+            
+            for (let i in repairSites) {
+                Memory.repairSites[i] = repairSites[i].id;
+            }
+            
+        }
+        
+//        console.log('TEST: ', CONTROLLER_STRUCTURES.extension[2]);
+        
+        function extensionStar(exPos) {
+            queueBuild(exPos.x + 1,exPos.y + 1, STRUCTURE_EXTENSION);
+            queueBuild(exPos.x + 1,exPos.y - 1, STRUCTURE_EXTENSION);
+            queueBuild(exPos.x - 1,exPos.y - 1, STRUCTURE_EXTENSION);
+            queueBuild(exPos.x - 1,exPos.y + 1, STRUCTURE_EXTENSION);
+        }
+        
+        function buildExtensions() {
+            
+            if (extensions.length == 0) {
+                queueBuild(Game.spawns['Spawn1'].pos.x - 4,Game.spawns['Spawn1'].pos.y, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 1) {
+                extensionStar(extensions[0].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 3 && extensions.length == 5) {
+                queueBuild(Game.spawns['Spawn1'].pos.x + 2,Game.spawns['Spawn1'].pos.y, STRUCTURE_TOWER);
+                queueBuild(extensions[0].pos.x - 4,extensions[0].pos.y, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 6) {
+                extensionStar(extensions[5].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 4 && extensions.length == 10) {
+                queueBuild(Game.spawns['Spawn1'].pos.x - 2,Game.spawns['Spawn1'].pos.y, STRUCTURE_STORAGE);
+                queueBuild(extensions[5].pos.x,extensions[5].pos.y + 4, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 11) {
+                extensionStar(extensions[10].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 4 && extensions.length == 15) {
+                queueBuild(extensions[10].pos.x + 4,extensions[10].pos.y, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 16) {
+                extensionStar(extensions[15].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 5 && extensions.length == 20) {
+                queueBuild(extensions[5].pos.x - 4,extensions[5].pos.y, STRUCTURE_EXTENSION);
+                queueBuild(Game.spawns['Spawn1'].pos.x,Game.spawns['Spawn1'].pos.y + 2, STRUCTURE_TOWER);
+            }
+            
+            if (extensions.length == 21) {
+                extensionStar(extensions[20].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 5 && extensions.length == 25) {
+                queueBuild(extensions[20].pos.x,extensions[20].pos.y + 4, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 26) {
+                extensionStar(extensions[25].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 6 && extensions.length == 30) {
+                queueBuild(extensions[15].pos.x,extensions[15].pos.y + 4, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 31) {
+                extensionStar(extensions[30].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 6 && extensions.length == 35) {
+                queueBuild(extensions[30].pos.x - 4,extensions[30].pos.y, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 36) {
+                extensionStar(extensions[35].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 7 && extensions.length == 40) {
+                queueBuild(extensions[30].pos.x,extensions[30].pos.y + 4, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 41) {
+                extensionStar(extensions[40].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 7 && extensions.length == 45) {
+                queueBuild(extensions[40].pos.x - 4,extensions[40].pos.y, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 46) {
+                extensionStar(extensions[45].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 8 && extensions.length == 50) {
+                queueBuild(extensions[25].pos.x,extensions[25].pos.y + 4, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 51) {
+                extensionStar(extensions[50].pos);
+            }
+            
+            if (Game.rooms['sim'].controller.level >= 8 && extensions.length == 55) {
+                queueBuild(extensions[50].pos.x,extensions[50].pos.y + 4, STRUCTURE_EXTENSION);
+            }
+            
+            if (extensions.length == 56) {
+                extensionStar(extensions[55].pos);
+            } 
+        }
+        
+        // function to add new construction sites to a list for building
+        function queueBuild(x, y, type) {
+            
+            if (!Memory.buildQueue) {
+                Memory.buildQueue = []
+            }
+            
+            for (let i in Memory.buildQueue) {
+                if (x == Memory.buildQueue[i].x && y == Memory.buildQueue[i].y) {
+                    return -1;
+                }
+            }
+            
+            if ((!Game.rooms['sim'].lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
+                Memory.buildQueue.push({x:x,y:y,type:type});
+            }
+        }
+        
+        // queues up construction for a path
+        function buildRoad(path, end) {
+            
+            for (let i in path) {
+//                console.log('i is '+i);
+                
+                //build the road and container at the end
+                if (i < (path.length - 2)) {
+//                    console.log('Building road at ('+path[i].x+','+path[i].y+').');
+                    queueBuild(path[i].x,path[i].y, STRUCTURE_ROAD);
+                } else {
+                    queueBuild(path[i].x,path[i].y, end);
+                }
+            }
+        }
+        
+        function buildControllerRoad() {
+            
+            var path = Game.rooms['sim'].findPath(spawns[0].pos,Game.rooms['sim'].controller.pos, {ignoreCreeps: true});
+            
+            for (let i = 0; i < (path.length - 5); i++) {
+                queueBuild(path[i].x,path[i].y, STRUCTURE_ROAD);
+            }
+            
+            for (let i = -3; i <= 3; i++) {
+                queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y + 4, STRUCTURE_ROAD);
+            }
+            
+            for (let i = 3; i >= -3; i--) {
+                queueBuild(Game.rooms['sim'].controller.pos.x - 4, Game.rooms['sim'].controller.pos.y + i, STRUCTURE_ROAD);
+            }
+            
+            for (let i = 3; i >= -3; i--) {
+                queueBuild(Game.rooms['sim'].controller.pos.x + 4, Game.rooms['sim'].controller.pos.y + i, STRUCTURE_ROAD);
+            }
+            
+            for (let i = -3; i <= 3; i++) {
+                queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y - 4, STRUCTURE_ROAD);
+            }
+            
+        }
+        
+        buildExtensions();
+        
+        if (!Memory.sourceRoad) {
+            Memory.sourceRoad = [];
+        }
+        
+        if (extensions.length == 5 && !Memory.sourceRoad[0]) {
+            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            queueBuild(spawns[0].pos.x + 1, spawns[0].pos.y, STRUCTURE_ROAD);
+            queueBuild(spawns[0].pos.x - 1, spawns[0].pos.y, STRUCTURE_ROAD);
+            queueBuild(spawns[0].pos.x, spawns[0].pos.y + 1, STRUCTURE_ROAD);
+            queueBuild(spawns[0].pos.x, spawns[0].pos.y - 1, STRUCTURE_ROAD);
+            Memory.sourceRoad[0] = true;
+        }
+        
+        if (containers.length == 1 && !Memory.sourceRoad[1]) {
+            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            Memory.sourceRoad[1] = true;
+        }
+        
+        if (containers.length == 2 && !Memory.sourceRoad[2]) {
+            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            buildControllerRoad();
+            Memory.sourceRoad[2] = true;
+        }
+        
+        if (numTowers && !Memory.sourceRoad[3]) {
+            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            Memory.sourceRoad[3] = true;
+        }
+        
+        if (containers.length == 4) {
+            queueBuild(containers[3].pos.x, containers[3].pos.y, STRUCTURE_RAMPART);
+        }
+        
+        // queue building of roads around extensions **IMPROVE THIS
+        if (!(Game.time % 1000)) {
+            for (let i in extensions) {
+                queueBuild(extensions[i].pos.x + 1, extensions[i].pos.y, STRUCTURE_ROAD);
+                queueBuild(extensions[i].pos.x - 1, extensions[i].pos.y, STRUCTURE_ROAD);
+                queueBuild(extensions[i].pos.x, extensions[i].pos.y + 1, STRUCTURE_ROAD);
+                queueBuild(extensions[i].pos.x, extensions[i].pos.y - 1, STRUCTURE_ROAD);
+            }
+        }
+        
+        if (sites < MAXSITES && Memory.buildQueue[0]) {
+            let site = Memory.buildQueue[0];
+//            console.log('Adding ',site.x, site.y, site.type);
+//            console.log(Game.rooms['sim'].createConstructionSite(site.x, site.y, site.type));
+            Game.rooms['sim'].createConstructionSite(site.x, site.y, site.type)
+            Memory.buildQueue.shift();
+//            console.log(Memory.buildQueue.length, ' items left in queue.');
+        }
+    }
+}
+
+module.exports = maintainStructures;
