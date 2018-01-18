@@ -6,22 +6,60 @@ var maintainNexus = {
         
         let extensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][Game.rooms['sim'].controller.level];
         let spawnPos = Game.spawns['Spawn1'].pos;
-        let nexus = Game.spawns['Spawn1'].memory.nexus;
         let nexusSize = Game.spawns['Spawn1'].memory.nexusSize;
         
-        if (nexus.length < extensionCount) {
-            let a = 0;
+        if (Game.spawns['Spawn1'].memory.nexus.length < extensionCount) {
+            let a = Game.spawns['Spawn1'].memory.nexusSize;
             let b = 0;
-            while (a < nexusSize) {
-                while (b < (nexusSize - a)) {
-                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y + b)});
-                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y - b)});
-                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y + b)});
-                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y - b)});
+            while (a >= 0) {
+                while (b <= (Game.spawns['Spawn1'].memory.nexusSize - a)) {
+                    var isDupe = false;
+                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x + a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y + b)) {
+                            isDupe = true;
+                        }
+                    }
+                    if (!isDupe) {
+                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y + b)});
+                        Game.rooms['sim'].createFlag((spawnPos.x + a), (spawnPos.y + b), 'Flag' + Game.time, COLOR_WHITE);
+                    }
+                    
+                    isDupe = false;
+                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x + a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y - b)) {
+                            isDupe = true;
+                        }
+                    }
+                    if (!isDupe) {
+                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y - b)});
+                        Game.rooms['sim'].createFlag((spawnPos.x + a), (spawnPos.y - b), 'Flag' + Game.time, COLOR_WHITE);
+                    }
+                    
+                    isDupe = false;
+                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x - a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y + b)) {
+                            isDupe = true;
+                        }
+                    }
+                    if (!isDupe) {
+                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y + b)});
+                        Game.rooms['sim'].createFlag((spawnPos.x - a), (spawnPos.y + b), 'Flag' + Game.time, COLOR_WHITE);
+                    }
+                    
+                    isDupe = false;
+                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x - a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y - b)) {
+                            isDupe = true;
+                        }
+                    }
+                    if (!isDupe) {
+                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y - b)});
+                        Game.rooms['sim'].createFlag((spawnPos.x - a), (spawnPos.y - b), 'Flag' + Game.time, COLOR_WHITE);
+                    }
                     b++;
                 }
                 b = 0;
-                a++;
+                a--;
             }
         }
     }
