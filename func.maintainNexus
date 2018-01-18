@@ -2,7 +2,7 @@ var maintainNexus = {
     
     run: function() {
         if (!Game.spawns['Spawn1'].memory.nexus) Game.spawns['Spawn1'].memory.nexus = [];
-        if (!Game.spawns['Spawn1'].memory.nexusSize) Game.spawns['Spawn1'].memory.nexusSize = 4;
+        if (!Game.spawns['Spawn1'].memory.nexusSize) Game.spawns['Spawn1'].memory.nexusSize = 5;
         
         let extensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][Game.rooms['sim'].controller.level];
         let spawnPos = Game.spawns['Spawn1'].pos;
