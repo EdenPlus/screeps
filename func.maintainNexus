@@ -9,21 +9,19 @@ var maintainNexus = {
         let nexus = Game.spawns['Spawn1'].memory.nexus;
         let nexusSize = Game.spawns['Spawn1'].memory.nexusSize;
         
-        function buildNexus() {
-            if (nexus.length < extensionCount) {
-                let a = 0;
-                let b = 0;
-                while (a < nexusSize) {
-                    while (b < (nexusSize - a)) {
-                        Game.spawns['Spawn1'].memory.nexus.push([x: spawnPos.x + a, y: spawnPos.y + b)]);
-                        Game.spawns['Spawn1'].memory.nexus.push([x: spawnPos.x + a, y: spawnPos.y - b)]);
-                        Game.spawns['Spawn1'].memory.nexus.push([x: spawnPos.x - a, y: spawnPos.y + b)]);
-                        Game.spawns['Spawn1'].memory.nexus.push([x: spawnPos.x - a, y: spawnPos.y - b)]);
-                        b++;
-                    }
-                    b = 0;
-                    a++;
+        if (nexus.length < extensionCount) {
+            let a = 0;
+            let b = 0;
+            while (a < nexusSize) {
+                while (b < (nexusSize - a)) {
+                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y + b)});
+                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y - b)});
+                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y + b)});
+                    Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y - b)});
+                    b++;
                 }
+                b = 0;
+                a++;
             }
         }
     }
