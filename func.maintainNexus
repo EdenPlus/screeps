@@ -14,135 +14,187 @@ var maintainNexus = {
                 let b = Game.spawns['Spawn1'].memory.nexusSize - a;
                 var curCoord = {x: spawnPos.x + a, y: spawnPos.y + b};
                 var isDupe = false;
+                // Check if coordinate is dupe
                 for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
+                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) isDupe = true;
                 }
-                // Start Tile Validator
-                var isBadLoc = false;
-                var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
-                tileCheck:
-                for (var x in tile) {
-                    if (tile[x][0] == 'structure') {
-                        isBadLoc = true;
-                        break tileCheck;
-                    }
-                    if (tile[x][1] == 'wall') {
-                        isBadLoc = true;
-                        break tileCheck;
-                    }
-                }
-                if (isBadLoc) {
-                    console.log('The tile at: [' + curCoord.x + ',' + curCoord.y + '] is a bad tile, recalculating...');
-                }
-                // End Tile Validator
-                if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                
-                curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
-                isDupe = false;
-                isBadLoc = false;
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // isBadLoc check here
-                if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                
-                curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
-                isDupe = false;
-                isBadLoc = false;
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // isBadLoc check here
-                if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                
-                curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
-                isDupe = false;
-                isBadLoc = false;
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // isBadLoc check here
-                if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                /*while (b <= (Game.spawns['Spawn1'].memory.nexusSize - a)) {
-                    var curCoord = {x: spawnPos.x + a, y: spawnPos.y + b};
-                    var isDupe = false;
-                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                            isDupe = true;
-                        }
-                    }
-                    // Start Tile Validator
+                // Validate if not dupe
+                if (!isDupe) {
+                    // Check tile
                     var isBadLoc = false;
                     var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
-                    for (var x in tile) {
-                        if (tile[x][0] == 'structure') {
+                    for (var i in tile) {
+                        if (tile[i][0] == 'structure') {
                             isBadLoc = true;
                             break tileCheck;
                         }
-                        if (tile[x][1] == 'wall') {
+                        if (tile[i][0] == 'constructionSite') {
                             isBadLoc = true;
                             break tileCheck;
+                        }
+                        if (tile[i][1] == 'wall') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                    }
+                    // Check build queue
+                    buildQueueCheck:
+                    for (var i in Memory.buildQueue) {
+                        if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
                         }
                     }
                     if (isBadLoc) {
                         console.log('The tile at: [' + curCoord.x + ',' + curCoord.y + '] is a bad tile, recalculating...');
                     }
-                    // End Tile Validator
-                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                    
-                    curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
-                    isDupe = false;
-                    isBadLoc = false;
-                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                            isDupe = true;
+                    else {
+                        // Add coordinate to nexus
+                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        // Break loop on size cap
+                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
+                    }
+                }
+                
+                curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
+                isDupe = false;
+                // Check if coordinate is dupe
+                for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) isDupe = true;
+                }
+                // Validate if not dupe
+                if (!isDupe) {
+                    // Check tile
+                    var isBadLoc = false;
+                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
+                    tileCheck:
+                    for (var i in tile) {
+                        if (tile[i][0] == 'structure') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                        if (tile[i][0] == 'constructionSite') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                        if (tile[i][1] == 'wall') {
+                            isBadLoc = true;
+                            break tileCheck;
                         }
                     }
-                    // isBadLoc check here
-                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                    
-                    curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
-                    isDupe = false;
-                    isBadLoc = false;
-                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                            isDupe = true;
+                    // Check build queue
+                    buildQueueCheck:
+                    for (var i in Memory.buildQueue) {
+                        if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
                         }
                     }
-                    // isBadLoc check here
-                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                    
-                    curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
-                    isDupe = false;
-                    isBadLoc = false;
-                    for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
-                            isDupe = true;
+                    if (isBadLoc) {
+                        console.log('The tile at: [' + curCoord.x + ',' + curCoord.y + '] is a bad tile, recalculating...');
+                    }
+                    else {
+                        // Add coordinate to nexus
+                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        // Break loop on size cap
+                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
+                    }
+                }
+                
+                curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
+                isDupe = false;
+                // Check if coordinate is dupe
+                for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) isDupe = true;
+                }
+                // Validate if not dupe
+                if (!isDupe) {
+                    // Check tile
+                    var isBadLoc = false;
+                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
+                    tileCheck:
+                    for (var i in tile) {
+                        if (tile[i][0] == 'structure') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                        if (tile[i][0] == 'constructionSite') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                        if (tile[i][1] == 'wall') {
+                            isBadLoc = true;
+                            break tileCheck;
                         }
                     }
-                    // isBadLoc check here
-                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
-                    b++;
-                }*/
+                    // Check build queue
+                    buildQueueCheck:
+                    for (var i in Memory.buildQueue) {
+                        if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
+                        }
+                    }
+                    if (isBadLoc) {
+                        console.log('The tile at: [' + curCoord.x + ',' + curCoord.y + '] is a bad tile, recalculating...');
+                    }
+                    else {
+                        // Add coordinate to nexus
+                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        // Break loop on size cap
+                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
+                    }
+                }
+                
+                curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
+                isDupe = false;
+                // Check if coordinate is dupe
+                for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) isDupe = true;
+                }
+                // Validate if not dupe
+                if (!isDupe) {
+                    // Check tile
+                    var isBadLoc = false;
+                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
+                    tileCheck:
+                    for (var i in tile) {
+                        if (tile[i][0] == 'structure') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                        if (tile[i][0] == 'constructionSite') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                        if (tile[i][1] == 'wall') {
+                            isBadLoc = true;
+                            break tileCheck;
+                        }
+                    }
+                    // Check build queue
+                    buildQueueCheck:
+                    for (var i in Memory.buildQueue) {
+                        if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
+                        }
+                    }
+                    if (isBadLoc) {
+                        console.log('The tile at: [' + curCoord.x + ',' + curCoord.y + '] is a bad tile, recalculating...');
+                    }
+                    else {
+                        // Add coordinate to nexus
+                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        // Break loop on size cap
+                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
+                    }
+                }
+                
                 a--;
             }
+            if (Game.spawns['Spawn1'].memory.nexus.length <= extensionCount) Game.spawns['Spawn1'].memory.nexusSize += 2;
         }
     }
 }
