@@ -6,56 +6,49 @@ var maintainNexus = {
         
         let extensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][Game.rooms['sim'].controller.level];
         let spawnPos = Game.spawns['Spawn1'].pos;
-        let nexusSize = Game.spawns['Spawn1'].memory.nexusSize;
         
-        if (Game.spawns['Spawn1'].memory.nexus.length < extensionCount) {
+        fillNexusMap:
+        while (Game.spawns['Spawn1'].memory.nexus.length < extensionCount) {
             let a = Game.spawns['Spawn1'].memory.nexusSize;
             let b = 0;
             while (a >= 0) {
                 while (b <= (Game.spawns['Spawn1'].memory.nexusSize - a)) {
                     var isDupe = false;
+                    var isBadLoc = false;
                     for (var i in Game.spawns['Spawn1'].memory.nexus) {
                         if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x + a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y + b)) {
                             isDupe = true;
                         }
                     }
-                    if (!isDupe) {
-                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y + b)});
-                        Game.rooms['sim'].createFlag((spawnPos.x + a), (spawnPos.y + b), 'Flag' + Game.time, COLOR_WHITE);
-                    }
+                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y + b)});
+                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
                     
                     isDupe = false;
+                    isBadLoc = false;
                     for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x + a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y - b)) {
-                            isDupe = true;
-                        }
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x + a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y - b)) isDupe = true;
                     }
-                    if (!isDupe) {
-                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y - b)});
-                        Game.rooms['sim'].createFlag((spawnPos.x + a), (spawnPos.y - b), 'Flag' + Game.time, COLOR_WHITE);
-                    }
+                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x + a), y: (spawnPos.y - b)});
+                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
                     
                     isDupe = false;
+                    isBadLoc = false;
                     for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x - a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y + b)) {
-                            isDupe = true;
-                        }
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x - a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y + b)) isDupe = true;
                     }
-                    if (!isDupe) {
-                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y + b)});
-                        Game.rooms['sim'].createFlag((spawnPos.x - a), (spawnPos.y + b), 'Flag' + Game.time, COLOR_WHITE);
-                    }
+                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y + b)});
+                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
                     
                     isDupe = false;
+                    isBadLoc = false;
                     for (var i in Game.spawns['Spawn1'].memory.nexus) {
                         if (Game.spawns['Spawn1'].memory.nexus[i].x == (spawnPos.x - a) && Game.spawns['Spawn1'].memory.nexus[i].y == (spawnPos.y - b)) {
                             isDupe = true;
                         }
                     }
-                    if (!isDupe) {
-                        Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y - b)});
-                        Game.rooms['sim'].createFlag((spawnPos.x - a), (spawnPos.y - b), 'Flag' + Game.time, COLOR_WHITE);
-                    }
+                    if (!isDupe && !isBadLoc) Game.spawns['Spawn1'].memory.nexus.push({x: (spawnPos.x - a), y: (spawnPos.y - b)});
+                    if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) break fillNexusMap;
+                    
                     b++;
                 }
                 b = 0;
