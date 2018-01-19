@@ -2,6 +2,8 @@ var maintainStructures = {
     
     run: function() {
         
+        console.log("Structure Maintenance Activated");
+        
         const MAXSITES = 3;
         
         var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
@@ -13,8 +15,8 @@ var maintainStructures = {
         });
         var sources = Game.rooms['sim'].find(FIND_SOURCES);
         
-        Memory.constructionSites = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
-        var sites =  Memory.constructionSites.length;
+        var constructionSites = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
+        var sites = constructionSites.length;
         
         var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
         var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
@@ -33,9 +35,9 @@ var maintainStructures = {
              var repairSites = Game.rooms['sim'].find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     if (Game.rooms['sim'].find(FIND_HOSTILE_CREEPS).length) {
-                        return (structure.hits < (structure.hitsMax * .5) && structure.structureType != STRUCTURE_RAMPART);
+                        return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART);
                     } else {
-                        return (structure.hits < (structure.hitsMax * .5) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
+                        return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
                     }
                 }
             });
