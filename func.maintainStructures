@@ -38,11 +38,9 @@ var maintainStructures = {
             }
         }
         
-        // function to add new construction sites to a list for building
+        // Function to add new construction sites to a list for building
         function queueBuild(x, y, type) {
-            if (!Memory.buildQueue) {
-                Memory.buildQueue = []
-            }
+            if (!Memory.buildQueue) Memory.buildQueue = [];
             for (let i in Memory.buildQueue) {
                 if (x == Memory.buildQueue[i].x && y == Memory.buildQueue[i].y) {
                     return -1;
@@ -53,7 +51,7 @@ var maintainStructures = {
             }
         }
         
-        // queues up construction for a path
+        // Queues up construction for a path
         function buildRoad(path, end) {
             for (let i in path) {
                 if (i < (path.length - 2)) {
@@ -83,6 +81,24 @@ var maintainStructures = {
                 queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y - 4, STRUCTURE_ROAD);
             }
         }
+        
+        // Extension queue start
+        if (extensions.length < Game.spawns['Spawn1'].memory.nexus.length) {
+            for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                var isBuilt = false;
+                builtCheck:
+                for (var j in extensions) {
+                    if (Game.spawns['Spawn1'].memory.nexus[i].x == extensions[j].x && Game.spawns['Spawn1'].memory.nexus[i].y == extensions[j].y) {
+                        isBuilt = true;
+                        break builtCheck;
+                    }
+                }
+                if (!isBuilt) {
+                    queueBuild(Game.spawns['Spawn1'].memory.nexus[i].x, Game.spawns['Spawn1'].memory.nexus[i].y, STRUCTURE_EXTENSION);
+                }
+            }
+        }
+        // Extension queue end
         
         if (extensions.length == 5 && !Memory.sourceRoad[0]) {
             buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
