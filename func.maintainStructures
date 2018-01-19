@@ -3,6 +3,7 @@ var maintainStructures = {
     run: function() {
         if (!Memory.repairSites) Memory.repairSites = [];
         if (!Memory.sourceRoad) Memory.sourceRoad = [];
+        if (!Memory.buildQueue) Memory.buildQueue = [];
         
         const MAXSITES = 3;
         
@@ -83,18 +84,20 @@ var maintainStructures = {
         }
         
         // Extension queue start
-        if (extensions.length < Game.spawns['Spawn1'].memory.nexus.length) {
-            for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                var isBuilt = false;
-                builtCheck:
-                for (var j in extensions) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == extensions[j].x && Game.spawns['Spawn1'].memory.nexus[i].y == extensions[j].y) {
-                        isBuilt = true;
-                        break builtCheck;
+        if (Game.spawns['Spawn1'].memory.nexus.length) {
+            if (extensions.length < Game.spawns['Spawn1'].memory.nexus.length) {
+                for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                    var isBuilt = false;
+                    builtCheck:
+                    for (var j in extensions) {
+                        if (Game.spawns['Spawn1'].memory.nexus[i].x == extensions[j].x && Game.spawns['Spawn1'].memory.nexus[i].y == extensions[j].y) {
+                            isBuilt = true;
+                            break builtCheck;
+                        }
                     }
-                }
-                if (!isBuilt) {
-                    queueBuild(Game.spawns['Spawn1'].memory.nexus[i].x, Game.spawns['Spawn1'].memory.nexus[i].y, STRUCTURE_EXTENSION);
+                    if (!isBuilt) {
+                        queueBuild(Game.spawns['Spawn1'].memory.nexus[i].x, Game.spawns['Spawn1'].memory.nexus[i].y, STRUCTURE_EXTENSION);
+                    }
                 }
             }
         }
