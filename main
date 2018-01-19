@@ -95,6 +95,7 @@ module.exports.loop = function () {
         }
         
         // Nexus Report
+        if (!Game.spawns['Spawn1'].memory.nexus) Game.spawns['Spawn1'].memory.nexus = [];
         if (Game.spawns['Spawn1'].memory.nexus.length) {
             console.log('  -=======  NEXUS REPORT  =======-   ');
             var temp = "Nexus Coords: ";
