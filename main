@@ -13,7 +13,7 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-    
+    // State report start
     const TICKSTOREPORT = 10;
     
     if (!(Game.time % TICKSTOREPORT)) {
@@ -105,22 +105,27 @@ module.exports.loop = function () {
             console.log("Extensions Built: " + Game.spawns['Spawn1'].room.find(STRUCTURE_EXTENSION).length + "/" + Game.spawns['Spawn1'].memory.nexus.length);
         }
     }
+    // State Report end
     
-    // Records what tick count each level was reached.
+    // Controller level up tick recorder start
     if (!Memory.levelTime) {
         Memory.levelTime = [];
     } else if (!Memory.levelTime[Game.rooms['sim'].controller.level]) {
         Memory.levelTime[Game.rooms['sim'].controller.level] =
             { level: Game.rooms['sim'].controller.level, time: Game.time}
-    } //Uncomment for level tick record
+    }
+    // Controller level up tick recorder end
     
+    // Maintenance start
     maintainCreeps.run();
     
     if (!(Game.time % 10)) {
         maintainNexus.run();
         maintainStructures.run();
     }
+    // Maintenance end
     
+    // Unit AI start
     var towers = Game.rooms['sim'].find(FIND_STRUCTURES, {
         filter: (structure) => {
             return structure.structureType == STRUCTURE_TOWER;
@@ -175,4 +180,5 @@ module.exports.loop = function () {
             creep.moveTo(0,25);
         }
     }
+    // Unit AI end
 }
