@@ -17,11 +17,13 @@ module.exports.loop = function () {
     const TICKSTOREPORT = 10;
     
     if (!(Game.time % TICKSTOREPORT)) {
-
+        // State Report
         console.log('  -=======  STATE REPORT  =======-   ');
-        
         console.log('Star Date: '+Game.time);
         console.log('Work Status: '+Memory.status);
+        
+        // Controller Report
+        console.log('  -=======  CONTROLLER REPORT  =======-   ');
         console.log('Controller Level: '+Game.rooms['sim'].controller.level);
         
         var progressBar = '[';
@@ -45,9 +47,9 @@ module.exports.loop = function () {
             console.log('Ticks to downgrade: '+Game.rooms['sim'].controller.ticksToDowngrade);
         }
         
-        if (!Memory.seconds) {
-            Memory.seconds = 0;
-        }
+        // Speed Report
+        console.log('  -=======  SPEED REPORT  =======-   ');
+        if (!Memory.seconds) Memory.seconds = 0;
         
         var seconds = new Date().getSeconds();
         
@@ -56,15 +58,26 @@ module.exports.loop = function () {
             console.log('Speed: '+(TICKSTOREPORT / (seconds + 60 - Memory.seconds)).toFixed(2)+' ticks per second.');
             console.log('Speed: '+((seconds + 60 - Memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
         } else {
-        
             console.log(seconds - Memory.seconds+' seconds since last update.');
             console.log('Speed: '+(TICKSTOREPORT / (seconds - Memory.seconds)).toFixed(2)+' ticks per second.');
             console.log('Speed: '+((seconds - Memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
-
         }
         
         Memory.seconds = seconds;
         
+        // Repair Report
+        if (!Memory.repairSites) Memory.repairSites = [];
+        
+        if (Memory.repairSites.length) {
+            console.log('  -=======  REPAIR REPORT  =======-   ');
+            console.log(Memory.repairSites.length+' structures are damaged.')
+        }
+        
+        // Energy Report
+        console.log('  -=======  ENERGY REPORT  =======-   ');
+        console.log('Room Energy: '+Game.rooms['sim'].energyAvailable+'/'+Game.rooms['sim'].energyCapacityAvailable+' = '+
+        Math.floor((Game.rooms['sim'].energyAvailable/Game.rooms['sim'].energyCapacityAvailable) * 100) // Percent
+        +"%");
         
         var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -72,29 +85,24 @@ module.exports.loop = function () {
             }
         });
         
-        if (!Memory.repairSites) {
-            Memory.repairSites = [];
-        }
-        
-        if (Memory.repairSites.length) {
-            console.log(Memory.repairSites.length+' structures are damaged.')
-        }
-        
-        
-        console.log('Room Energy: '+Game.rooms['sim'].energyAvailable+'/'+Game.rooms['sim'].energyCapacityAvailable+' = '+
-        Math.floor((Game.rooms['sim'].energyAvailable/Game.rooms['sim'].energyCapacityAvailable) * 100) // Percent
-        +"%");
-        
-        
         if (containers.length) {
-        
             if (Game.rooms['sim'].storage) {
                 containers = containers.concat(Game.rooms['sim'].storage);
             }
-        
             for (let x in containers) {
                 console.log(containers[x]+' has '+containers[x].store.energy);
             }
+        }
+        
+        // Nexus Report
+        if (Game.spawns['Spawn1'].memory.nexus.length) {
+            console.log('  -=======  NEXUS REPORT  =======-   ');
+            var temp = "Nexus Coords: ";
+            for (var i in Game.spawns['Spawn1'].memory.nexus) {
+                temp += "[" + Game.spawns['Spawn1'].memory.nexus[i].x + "," + Game.spawns['Spawn1'].memory.nexus[i].y + "] ";
+            }
+            console.log(temp);
+            console.log("Extensions Built: " + Game.spawns['Spawn1'].room.find(STRUCTURE_EXTENSION).length + "/" + Game.spawns['Spawn1'].memory.nexus.length);
         }
     }
     
@@ -109,15 +117,9 @@ module.exports.loop = function () {
     maintainCreeps.run();
     
     if (!(Game.time % 10)) {
+        maintainNexus.run();
         maintainStructures.run();
     }
-    
-    maintainNexus.run();
-    var temp = "Nexus Coords: ";
-    for (var i in Game.spawns['Spawn1'].memory.nexus) {
-        temp += "[x: " + Game.spawns['Spawn1'].memory.nexus[i].x + ", y: " + Game.spawns['Spawn1'].memory.nexus[i].y + "] ";
-    }
-    console.log(temp);
     
     var towers = Game.rooms['sim'].find(FIND_STRUCTURES, {
         filter: (structure) => {
