@@ -12,6 +12,7 @@ var maintainNexus = {
             var a = Game.spawns['Spawn1'].memory.nexusSize;
             while (a >= 0) {
                 var b = Game.spawns['Spawn1'].memory.nexusSize - a;
+                // x + a, y + a
                 var curCoord = {x: spawnPos.x + a, y: spawnPos.y + b};
                 var isDupe = false;
                 // Check if coordinate is dupe
@@ -60,6 +61,7 @@ var maintainNexus = {
                     }
                 }
                 
+                // x +  a, y - b
                 curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
                 isDupe = false;
                 // Check if coordinate is dupe
@@ -108,6 +110,7 @@ var maintainNexus = {
                     }
                 }
                 
+                // x - a, y + b
                 curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
                 isDupe = false;
                 // Check if coordinate is dupe
@@ -156,6 +159,7 @@ var maintainNexus = {
                     }
                 }
                 
+                // x - a, y - b
                 curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
                 isDupe = false;
                 // Check if coordinate is dupe
@@ -205,6 +209,7 @@ var maintainNexus = {
                 }
                 a--;
             }
+            // Increases the nexus boundary if we no longer have tiles that are capable of being used in the nexus
             if (Game.spawns['Spawn1'].memory.nexus.length <= extensionCount) {
                 Game.spawns['Spawn1'].memory.nexusSize += 2;
             }
