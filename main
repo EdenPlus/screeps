@@ -13,16 +13,17 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-    // State report start
+    // Status report start
     const TICKSTOREPORT = 10;
     
     if (!(Game.time % TICKSTOREPORT)) {
-        // State Report
+        // State report start
         console.log('  -=======  STATE REPORT  =======-   ');
         console.log('Star Date: '+Game.time);
         console.log('Work Status: '+Memory.status);
+        // State report end
         
-        // Controller Report
+        // Controller report start
         console.log('  -=======  CONTROLLER REPORT  =======-   ');
         console.log('Controller Level: '+Game.rooms['sim'].controller.level);
         
@@ -46,8 +47,9 @@ module.exports.loop = function () {
         if (Game.rooms['sim'].controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[Game.rooms['sim'].controller.level]) {
             console.log('Ticks to downgrade: '+Game.rooms['sim'].controller.ticksToDowngrade);
         }
+        // Controller report end
         
-        // Speed Report
+        // Speed report start
         console.log('  -=======  SPEED REPORT  =======-   ');
         if (!Memory.seconds) Memory.seconds = 0;
         
@@ -64,16 +66,18 @@ module.exports.loop = function () {
         }
         
         Memory.seconds = seconds;
+        // Speed report end
         
-        // Repair Report
+        // Repair report start
         if (!Memory.repairSites) Memory.repairSites = [];
         
         if (Memory.repairSites.length) {
             console.log('  -=======  REPAIR REPORT  =======-   ');
             console.log(Memory.repairSites.length+' structures are damaged.')
         }
+        // Repair report end
         
-        // Energy Report
+        // Energy report start
         console.log('  -=======  ENERGY REPORT  =======-   ');
         console.log('Room Energy: '+Game.rooms['sim'].energyAvailable+'/'+Game.rooms['sim'].energyCapacityAvailable+' = '+
         Math.floor((Game.rooms['sim'].energyAvailable/Game.rooms['sim'].energyCapacityAvailable) * 100) // Percent
@@ -93,8 +97,9 @@ module.exports.loop = function () {
                 console.log(containers[x]+' has '+containers[x].store.energy);
             }
         }
+        // Energy report end
         
-        // Nexus Report
+        // Nexus report start
         if (!Game.spawns['Spawn1'].memory.nexus) Game.spawns['Spawn1'].memory.nexus = [];
         if (Game.spawns['Spawn1'].memory.nexus.length) {
             console.log('  -=======  NEXUS REPORT  =======-   ');
@@ -105,8 +110,9 @@ module.exports.loop = function () {
             console.log(temp);
             console.log("Extensions Built: " + Game.spawns['Spawn1'].room.find(STRUCTURE_EXTENSION).length + "/" + Game.spawns['Spawn1'].memory.nexus.length);
         }
+        // Nexus report end
     }
-    // State Report end
+    // Status Report end
     
     // Controller level up tick recorder start
     if (!Memory.levelTime) {
