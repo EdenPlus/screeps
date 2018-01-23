@@ -17,8 +17,14 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-    // Function for the status report
-    statusReport.run();
+    var controlledRooms = [];
+    console.log(Game.rooms);
+    for (var a in Game.rooms) {
+        console.log(Game.rooms[a]);
+        if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
+            statusReport.run(Game.rooms[a]);
+        }
+    }
     
     // Function for creep maintenance
     maintainCreeps.run();
