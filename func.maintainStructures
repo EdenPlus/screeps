@@ -123,6 +123,14 @@ var maintainStructures = {
             Memory.sourceRoad[2] = true;
         }
         
+        if (Game.rooms['sim'].controller.level >= 3 && extensions.length == 5) {
+            queueBuild(Game.spawns['Spawn1'].pos.x + 2,Game.spawns['Spawn1'].pos.y, STRUCTURE_TOWER);
+        }
+        
+        if (Game.rooms['sim'].controller.level >= 5 && extensions.length == 20) {
+            queueBuild(Game.spawns['Spawn1'].pos.x,Game.spawns['Spawn1'].pos.y + 2, STRUCTURE_TOWER);
+        }
+        
         if (numTowers && !Memory.sourceRoad[3]) {
             buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             Memory.sourceRoad[3] = true;
