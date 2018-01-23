@@ -1,6 +1,6 @@
 var statusReport = {
     
-    run: function() {
+    run: function(curRoom) {
         const TICKSTOREPORT = 10;
         
         if (!(Game.time % TICKSTOREPORT)) {
@@ -12,7 +12,7 @@ var statusReport = {
             
             // Controller report start
             console.log('  -=======  CONTROLLER REPORT  =======-   ');
-            console.log('Controller Level: '+Game.rooms['sim'].controller.level);
+            console.log('Controller Level: '+curRoom.controller.level);
             
             var progressBar = '[';
             var progressBarLength = 29;
