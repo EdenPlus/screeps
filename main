@@ -1,7 +1,10 @@
+// Function stuff
 var maintainCreeps = require('func.maintainCreeps');
 var maintainStructures = require('func.maintainStructures');
 var maintainNexus = require('func.maintainNexus');
 var statusReport = require('func.statusReport');
+
+// Role Stuff
 var roleHarvester = require('role.harvester');
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
@@ -17,14 +20,14 @@ module.exports.loop = function () {
     // Function for the status report
     statusReport.run();
     
-    // Maintenance start
+    // Function for creep maintenance
     maintainCreeps.run();
     
+    // If statement to reduce resource consumption for building maintenance
     if (!(Game.time % 10)) {
         maintainNexus.run();
         maintainStructures.run();
     }
-    // Maintenance end
     
     // Unit AI start
     var towers = Game.rooms['sim'].find(FIND_STRUCTURES, {
