@@ -108,7 +108,10 @@ module.exports.loop = function () {
                 temp += "[" + Game.spawns['Spawn1'].memory.nexus[i].x + "," + Game.spawns['Spawn1'].memory.nexus[i].y + "] ";
             }
             console.log(temp);
-            console.log("Extensions Built: " + Game.spawns['Spawn1'].room.find(STRUCTURE_EXTENSION).length + "/" + Game.spawns['Spawn1'].memory.nexus.length);
+            var quickExt = Game.spawns['Spawn1'].room.find(FIND_MY_STRUCTURES, {
+              filter: { structureType: STRUCTURE_EXTENSION }
+            });
+            console.log("Extensions Built: " + quickExt.length + "/" + Game.spawns['Spawn1'].memory.nexus.length);
         }
         // Nexus report end
     }
