@@ -14,6 +14,7 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
+    // Function for the status report
     statusReport.run();
     
     // Controller level up tick recorder start
