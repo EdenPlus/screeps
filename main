@@ -17,15 +17,6 @@ module.exports.loop = function () {
     // Function for the status report
     statusReport.run();
     
-    // Controller level up tick recorder start
-    if (!Memory.levelTime) {
-        Memory.levelTime = [];
-    } else if (!Memory.levelTime[Game.rooms['sim'].controller.level]) {
-        Memory.levelTime[Game.rooms['sim'].controller.level] =
-            { level: Game.rooms['sim'].controller.level, time: Game.time}
-    }
-    // Controller level up tick recorder end
-    
     // Maintenance start
     maintainCreeps.run();
     
