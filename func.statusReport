@@ -18,8 +18,8 @@ var statusReport = {
             var progressBarLength = 29;
             for (let x = 0; x < progressBarLength; x++) {
                 if (x == Math.floor(progressBarLength/2)) {
-                    progressBar+=(Game.rooms['sim'].controller.progress/Game.rooms['sim'].controller.progressTotal * 100).toFixed(1)+'%';
-                } else if (x/progressBarLength < Game.rooms['sim'].controller.progress/Game.rooms['sim'].controller.progressTotal) {
+                    progressBar+=(curRoom.controller.progress/curRoom.controller.progressTotal * 100).toFixed(1)+'%';
+                } else if (x/progressBarLength < curRoom.controller.progress/curRoom.controller.progressTotal) {
                     progressBar+='=';
                 } else {
                     progressBar+=' ';
@@ -27,12 +27,12 @@ var statusReport = {
             }
             progressBar += ']';
             
-            console.log('Progess: '+Game.rooms['sim'].controller.progress+'/'+Game.rooms['sim'].controller.progressTotal+
+            console.log('Progess: '+curRoom.controller.progress+'/'+curRoom.controller.progressTotal+
     //            ' = '+(Game.rooms['sim'].controller.progress/Game.rooms['sim'].controller.progressTotal * 100).toFixed(1)+'%' + 
                 ' '+progressBar);
                 
-            if (Game.rooms['sim'].controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[Game.rooms['sim'].controller.level]) {
-                console.log('Ticks to downgrade: '+Game.rooms['sim'].controller.ticksToDowngrade);
+            if (curRoom.controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[curRoom.controller.level]) {
+                console.log('Ticks to downgrade: '+curRoom.controller.ticksToDowngrade);
             }
             // Controller report end
             
@@ -66,19 +66,19 @@ var statusReport = {
             
             // Energy report start
             console.log('  -=======  ENERGY REPORT  =======-   ');
-            console.log('Room Energy: '+Game.rooms['sim'].energyAvailable+'/'+Game.rooms['sim'].energyCapacityAvailable+' = '+
-            Math.floor((Game.rooms['sim'].energyAvailable/Game.rooms['sim'].energyCapacityAvailable) * 100) // Percent
+            console.log('Room Energy: '+curRoom.energyAvailable+'/'+curRoom.energyCapacityAvailable+' = '+
+            Math.floor((curRoom.energyAvailable/curRoom.energyCapacityAvailable) * 100) // Percent
             +"%");
             
-            var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+            var containers = curRoom.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER;
                 }
             });
             
             if (containers.length) {
-                if (Game.rooms['sim'].storage) {
-                    containers = containers.concat(Game.rooms['sim'].storage);
+                if (curRoom.storage) {
+                    containers = containers.concat(curRoom.storage);
                 }
                 for (let x in containers) {
                     console.log(containers[x]+' has '+containers[x].store.energy);
