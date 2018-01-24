@@ -43,10 +43,10 @@ var maintainNexus = {
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -92,10 +92,10 @@ var maintainNexus = {
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -141,10 +141,10 @@ var maintainNexus = {
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -190,10 +190,10 @@ var maintainNexus = {
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
