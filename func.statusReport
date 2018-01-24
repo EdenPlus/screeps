@@ -6,7 +6,7 @@ var statusReport = {
         if (!(Game.time % TICKSTOREPORT)) {
             // State report start
             console.log('  -=======  STATE REPORT  =======-   ');
-            console.log('Report for room: '+curRoom.name);
+            console.log('Room Name: '+curRoom.name);
             console.log('Star Date: '+Game.time);
             console.log('Work Status: '+Memory.status);
             // State report end
