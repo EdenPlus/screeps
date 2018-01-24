@@ -8,7 +8,7 @@ var statusReport = {
             console.log('  -=======  STATE REPORT  =======-   ');
             console.log('Room Name: '+curRoom.name);
             console.log('Star Date: '+Game.time);
-            console.log('Work Status: '+Memory.status);
+            console.log('Work Status: '+curRoom.memory.status);
             // State report end
             
             // Controller report start
@@ -39,29 +39,29 @@ var statusReport = {
             
             // Speed report start
             console.log('  -=======  SPEED REPORT  =======-   ');
-            if (!Memory.seconds) Memory.seconds = 0;
+            if (!curRoom.memory.seconds) curRoom.memory.seconds = 0;
             
             var seconds = new Date().getSeconds();
             
-            if (0 > (seconds - Memory.seconds)) {
-                console.log(seconds + 60 - Memory.seconds+' seconds since last update.');
-                console.log('Speed: '+(TICKSTOREPORT / (seconds + 60 - Memory.seconds)).toFixed(2)+' ticks per second.');
-                console.log('Speed: '+((seconds + 60 - Memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
+            if (0 > (seconds - curRoom.memory.seconds)) {
+                console.log(seconds + 60 - curRoom.memory.seconds+' seconds since last update.');
+                console.log('Speed: '+(TICKSTOREPORT / (seconds + 60 - curRoom.memory.seconds)).toFixed(2)+' ticks per second.');
+                console.log('Speed: '+((seconds + 60 - curRoom.memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
             } else {
-                console.log(seconds - Memory.seconds+' seconds since last update.');
-                console.log('Speed: '+(TICKSTOREPORT / (seconds - Memory.seconds)).toFixed(2)+' ticks per second.');
-                console.log('Speed: '+((seconds - Memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
+                console.log(seconds - curRoom.memory.seconds+' seconds since last update.');
+                console.log('Speed: '+(TICKSTOREPORT / (seconds - curRoom.memory.seconds)).toFixed(2)+' ticks per second.');
+                console.log('Speed: '+((seconds - curRoom.memory.seconds) / TICKSTOREPORT).toFixed(2)+' seconds per tick.');
             }
             
-            Memory.seconds = seconds;
+            curRoom.memory.seconds = seconds;
             // Speed report end
             
             // Repair report start
-            if (!Memory.repairSites) Memory.repairSites = [];
+            if (!curRoom.memory.repairSites) curRoom.memory.repairSites = [];
             
-            if (Memory.repairSites.length) {
+            if (curRoom.memory.repairSites.length) {
                 console.log('  -=======  REPAIR REPORT  =======-   ');
-                console.log(Memory.repairSites.length+' structures are damaged.')
+                console.log(curRoom.memory.repairSites.length+' structures are damaged.')
             }
             // Repair report end
             
