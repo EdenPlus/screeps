@@ -103,7 +103,8 @@ var statusReport = {
             }
             // Nexus report end
         }
-        
+        /*
+        Why does this exist?
         // Controller level up tick recorder start
         if (!Memory.levelTime) {
             Memory.levelTime = [];
@@ -112,6 +113,7 @@ var statusReport = {
                 { level: curRoom.controller.level, time: Game.time}
         }
         // Controller level up tick recorder end
+        */
     }
 }
 
