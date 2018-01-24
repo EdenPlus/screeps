@@ -17,7 +17,7 @@ var roleBuilder = {
         
         if (creep.memory.working) {
             
-            var targets = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
+            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
 //            targets = 0;
             
             if (targets.length) {
