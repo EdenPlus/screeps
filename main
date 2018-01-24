@@ -23,7 +23,7 @@ module.exports.loop = function () {
             statusReport.run(Game.rooms[a]);
             
             // Function for creep maintenance
-            maintainCreeps.run();
+            maintainCreeps.run(Game.rooms[a]);
             
             // If statement to reduce resource consumption for building maintenance
             if (!(Game.time % 10)) {
