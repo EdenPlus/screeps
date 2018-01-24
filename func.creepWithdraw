@@ -48,7 +48,7 @@ var creepWithdraw = {
             
         } else {
             
-            if (Memory.status == 'unpaused' || creep.memory.role == 'filler') {
+            if (creep.room.memory.status == 'unpaused' || creep.memory.role == 'filler') {
                 
                 if (creep.withdraw(Game.getObjectById(creep.memory.job), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(Game.getObjectById(creep.memory.job));
