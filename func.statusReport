@@ -87,18 +87,19 @@ var statusReport = {
             // Energy report end
             
             // Nexus report start
-            if (!Game.spawns['Spawn1'].memory.nexus) Game.spawns['Spawn1'].memory.nexus = [];
-            if (Game.spawns['Spawn1'].memory.nexus.length) {
+            var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
+            if (!curSpawn.memory.nexus) curSpawn.memory.nexus = [];
+            if (curSpawn.memory.nexus.length) {
                 console.log('  -=======  NEXUS REPORT  =======-   ');
                 var temp = "Nexus Coords: ";
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    temp += "[" + Game.spawns['Spawn1'].memory.nexus[i].x + "," + Game.spawns['Spawn1'].memory.nexus[i].y + "] ";
+                for (var i in curSpawn.memory.nexus) {
+                    temp += "[" + curSpawn.memory.nexus[i].x + "," + curSpawn.memory.nexus[i].y + "] ";
                 }
                 console.log(temp);
-                var quickExt = Game.spawns['Spawn1'].room.find(FIND_MY_STRUCTURES, {
+                var quickExt = curSpawn.room.find(FIND_MY_STRUCTURES, {
                   filter: { structureType: STRUCTURE_EXTENSION }
                 });
-                console.log("Extensions Built: " + quickExt.length + "/" + Game.spawns['Spawn1'].memory.nexus.length);
+                console.log("Extensions Built: " + quickExt.length + "/" + curSpawn.memory.nexus.length);
             }
             // Nexus report end
         }
