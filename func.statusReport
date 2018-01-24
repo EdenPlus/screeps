@@ -107,10 +107,10 @@ var statusReport = {
         /*
         Why does this exist?
         // Controller level up tick recorder start
-        if (!Memory.levelTime) {
-            Memory.levelTime = [];
-        } else if (!Memory.levelTime[curRoom.controller.level]) {
-            Memory.levelTime[curRoom.controller.level] =
+        if (!curRoom.memory.levelTime) {
+            curRoom.memory.levelTime = [];
+        } else if (!curRoom.memory.levelTime[curRoom.controller.level]) {
+            curRoom.memory.levelTime[curRoom.controller.level] =
                 { level: curRoom.controller.level, time: Game.time}
         }
         // Controller level up tick recorder end
