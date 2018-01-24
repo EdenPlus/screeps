@@ -153,10 +153,10 @@ var maintainCreeps = {
             transfers.length < TRANSFERMAX ||
             (numFighters < FIGHTERMAX && curRoom.energyCapacityAvailable >= 800 && curRoom.find(FIND_HOSTILE_CREEPS).length)) ||
             miners.length == 0 && numHarvesters < HARVESTERMAX) {
-                
-            Memory.status = 'paused';
+            
+            curRoom.memory.status = 'paused';
         } else {
-            Memory.status = 'unpaused';
+            curRoom.memory.status = 'unpaused';
         }
         
         if ((miners.length == 0 || transfers.length == 0) && (containers.length) && curRoom.controller.level > 1) {
@@ -196,9 +196,9 @@ var maintainCreeps = {
             }
         }
         
-        if (Game.rooms['sim'].energyAvailable >= 800 &&
+        if (curRoom.energyAvailable >= 800 &&
             numFighters < FIGHTERMAX) {
-                
+            
             makeCreep([
                 MOVE,  MOVE,  MOVE,  MOVE,                                  // MOVE    4 x  50 = 200
                 RANGED_ATTACK, RANGED_ATTACK,
