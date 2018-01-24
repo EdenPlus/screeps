@@ -17,35 +17,35 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-    var controlledRooms = [];
-    console.log(Game.rooms);
     for (var a in Game.rooms) {
-        console.log(Game.rooms[a]);
         if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
+            // Function for status report
             statusReport.run(Game.rooms[a]);
+            
+            // Function for creep maintenance
+            maintainCreeps.run();
+            
+            // If statement to reduce resource consumption for building maintenance
+            if (!(Game.time % 10)) {
+                maintainNexus.run(Game.rooms[a]);
+                maintainStructures.run(Game.rooms[a]);
+            }
+            
+            // Tower AI Start
+            var towers = Game.rooms[a].find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_TOWER;
+                }
+            });
+            
+            for (let x in towers) {
+                roleTower.run(towers[x]);
+            }
+            // Tower AI end
         }
-    }
-    
-    // Function for creep maintenance
-    maintainCreeps.run();
-    
-    // If statement to reduce resource consumption for building maintenance
-    if (!(Game.time % 10)) {
-        maintainNexus.run();
-        maintainStructures.run();
     }
     
     // Unit AI start
-    var towers = Game.rooms['sim'].find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_TOWER;
-        }
-    });
-    
-    for (let x in towers) {
-        roleTower.run(towers[x]);
-    }
-    
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         
