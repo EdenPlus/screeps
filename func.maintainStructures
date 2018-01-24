@@ -1,9 +1,9 @@
 var maintainStructures = {
     
     run: function(curRoom) {
-        if (!Memory.repairSites) Memory.repairSites = [];
-        if (!Memory.sourceRoad) Memory.sourceRoad = [];
-        if (!Memory.buildQueue) Memory.buildQueue = [];
+        if (!curRoom.memory.repairSites) curRoom.memory.repairSites = [];
+        if (!curRoom.memory.sourceRoad) curRoom.memory.sourceRoad = [];
+        if (!curRoom.memory.buildQueue) curRoom.memory.buildQueue = [];
         
         const MAXSITES = 3;
         
@@ -33,22 +33,22 @@ var maintainStructures = {
                     }
                 }
             });
-            Memory.repairSites = [];
+            curRoom.memory.repairSites = [];
             for (let i in repairSites) {
-                Memory.repairSites[i] = repairSites[i].id;
+                curRoom.memory.repairSites[i] = repairSites[i].id;
             }
         }
         
         // Function to add new construction sites to a list for building
         function queueBuild(x, y, type) {
-            if (!Memory.buildQueue) Memory.buildQueue = [];
-            for (let i in Memory.buildQueue) {
-                if (x == Memory.buildQueue[i].x && y == Memory.buildQueue[i].y) {
+            if (!curRoom.memory.buildQueue) curRoom.memory.buildQueue = [];
+            for (let i in curRoom.memory.buildQueue) {
+                if (x == curRoom.memory.buildQueue[i].x && y == curRoom.memory.buildQueue[i].y) {
                     return -1;
                 }
             }
             if ((!curRoom.lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
-                Memory.buildQueue.push({x:x,y:y,type:type});
+                curRoom.memory.buildQueue.push({x:x,y:y,type:type});
             }
         }
         
@@ -105,7 +105,7 @@ var maintainStructures = {
         }
         // Extension queue end
         
-        if (extensions.length >= 5 && !Memory.sourceRoad[0]) {
+        if (extensions.length >= 5 && !curRoom.memory.sourceRoad[0]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             queueBuild(spawns[0].pos.x + 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x - 1, spawns[0].pos.y, STRUCTURE_ROAD);
@@ -114,15 +114,15 @@ var maintainStructures = {
             Memory.sourceRoad[0] = true;
         }
         
-        if (containers.length == 1 && !Memory.sourceRoad[1]) {
+        if (containers.length == 1 && !curRoom.memory.sourceRoad[1]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
-            Memory.sourceRoad[1] = true;
+            curRoom.memory.sourceRoad[1] = true;
         }
         
-        if (containers.length == 2 && !Memory.sourceRoad[2]) {
+        if (containers.length == 2 && !curRoom.memory.sourceRoad[2]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             buildControllerRoad();
-            Memory.sourceRoad[2] = true;
+            curRoom.memory.sourceRoad[2] = true;
         }
         
         if (curRoom.controller.level >= 3 && extensions.length >= 5) {
@@ -133,9 +133,9 @@ var maintainStructures = {
             queueBuild(curSpawn.pos.x,curSpawn.pos.y + 2, STRUCTURE_TOWER);
         }
         
-        if (numTowers && !Memory.sourceRoad[3]) {
+        if (numTowers && !curRoom.memory.sourceRoad[3]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
-            Memory.sourceRoad[3] = true;
+            curRoom.memory.sourceRoad[3] = true;
         }
         
         if (containers.length == 4) {
@@ -152,10 +152,10 @@ var maintainStructures = {
             }
         }
         
-        if (sites < MAXSITES && Memory.buildQueue[0]) {
-            let site = Memory.buildQueue[0];
+        if (sites < MAXSITES && curRoom.memory.buildQueue[0]) {
+            let site = curRoom.memory.buildQueue[0];
             curRoom.createConstructionSite(site.x, site.y, site.type)
-            Memory.buildQueue.shift();
+            curRoom.memory.buildQueue.shift();
         }
     }
 }
