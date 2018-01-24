@@ -111,7 +111,7 @@ var maintainStructures = {
             queueBuild(spawns[0].pos.x - 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y + 1, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y - 1, STRUCTURE_ROAD);
-            Memory.sourceRoad[0] = true;
+            curRoom.memory.sourceRoad[0] = true;
         }
         
         if (containers.length == 1 && !curRoom.memory.sourceRoad[1]) {
