@@ -1,7 +1,6 @@
 // This function handles creep energy withdrawal
 // creepWithdraw.run(creep);
 
-
 var creepWithdraw = {
     
     run: function(creep) {
