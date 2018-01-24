@@ -1,6 +1,6 @@
 var maintainStructures = {
     
-    run: function() {
+    run: function(curRoom) {
         if (!Memory.repairSites) Memory.repairSites = [];
         if (!Memory.sourceRoad) Memory.sourceRoad = [];
         if (!Memory.buildQueue) Memory.buildQueue = [];
@@ -9,14 +9,14 @@ var maintainStructures = {
         
         var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
         var extensions = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_EXTENSION);
-        var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+        var containers = curRoom.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_CONTAINER;
             }
         });
-        var sources = Game.rooms['sim'].find(FIND_SOURCES);
+        var sources = curRoom.find(FIND_SOURCES);
         
-        var constructionSites = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
+        var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
         var sites = constructionSites.length;
         
         var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
@@ -24,9 +24,9 @@ var maintainStructures = {
         var numTowers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
         
         if (!(Game.time % 100) && !sites) {
-             var repairSites = Game.rooms['sim'].find(FIND_STRUCTURES, {
+             var repairSites = curRoom.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    if (Game.rooms['sim'].find(FIND_HOSTILE_CREEPS).length) {
+                    if (curRoom.find(FIND_HOSTILE_CREEPS).length) {
                         return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART);
                     } else {
                         return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
@@ -47,7 +47,7 @@ var maintainStructures = {
                     return -1;
                 }
             }
-            if ((!Game.rooms['sim'].lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
+            if ((!curRoom.lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
                 Memory.buildQueue.push({x:x,y:y,type:type});
             }
         }
@@ -65,38 +65,40 @@ var maintainStructures = {
         
         // Build road around controller
         function buildControllerRoad() {
-            var path = Game.rooms['sim'].findPath(spawns[0].pos,Game.rooms['sim'].controller.pos, {ignoreCreeps: true});
+            var path = curRoom.findPath(spawns[0].pos,curRoom.controller.pos, {ignoreCreeps: true});
             for (let i = 0; i < (path.length - 5); i++) {
                 queueBuild(path[i].x,path[i].y, STRUCTURE_ROAD);
             }
             for (let i = -3; i <= 3; i++) {
-                queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y + 4, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x + i, curRoom.controller.pos.y + 4, STRUCTURE_ROAD);
             }
             for (let i = 3; i >= -3; i--) {
-                queueBuild(Game.rooms['sim'].controller.pos.x - 4, Game.rooms['sim'].controller.pos.y + i, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x - 4, curRoom.controller.pos.y + i, STRUCTURE_ROAD);
             }
             for (let i = 3; i >= -3; i--) {
-                queueBuild(Game.rooms['sim'].controller.pos.x + 4, Game.rooms['sim'].controller.pos.y + i, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x + 4, curRoom.controller.pos.y + i, STRUCTURE_ROAD);
             }
             for (let i = -3; i <= 3; i++) {
-                queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y - 4, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x + i, curRoom.controller.pos.y - 4, STRUCTURE_ROAD);
             }
         }
         
         // Extension queue start
-        if (Game.spawns['Spawn1'].memory.nexus.length) {
-            if (extensions.length < Game.spawns['Spawn1'].memory.nexus.length) {
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
+        var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
+        
+        if (curSpawn.memory.nexus.length) {
+            if (extensions.length < curSpawn.memory.nexus.length) {
+                for (var i in curSpawn.memory.nexus) {
                     var isBuilt = false;
                     builtCheck:
                     for (var j in extensions) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == extensions[j].x && Game.spawns['Spawn1'].memory.nexus[i].y == extensions[j].y) {
+                        if (curSpawn.memory.nexus[i].x == extensions[j].x && curSpawn.memory.nexus[i].y == extensions[j].y) {
                             isBuilt = true;
                             break builtCheck;
                         }
                     }
                     if (!isBuilt) {
-                        queueBuild(Game.spawns['Spawn1'].memory.nexus[i].x, Game.spawns['Spawn1'].memory.nexus[i].y, STRUCTURE_EXTENSION);
+                        queueBuild(curSpawn.memory.nexus[i].x, curSpawn.memory.nexus[i].y, STRUCTURE_EXTENSION);
                     }
                 }
             }
@@ -104,7 +106,7 @@ var maintainStructures = {
         // Extension queue end
         
         if (extensions.length == 5 && !Memory.sourceRoad[0]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             queueBuild(spawns[0].pos.x + 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x - 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y + 1, STRUCTURE_ROAD);
@@ -113,26 +115,26 @@ var maintainStructures = {
         }
         
         if (containers.length == 1 && !Memory.sourceRoad[1]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             Memory.sourceRoad[1] = true;
         }
         
         if (containers.length == 2 && !Memory.sourceRoad[2]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             buildControllerRoad();
             Memory.sourceRoad[2] = true;
         }
         
-        if (Game.rooms['sim'].controller.level >= 3 && extensions.length == 5) {
-            queueBuild(Game.spawns['Spawn1'].pos.x + 2,Game.spawns['Spawn1'].pos.y, STRUCTURE_TOWER);
+        if (curRoom.controller.level >= 3 && extensions.length == 5) {
+            queueBuild(curSpawn.pos.x + 2,curSpawn.pos.y, STRUCTURE_TOWER);
         }
         
-        if (Game.rooms['sim'].controller.level >= 5 && extensions.length == 20) {
-            queueBuild(Game.spawns['Spawn1'].pos.x,Game.spawns['Spawn1'].pos.y + 2, STRUCTURE_TOWER);
+        if (curRoom.controller.level >= 5 && extensions.length == 20) {
+            queueBuild(curSpawn.pos.x,curSpawn.pos.y + 2, STRUCTURE_TOWER);
         }
         
         if (numTowers && !Memory.sourceRoad[3]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             Memory.sourceRoad[3] = true;
         }
         
@@ -152,7 +154,7 @@ var maintainStructures = {
         
         if (sites < MAXSITES && Memory.buildQueue[0]) {
             let site = Memory.buildQueue[0];
-            Game.rooms['sim'].createConstructionSite(site.x, site.y, site.type)
+            curRoom.createConstructionSite(site.x, site.y, site.type)
             Memory.buildQueue.shift();
         }
     }
