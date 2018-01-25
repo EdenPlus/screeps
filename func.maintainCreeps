@@ -7,8 +7,6 @@ var maintainCreeps = {
             }
         }
         
-        // https://screeps.com/forum/topic/1409/game-creeps-filter-vs-room-find-find_my_creeps/2
-        // room.find(...) is faster than _.filter(Game...)
         var containers = curRoom.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_CONTAINER;
