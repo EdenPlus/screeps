@@ -128,8 +128,15 @@ var maintainStructures = {
         var towerCap = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][curRoom.controller.level];
         var spawnPos = curSpawn.pos;
         
+        var numTowersQueued = 0;
+        for (var i in curRoom.memory.buildQueue) {
+            if (curRoom.memory.buildQueue[i].type == STRUCTURE_TOWER) {
+                numTowersQueued++;
+            }
+        }
+        
         towerQueue:
-        while (numTowers < towerCap) {
+        while (numTowers + numTowersQueued < towerCap) {
             var a = 2;
             while (a >= 0) {
                 var b = 2 - a;
@@ -176,8 +183,9 @@ var maintainStructures = {
                 if (!isBadLoc) {
                     // Queue construction of tower
                     queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
                     // Break loop on size cap
-                    if (numTowers + 1 >= towerCap) {
+                    if (numTowers + numTowersQueued >= towerCap) {
                         break towerQueue;
                     }
                 }
@@ -225,8 +233,9 @@ var maintainStructures = {
                 if (!isBadLoc) {
                     // Queue construction of tower
                     queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
                     // Break loop on size cap
-                    if (numTowers + 1 >= towerCap) {
+                    if (numTowers + numTowersQueued >= towerCap) {
                         break towerQueue;
                     }
                 }
@@ -274,8 +283,9 @@ var maintainStructures = {
                 if (!isBadLoc) {
                     // Queue construction of tower
                     queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
                     // Break loop on size cap
-                    if (numTowers + 1 >= towerCap) {
+                    if (numTowers + numTowersQueued >= towerCap) {
                         break towerQueue;
                     }
                 }
@@ -323,8 +333,9 @@ var maintainStructures = {
                 if (!isBadLoc) {
                     // Queue construction of tower
                     queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
                     // Break loop on size cap
-                    if (numTowers + 1 >= towerCap) {
+                    if (numTowers + numTowersQueued >= towerCap) {
                         break towerQueue;
                     }
                 }
@@ -332,7 +343,7 @@ var maintainStructures = {
                 a--;
             }
         }
-
+        
         /*
         if (curRoom.controller.level >= 3 && extensions.length >= 5) {
             queueBuild(curSpawn.pos.x + 2,curSpawn.pos.y, STRUCTURE_TOWER);
