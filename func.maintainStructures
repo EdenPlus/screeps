@@ -6,9 +6,12 @@ var maintainStructures = {
         if (!curRoom.memory.buildQueue) curRoom.memory.buildQueue = [];
         
         const MAXSITES = 3;
-        
+        /*
         var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
         var extensions = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_EXTENSION);
+        */
+        var spawns = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_SPAWN && structure.room == curRoom));
+        var extensions = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_EXTENSION && structure.room == curRoom));
         
         var containers = curRoom.find(FIND_STRUCTURES, {
             filter: (structure) => {
