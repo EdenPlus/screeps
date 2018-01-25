@@ -26,27 +26,34 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i].type == LOOK_STRUCTURES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        // This doesn't work, find to get it to work
-                        /*
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        */
-                    }
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name)) {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
                         isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                            isBadLoc = true;
+                        }
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                // This doesn't work, find to get it to work
+                                /*
+                                if (tile[i][1] == 'wall') {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                */
+                            }
+                        }
                     }
                     // Check build queue
                     if (curRoom.memory.buildQueue) {
@@ -81,27 +88,34 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i].type == LOOK_STRUCTURES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        // This doesn't work, find to get it to work
-                        /*
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        */
-                    }
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name)) {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
                         isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                            isBadLoc = true;
+                        }
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                // This doesn't work, find to get it to work
+                                /*
+                                if (tile[i][1] == 'wall') {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                */
+                            }
+                        }
                     }
                     // Check build queue
                     if (curRoom.memory.buildQueue) {
@@ -136,27 +150,34 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i].type == LOOK_STRUCTURES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        // This doesn't work, find to get it to work
-                        /*
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        */
-                    }
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name)) {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
                         isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                            isBadLoc = true;
+                        }
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                // This doesn't work, find to get it to work
+                                /*
+                                if (tile[i][1] == 'wall') {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                */
+                            }
+                        }
                     }
                     // Check build queue
                     if (curRoom.memory.buildQueue) {
@@ -191,27 +212,34 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i].type == LOOK_STRUCTURES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        // This doesn't work, find to get it to work
-                        /*
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        */
-                    }
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name)) {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
                         isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                            isBadLoc = true;
+                        }
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                // This doesn't work, find to get it to work
+                                /*
+                                if (tile[i][1] == 'wall') {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                */
+                            }
+                        }
                     }
                     // Check build queue
                     if (curRoom.memory.buildQueue) {
