@@ -187,7 +187,7 @@ var maintainCreeps = {
         
         if (numUpgraders < UPGRADERMAX && curRoom.controller.level < 8) {
             
-            var workers = _.filter(allCreepsInRoom, (creep) => (creep.memory.role == 'builder' || creep.memory.role == 'repairer')).length; // _.filter(Game.creeps, (creep) => ((creep.memory.role == 'builder' || creep.memory.role == 'repairer') && creep.room == curRoom));
+            var workers = _.filter(allCreepsInRoom, (creep) => (creep.memory.role == 'builder' || creep.memory.role == 'repairer')); // _.filter(Game.creeps, (creep) => ((creep.memory.role == 'builder' || creep.memory.role == 'repairer') && creep.room == curRoom));
             
             if (workers.length) {
                 workers[0].memory.role = 'upgrader';
@@ -197,7 +197,7 @@ var maintainCreeps = {
         
         if (fillers.length < FILLERMAX && curRoom.storage) {
             
-            var workers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'transfer').length; // _.filter(Game.creeps, (creep) => (creep.memory.role == 'transfer' && creep.room == curRoom));
+            var workers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'transfer'); // _.filter(Game.creeps, (creep) => (creep.memory.role == 'transfer' && creep.room == curRoom));
             
             if (workers.length) {
                 workers[0].memory.role = 'filler';
@@ -227,7 +227,6 @@ var maintainCreeps = {
                 HEAL, HEAL                                                  // HEAL  : 2 x 250 = 500
                 ], 'healer');                                      // Total:            740
         }
-        
         
         if (numFighters < FIGHTERMAX && curRoom.energyAvailable >= (2700 + 1000)) {
             console.log('New Fighter: '+makeCreep([
