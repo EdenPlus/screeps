@@ -6,20 +6,10 @@ var maintainStructures = {
         if (!curRoom.memory.buildQueue) curRoom.memory.buildQueue = [];
         
         const MAXSITES = 3;
-        /*
+        
         var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
         var extensions = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_EXTENSION);
-        */
-        var spawns = curRoom.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_SPAWN;
-            }
-        });
-        var extensions = curRoom.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_EXTENSION;
-            }
-        });
+        
         var containers = curRoom.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_CONTAINER;
@@ -29,26 +19,10 @@ var maintainStructures = {
         
         var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
         var sites = constructionSites.length;
-        /*
+        
         var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
         var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
         var numTowers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
-        */
-        var numFighters = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'fighter';
-            }
-        }); 
-        var numHealers = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'healer';
-            }
-        });
-        var numTowers = curRoom.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_TOWER;
-            }
-        }).length;
         
         if (!(Game.time % 100) && !sites) {
              var repairSites = curRoom.find(FIND_STRUCTURES, {
