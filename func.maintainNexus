@@ -45,13 +45,6 @@ var maintainNexus = {
                                     isBadLoc = true;
                                     break tileCheck;
                                 }
-                                // This doesn't work, find to get it to work
-                                /*
-                                if (tile[i][1] == 'wall') {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                */
                             }
                         }
                     }
@@ -107,13 +100,6 @@ var maintainNexus = {
                                     isBadLoc = true;
                                     break tileCheck;
                                 }
-                                // This doesn't work, find to get it to work
-                                /*
-                                if (tile[i][1] == 'wall') {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                */
                             }
                         }
                     }
@@ -169,13 +155,6 @@ var maintainNexus = {
                                     isBadLoc = true;
                                     break tileCheck;
                                 }
-                                // This doesn't work, find to get it to work
-                                /*
-                                if (tile[i][1] == 'wall') {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                */
                             }
                         }
                     }
@@ -231,13 +210,6 @@ var maintainNexus = {
                                     isBadLoc = true;
                                     break tileCheck;
                                 }
-                                // This doesn't work, find to get it to work
-                                /*
-                                if (tile[i][1] == 'wall') {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                */
                             }
                         }
                     }
