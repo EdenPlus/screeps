@@ -29,11 +29,11 @@ var maintainNexus = {
                     var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
-                        if (tile[i].type == 'structure') {
+                        if (tile[i].type == LOOK_STRUCTURES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
-                        if (tile[i].type == 'constructionSite') {
+                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
@@ -84,11 +84,11 @@ var maintainNexus = {
                     var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
-                        if (tile[i].type == 'structure') {
+                        if (tile[i].type == LOOK_STRUCTURES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
-                        if (tile[i].type == 'constructionSite') {
+                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
@@ -139,11 +139,11 @@ var maintainNexus = {
                     var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
-                        if (tile[i].type == 'structure') {
+                        if (tile[i].type == LOOK_STRUCTURES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
-                        if (tile[i].type == 'constructionSite') {
+                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
@@ -194,11 +194,11 @@ var maintainNexus = {
                     var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
-                        if (tile[i].type == 'structure') {
+                        if (tile[i].type == LOOK_STRUCTURES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
-                        if (tile[i].type == 'constructionSite') {
+                        if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
                             isBadLoc = true;
                             break tileCheck;
                         }
