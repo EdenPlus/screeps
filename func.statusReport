@@ -92,12 +92,12 @@ var statusReport = {
             if (!curSpawn.memory.nexus) curSpawn.memory.nexus = [];
             if (curSpawn.memory.nexus.length) {
                 console.log('  -=======  NEXUS REPORT  =======-   ');
-                var temp = "Nexus Coords: ";
+                var nexusReport = "Nexus Coords: ";
                 for (var i in curSpawn.memory.nexus) {
-                    temp += "[" + curSpawn.memory.nexus[i].x + "," + curSpawn.memory.nexus[i].y + "] ";
+                    nexusReport += "[" + curSpawn.memory.nexus[i].x + "," + curSpawn.memory.nexus[i].y + "] ";
                 }
-                console.log(temp);
-                var quickExt = curSpawn.room.find(FIND_MY_STRUCTURES, {
+                console.log(nexusReport);
+                var quickExt = curRoom.find(FIND_MY_STRUCTURES, {
                   filter: { structureType: STRUCTURE_EXTENSION }
                 });
                 console.log("Extensions Built: " + quickExt.length + "/" + curSpawn.memory.nexus.length);
