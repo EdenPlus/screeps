@@ -9,7 +9,7 @@ is faster than
 ```javascript
 _.filter(Game...)
 ```
-It searches only that room, and if it's done once for all members of a category (Like FIND_MY_CREEPS) then filtered for something more specific (Like creep.memory.role == 'fighter')
+as per [this post](https://screeps.com/forum/topic/1409/game-creeps-filter-vs-room-find-find_my_creeps/2). It searches only that room, and if it's done once for all members of a category (Like FIND_MY_CREEPS) then filtered for something more specific (Like creep.memory.role == 'fighter')
 #### An example of this:
 ```javascript
 var allCreepsInRoom = Game.rooms['sim'].find(FIND_MY_CREEPS);
