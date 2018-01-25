@@ -9,15 +9,17 @@ var maintainStructures = {
         /*
         var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
         var extensions = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_EXTENSION);
-        */
-        var spawns = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_SPAWN && structure.room == curRoom));
-        var extensions = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_EXTENSION && structure.room == curRoom));
         
         var containers = curRoom.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_CONTAINER;
             }
         });
+        
+        var spawns = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_SPAWN && structure.room == curRoom));
+        var extensions = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_EXTENSION && structure.room == curRoom));
+        var containers = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_CONTAINER && structure.room == curRoom));
+        
         var sources = curRoom.find(FIND_SOURCES);
         
         var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
@@ -26,6 +28,24 @@ var maintainStructures = {
         var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
         var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
         var numTowers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
+        */
+        
+        var allStructuresInRoom = curRoom.find(FIND_MY_STRUCTURES);
+        
+        var spawns = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN);
+        var extensions = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_EXTENSION);
+        var containers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_CONTAINER);
+        
+        var sources = curRoom.find(FIND_SOURCES);
+        
+        var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
+        var sites = constructionSites.length;
+        
+        var allCreepsInRoom = curRoom.find(FIND_MY_CREEPS);
+        
+        var numFighters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'fighter').length;
+        var numHealers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'healer').length;
+        var numTowers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_TOWER).length;
         
         if (!(Game.time % 100) && !sites) {
              var repairSites = curRoom.find(FIND_STRUCTURES, {
