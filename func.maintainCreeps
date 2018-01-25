@@ -83,15 +83,6 @@ var maintainCreeps = {
             
         }
         
-        const HARVESTERMAX = 8;
-        const WORKERMAX = Math.ceil(30 / (curRoom.energyCapacityAvailable / bodyCost(WORKERPART)));
-        const UPGRADERMAX = 1;
-        const FILLERMAX = 1;
-        const FIGHTERMAX = 0;
-        const HEALERMAX = 0;
-        const TRANSFERMAX = Math.ceil(Math.floor(1.75 * _.filter(Game.creeps, (creep) => creep.memory.role == 'miner').length) / (curRoom.energyCapacityAvailable / (3 * bodyCost(TRANSFERPART))));
-        const MINERMAX = containers.length;
-        
         var allCreepsInRoom = curRoom.find(FIND_MY_CREEPS);
         
         var numFighters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'fighter').length;
@@ -102,6 +93,15 @@ var maintainCreeps = {
         var fillers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'filler');
         var numUpgraders = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'upgrader').length;
         var miners = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'miner');
+        
+        const HARVESTERMAX = 8;
+        const WORKERMAX = Math.ceil(30 / (curRoom.energyCapacityAvailable / bodyCost(WORKERPART)));
+        const UPGRADERMAX = 1;
+        const FILLERMAX = 1;
+        const FIGHTERMAX = 0;
+        const HEALERMAX = 0;
+        const TRANSFERMAX = Math.ceil(Math.floor(1.75 * miners.length) / (curRoom.energyCapacityAvailable / (3 * bodyCost(TRANSFERPART))));
+        const MINERMAX = containers.length;
         
         /*
         var numFighters = _.filter(Game.creeps, (creep) => (creep.memory.role == 'fighter' && creep.room == curRoom)).length;
