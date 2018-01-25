@@ -90,60 +90,20 @@ var maintainCreeps = {
             makeCreep(body,'transfer');
             
         }
-
-        /*
-        var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
-        var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
-        var numHarvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
+        
+        var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter' && creep.room == curRoom).length;
+        var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer' && creep.room == curRoom).length;
+        var numHarvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester' && creep.room == curRoom).length;
         var numWorkers = _.filter(Game.creeps, (creep) => (
-            creep.memory.role == 'builder' ||
-            creep.memory.role == 'repairer'
+            (creep.memory.role == 'builder' ||
+            creep.memory.role == 'repairer') &&
+            creep.room == curRoom
             )).length;
-        var transfers = _.filter(Game.creeps, (creep) => creep.memory.role == 'transfer');
-        var fillers = _.filter(Game.creeps, (creep) => creep.memory.role == 'filler');
-        var numUpgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
-        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-        */
-        var numFighters = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'fighter';
-            }
-        }).length;
-        var numHealers = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'healer';
-            }
-        }).length;
-        var numHarvesters = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'harvester';
-            }
-        }).length;
-        var numWorkers = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'repairer' || creep.memory.role == 'builder';
-            }
-        }).length;
-        var transfers = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'transfer';
-            }
-        });
-        var fillers = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'filler';
-            }
-        });
-        var numUpgraders = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'upgrader';
-            }
-        }).length;
-        var miners = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'miner';
-            }
-        });
+        var transfers = _.filter(Game.creeps, (creep) => creep.memory.role == 'transfer' && creep.room == curRoom);
+        var fillers = _.filter(Game.creeps, (creep) => creep.memory.role == 'filler' && creep.room == curRoom);
+        var numUpgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader' && creep.room == curRoom).length;
+        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner' && creep.room == curRoom);
+        
         /*
          = curRoom.find(FIND_CREEPS, {
             filter: (creep) => {
@@ -222,11 +182,11 @@ var maintainCreeps = {
         
         if (numUpgraders < UPGRADERMAX && curRoom.controller.level < 8) {
             
-            var workers = curRoom.find(FIND_CREEPS, {
-            filter: (creep) => {
-                return creep.memory.role == 'builder' || creep.memory.role == 'repairer';
-            }
-        });
+            var workers = _.filter(Game.creeps, (creep) => (
+                (creep.memory.role == 'builder' ||
+                creep.memory.role == 'repairer') &&
+                creep.room == curRoom
+            ));
             
             if (workers.length) {
                 workers[0].memory.role = 'upgrader';
@@ -236,11 +196,10 @@ var maintainCreeps = {
         
         if (fillers.length < FILLERMAX && curRoom.storage) {
             
-            var workers = curRoom.find(FIND_CREEPS, {
-                filter: (creep) => {
-                    return creep.memory.role == 'transfer';
-                }
-            });
+            var workers = _.filter(Game.creeps, (creep) => (
+                creep.memory.role == 'transfer' &&
+                creep.room == curRoom;
+            ));
             
             if (workers.length) {
                 workers[0].memory.role = 'filler';
