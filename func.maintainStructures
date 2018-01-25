@@ -136,7 +136,7 @@ var maintainStructures = {
         }
         
         towerQueue:
-        while (numTowers + numTowersQueued < towerCap) {
+        while (numTowers + numTowersQueued < towerCap && extensions.length == CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level]) {
             var a = 2;
             while (a >= 0) {
                 var b = 2 - a;
@@ -343,16 +343,6 @@ var maintainStructures = {
                 a--;
             }
         }
-        
-        /*
-        if (curRoom.controller.level >= 3 && extensions.length >= 5) {
-            queueBuild(curSpawn.pos.x + 2,curSpawn.pos.y, STRUCTURE_TOWER);
-        }
-        
-        if (curRoom.controller.level >= 5 && extensions.length >= 20) {
-            queueBuild(curSpawn.pos.x,curSpawn.pos.y + 2, STRUCTURE_TOWER);
-        }
-        */
         
         if (numTowers && !curRoom.memory.sourceRoad[3]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
