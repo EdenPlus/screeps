@@ -26,7 +26,7 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
+                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
                         if (tile[i].type == LOOK_STRUCTURES) {
@@ -81,7 +81,7 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
+                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
                         if (tile[i].type == LOOK_STRUCTURES) {
@@ -136,7 +136,7 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
+                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
                         if (tile[i].type == LOOK_STRUCTURES) {
@@ -191,7 +191,7 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = curSpawn.room.lookAt(curCoord.x, curCoord.y);
+                    var tile = curRoom.lookAt(curCoord.x, curCoord.y);
                     tileCheck:
                     for (var i in tile) {
                         if (tile[i].type == LOOK_STRUCTURES) {
