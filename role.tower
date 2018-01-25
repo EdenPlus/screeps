@@ -3,7 +3,7 @@ var roleTower = {
         
         var enemies = tower.room.find(FIND_HOSTILE_CREEPS);
         
-        var damages = creep.room.memory.repairSites;
+        var damages = tower.room.memory.repairSites;
         
         var injuries = _.filter(Game.creeps, (creep) => creep.hits < creep.hitsMax);
         
@@ -17,11 +17,11 @@ var roleTower = {
             tower.attack(enemies[0]);
         } else if (injuries.length) {
             tower.heal(injuries[0]);
-        } else if (ramparts.length && creep.room.memory.status != 'paused') {
+        } else if (ramparts.length && tower.room.memory.status != 'paused') {
             tower.repair(ramparts[0]);
         } else if (tower.room.energyAvailable == tower.room.energyCapacityAvailable
             && damages.length
-            && creep.room.memory.status != 'paused'
+            && tower.room.memory.status != 'paused'
             && (!tower.room.storage || tower.room.storage.store.energy > 1000)) {
             tower.repair(Game.getObjectById(damages[0]));
         }
