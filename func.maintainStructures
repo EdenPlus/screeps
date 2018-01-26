@@ -48,15 +48,13 @@ var maintainStructures = {
         var numTowers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_TOWER).length;
         
         if (!(Game.time % 100) && !sites) {
-             var repairSites = curRoom.find(FIND_STRUCTURES, {
-                filter: (structure) => {
+             var repairSites = _.filter(allStructuresInRoom, (structure) => {
                     if (curRoom.find(FIND_HOSTILE_CREEPS).length) {
                         return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART);
                     } else {
                         return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
                     }
-                }
-            });
+                });
             curRoom.memory.repairSites = [];
             for (let i in repairSites) {
                 curRoom.memory.repairSites[i] = repairSites[i].id;
@@ -108,7 +106,7 @@ var maintainStructures = {
         }
         
         // Extension queue start
-        var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
+        var curSpawn = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN)[0];
         
         if (curSpawn.memory.nexus.length) {
             if (extensions.length < curSpawn.memory.nexus.length) {
