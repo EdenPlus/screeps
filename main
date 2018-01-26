@@ -127,12 +127,12 @@ module.exports.loop = function () {
     if (!Memory.execTimes) Memory.execTimes = [];
     
     var CPU_LIMIT = Game.cpu.limit; // Base MS allowed per tick
+    var CPU_LIMIT_CAP = 300; // Cap for CPU_LIMIT
     var CPU_TICK_LIMIT = Game.cpu.tickLimit; // MS allowed per tick w/ bucket
     var BUCKET = Game.cpu.bucket; // MS in bucket
     var BUCKET_LIMIT = 10000; // Bucket MS cap
     var BUCKET_TICK_LIMIT = 500; // MS in bucket allowed to be used per tick
-    var EXEC_TIMES_LIMIT = 100; // Limit to how many global execution times can be stored
-    var CPU_LIMIT_CAP = 300; // Cap for CPU_LIMIT
+    var EXEC_TIMES_LIMIT = 50; // Limit to how many global execution times can be stored
     
     // Set CPU_LIMIT if sim
     if ((!CPU_LIMIT && CPU_LIMIT != 0) || CPU_LIMIT == "Infinity") {
