@@ -7,11 +7,9 @@ var maintainCreeps = {
             }
         }
         
-        var containers = curRoom.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_CONTAINER;
-            }
-        });
+        var allStructuresInRoom = curRoom.find(FIND_STRUCTURES);
+        
+        var containers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_CONTAINER);
         
         var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
         
@@ -32,7 +30,7 @@ var maintainCreeps = {
         
         function makeCreep(body, role) {
             
-            let spawns = curRoom.find(FIND_MY_SPAWNS);
+            let spawns = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN);
             
             for (let x in spawns) {
 //                console.log(spawns[x].canCreateCreep(body,role));
