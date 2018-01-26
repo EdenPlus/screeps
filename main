@@ -121,6 +121,6 @@ module.exports.loop = function () {
     console.log("-====== GLOBAL EXECUTION TIME ======-");
     console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
     console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
-    console.log("Execution time - Start: " + startLoopTime + " | End:" + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
+    console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
     // Global Execution Time Report End
 }
