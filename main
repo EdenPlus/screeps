@@ -123,6 +123,9 @@ module.exports.loop = function () {
     console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
     console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
     
+    if (!Memory.bucket) Memory.bucket = 0;
+    if (!Memory.execTimes) Memory.execTimes = [];
+    
     var CPU_LIMIT = Game.cpu.limit; // Base MS allowed per tick
     var CPU_TICK_LIMIT = Game.cpu.tickLimit; // MS allowed per tick w/ bucket
     var BUCKET = Game.cpu.bucket; // MS in bucket
@@ -138,10 +141,12 @@ module.exports.loop = function () {
             CPU_LIMIT = CPU_LIMIT_CAP;
         }
     }
+    
     // Set BUCKET if sim
     if ((!BUCKET && BUCKET != 0) || BUCKET == "Infinity") {
         BUCKET = 0 + Memory.bucket;
     }
+    
     // Set CPU_TICK_LIMIT is sim
     if ((!CPU_TICK_LIMIT && CPU_TICK_LIMIT != 0) || CPU_TICK_LIMIT == "Infinity") {
         CPU_TICK_LIMIT = CPU_LIMIT + BUCKET;
@@ -151,8 +156,6 @@ module.exports.loop = function () {
     }
     
     var execTime = (endLoopTime - startLoopTime); // Last split
-    
-    if (!Memory.bucket) Memory.bucket = 0;
     
     if (execTime <= CPU_LIMIT) {
         Memory.bucket += (CPU_LIMIT - execTime);
@@ -167,7 +170,6 @@ module.exports.loop = function () {
         }
     }
     
-    if (!Memory.execTimes) Memory.execTimes = [];
     Memory.execTimes.push(execTime);
     while (Memory.execTimes.length > EXEC_TIMES_LIMIT) {
         Memory.execTimes.splice(0, 1);
@@ -177,6 +179,7 @@ module.exports.loop = function () {
     for (var i in Memory.execTimes) {
         tempSum += Memory.execTimes[i];
     }
+    
     console.log("Average (of past " + EXEC_TIMES_LIMIT + ") execution cost (Should be below limit): " + (tempSum / Memory.execTimes.length) + "/" + CPU_LIMIT);
     console.log("CPU_LIMIT: " + CPU_LIMIT + " | CPU_LIMIT_CAP: " + CPU_LIMIT_CAP + " | CPU_TICK_LIMIT: " + CPU_TICK_LIMIT + " | BUCKET: " + BUCKET + " | BUCKET_LIMIT: " + BUCKET_LIMIT + " | BUCKET_TICK_LIMIT: " + BUCKET_TICK_LIMIT);
     // Global Execution Time Report End
