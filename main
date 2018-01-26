@@ -56,7 +56,7 @@ module.exports.loop = function () {
             var endTowerLoopTime = new Date().getTime(); 
             // Tower AI end
             // Room Execution Time Report Start
-            console.log("-===== ROOM EXECUTION TIMES =====-")
+            console.log("-===== ROOM MANAGEMENT TIMES =====-")
             console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
             console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
             if (!(Game.time % 10)) {
