@@ -30,7 +30,7 @@ var maintainStructures = {
         var numTowers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
         */
         
-        var allStructuresInRoom = curRoom.find(FIND_MY_STRUCTURES);
+        var allStructuresInRoom = curRoom.find(FIND_STRUCTURES);
         
         var spawns = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN);
         var extensions = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_EXTENSION);
