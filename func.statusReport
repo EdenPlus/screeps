@@ -71,11 +71,9 @@ var statusReport = {
             Math.floor((curRoom.energyAvailable/curRoom.energyCapacityAvailable) * 100) // Percent
             +"%");
             
-            var containers = curRoom.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_CONTAINER;
-                }
-            });
+            var allStructuresInRoom = curRoom.find(FIND_STRUCTURES);
+            
+            var containers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_CONTAINER);
             
             if (containers.length) {
                 if (curRoom.storage) {
@@ -88,7 +86,7 @@ var statusReport = {
             // Energy report end
             
             // Nexus report start
-            var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
+            var curSpawn = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN)[0];
             if (!curSpawn.memory.nexus) curSpawn.memory.nexus = [];
             if (curSpawn.memory.nexus.length) {
                 console.log('  -=======  NEXUS REPORT  =======-   ');
@@ -97,9 +95,7 @@ var statusReport = {
                     nexusReport += "[" + curSpawn.memory.nexus[i].x + "," + curSpawn.memory.nexus[i].y + "] ";
                 }
                 console.log(nexusReport);
-                var quickExt = curRoom.find(FIND_MY_STRUCTURES, {
-                  filter: { structureType: STRUCTURE_EXTENSION }
-                });
+                var quickExt = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_EXTENSION);
                 console.log("Extensions Built: " + quickExt.length + "/" + curSpawn.memory.nexus.length);
             }
             // Nexus report end
