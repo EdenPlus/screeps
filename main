@@ -17,33 +17,33 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-var startLoopTime = new Date().getTime();
-var startRoomLoopTime = new Date().getTime();
+    var startLoopTime = new Date().getTime();
+    var startRoomLoopTime = new Date().getTime();
     for (var a in Game.rooms) {
         if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
             // Function for status report
-var startStatusReportTime = new Date().getTime();
+            var startStatusReportTime = new Date().getTime();
             statusReport.run(Game.rooms[a]);
-var endStatusReportTime = new Date().getTime(); 
+            var endStatusReportTime = new Date().getTime(); 
             
             // Function for creep maintenance
-var startCreepMainTime = new Date().getTime();
+            var startCreepMainTime = new Date().getTime();
             maintainCreeps.run(Game.rooms[a]);
-var endCreepMainTime = new Date().getTime(); 
+            var endCreepMainTime = new Date().getTime(); 
             
             // If statement to reduce resource consumption for building maintenance
             if (!(Game.time % 10)) {
-var startNexusMainTime = new Date().getTime();
+                var startNexusMainTime = new Date().getTime();
                 maintainNexus.run(Game.rooms[a]);
-var endNexusMainTime = new Date().getTime(); 
+                var endNexusMainTime = new Date().getTime(); 
                 
-var startStructMainTime = new Date().getTime();
+                var startStructMainTime = new Date().getTime();
                 maintainStructures.run(Game.rooms[a]);
-var endStructMainTime = new Date().getTime(); 
+                var endStructMainTime = new Date().getTime(); 
             }
             
             // Tower AI Start
-var startTowerLoopTime = new Date().getTime();
+            var startTowerLoopTime = new Date().getTime();
             var towers = Game.rooms[a].find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_TOWER;
@@ -53,14 +53,22 @@ var startTowerLoopTime = new Date().getTime();
             for (let x in towers) {
                 roleTower.run(towers[x]);
             }
-var endTowerLoopTime = new Date().getTime(); 
+            var endTowerLoopTime = new Date().getTime(); 
             // Tower AI end
+            // Room Execution Time Report Start
+            console.log("-===== ROOM EXECUTION TIMES =====-")
+            console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
+            console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
+            console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
+            console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
+            console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
+            // Room Execution Time Report End
         }
     }
-var endRoomLoopTime = new Date().getTime(); 
+    var endRoomLoopTime = new Date().getTime(); 
     
     // Unit AI start
-var startAILoopTime = new Date().getTime();
+    var startAILoopTime = new Date().getTime();
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         //creep.suicide();
@@ -103,18 +111,14 @@ var startAILoopTime = new Date().getTime();
             creep.moveTo(0,25);
         }
     }
-var endAILoopTime = new Date().getTime(); 
+    var endAILoopTime = new Date().getTime();
     // Unit AI end
-var endLoopTime = new Date().getTime();
-console.log("-====== GLOBAL EXECUTION TIME ======-");
-console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
-console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
-if (!(Game.time % 10)) {
-    console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
-    console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
-}
-console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
-console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
-console.log("AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
-console.log("Execution time - Start: " + startLoopTime + " | End:" + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
+    
+    // Global Execution Time Report Start
+    var endLoopTime = new Date().getTime();
+    console.log("-====== GLOBAL EXECUTION TIME ======-");
+    console.log("Room Management Loop - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
+    console.log("AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
+    console.log("Execution time - Start: " + startLoopTime + " | End:" + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
+    // Global Execution Time Report End
 }
