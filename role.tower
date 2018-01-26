@@ -5,11 +5,15 @@ var roleTower = {
         
         var damages = tower.room.memory.repairSites;
         
-        var injuries = _.filter(Game.creeps, (creep) => creep.hits < creep.hitsMax);
+        var allCreepsInRoom = tower.room.find(FIND_MY_CREEPS);
         
-        var injFighters = _.filter(Game.creeps, (creep) => (creep.memory.role == 'fighter' && creep.hits < creep.hitsMax));
+        var injuries = _.filter(allCreepsInRoom, (creep) => creep.hits < creep.hitsMax);
         
-        var ramparts = _.filter(Game.structures, (rampart) => (rampart.structureType == STRUCTURE_RAMPART && rampart.hits < 100000));
+        var injFighters = _.filter(allCreepsInRoom, (creep) => (creep.memory.role == 'fighter' && creep.hits < creep.hitsMax));
+        
+        var allStructuresInRoom = tower.room.find(FIND_MY_STRUCTURES);
+        
+        var ramparts = _.filter(allStructuresInRoom, (rampart) => (rampart.structureType == STRUCTURE_RAMPART && rampart.hits < 100000));
         
         if (injFighters.length) {
             tower.heal(injFighters[0]);
