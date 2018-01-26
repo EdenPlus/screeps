@@ -122,30 +122,27 @@ module.exports.loop = function () {
     console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
     console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
     console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
-    /*
-    const CPU_LIMIT = 100; // MS allowed per tick
-    const BUCKET_LIMIT = 10000; // MS allowed to be save in bucket
-    const BUCKET_TICK_LIMIT = 500; // MS in bucket allowed to be used per tick
-    const EXEC_TIMES_LIMIT = 20; // Limit to how many global execution times can be stored
-    */
     
-    var CPU_LIMIT = Game.cpu.limit;
-    var CPU_TICK_LIMIT = Game.cpu.tickLimit;
-    var BUCKET = Game.cpu.bucket;
-    var BUCKET_LIMIT = 10000;
+    var CPU_LIMIT = Game.cpu.limit; // Base MS allowed per tick
+    var CPU_TICK_LIMIT = Game.cpu.tickLimit; // MS allowed per tick w/ bucket
+    var BUCKET = Game.cpu.bucket; // MS in bucket
+    var BUCKET_LIMIT = 10000; // Bucket MS cap
     var BUCKET_TICK_LIMIT = 500; // MS in bucket allowed to be used per tick
-    var EXEC_TIMES_LIMIT = 20; // Limit to how many global execution times can be stored
-    var CPU_LIMIT_CAP = 300;
+    var EXEC_TIMES_LIMIT = 100; // Limit to how many global execution times can be stored
+    var CPU_LIMIT_CAP = 300; // Cap for CPU_LIMIT
     
+    // Set CPU_LIMIT if sim
     if ((!CPU_LIMIT && CPU_LIMIT != 0) || CPU_LIMIT == "Infinity") {
         CPU_LIMIT = 30 + ((Game.gcl.level - 1) * 10);
         if (CPU_LIMIT > CPU_LIMIT_CAP) {
             CPU_LIMIT = CPU_LIMIT_CAP;
         }
     }
+    // Set BUCKET if sim
     if ((!BUCKET && BUCKET != 0) || BUCKET == "Infinity") {
         BUCKET = 0 + Memory.bucket;
     }
+    // Set CPU_TICK_LIMIT is sim
     if ((!CPU_TICK_LIMIT && CPU_TICK_LIMIT != 0) || CPU_TICK_LIMIT == "Infinity") {
         CPU_TICK_LIMIT = CPU_LIMIT + BUCKET;
         if (CPU_TICK_LIMIT > CPU_LIMIT + BUCKET_TICK_LIMIT) {
@@ -180,8 +177,7 @@ module.exports.loop = function () {
     for (var i in Memory.execTimes) {
         tempSum += Memory.execTimes[i];
     }
-    console.log("Tick limit: " + CPU_TICK_LIMIT);
-    console.log("Bucket: " + Memory.bucket + "/" + BUCKET_LIMIT);
     console.log("Average (of past " + EXEC_TIMES_LIMIT + ") execution cost (Should be below limit): " + (tempSum / Memory.execTimes.length) + "/" + CPU_LIMIT);
+    console.log("CPU_LIMIT: " + CPU_LIMIT + " | CPU_LIMIT_CAP: " + CPU_LIMIT_CAP + " | CPU_TICK_LIMIT: " + CPU_TICK_LIMIT + " | BUCKET: " + BUCKET + " | BUCKET_LIMIT: " + BUCKET_LIMIT + " | BUCKET_TICK_LIMIT: " + BUCKET_TICK_LIMIT);
     // Global Execution Time Report End
 }
