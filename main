@@ -17,21 +17,37 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
+console.log("-====== New Main Loop ======-")
+let startRoomLoopTime = new Date().getTime();
     for (var a in Game.rooms) {
         if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
             // Function for status report
+let startStatusReportTime = new Date().getTime();
             statusReport.run(Game.rooms[a]);
+let endStatusReportTime = new Date().getTime(); 
+console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
             
             // Function for creep maintenance
+let startCreepMainTime = new Date().getTime();
             maintainCreeps.run(Game.rooms[a]);
+let endCreepMainTime = new Date().getTime(); 
+console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
             
             // If statement to reduce resource consumption for building maintenance
             if (!(Game.time % 10)) {
+let startNexusMainTime = new Date().getTime();
                 maintainNexus.run(Game.rooms[a]);
+let endNexusMainTime = new Date().getTime(); 
+console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
+                
+let startStructMainTime = new Date().getTime();
                 maintainStructures.run(Game.rooms[a]);
+let endStructMainTime = new Date().getTime(); 
+console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
             }
             
             // Tower AI Start
+let startTowerLoopTime = new Date().getTime();
             var towers = Game.rooms[a].find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_TOWER;
@@ -41,15 +57,19 @@ module.exports.loop = function () {
             for (let x in towers) {
                 roleTower.run(towers[x]);
             }
+let endTowerLoopTime = new Date().getTime(); 
+console.log("AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
             // Tower AI end
         }
     }
+let endRoomLoopTime = new Date().getTime(); 
+console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
+    
     // Unit AI start
+let startAILoopTime = new Date().getTime();
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
-        
-//                creep.suicide();
-        
+        //creep.suicide();
         if (creep.memory.role == 'healer') {
             roleHealer.run(creep);
         }
@@ -58,11 +78,11 @@ module.exports.loop = function () {
             roleFighter.run(creep);
         }
         if (creep.memory.role == 'harvester') {
-//                    creep.suicide();
+            // creep.suicide();
             roleHarvester.run(creep);
         }
         if (creep.memory.role == 'builder') {
-//                    creep.suicide();
+            // creep.suicide();
             roleBuilder.run(creep);
         }
         if (creep.memory.role == 'upgrader') {
@@ -70,24 +90,27 @@ module.exports.loop = function () {
         }
         if (creep.memory.role == 'repairer') {
             roleRepairer.run(creep);
-//                    creep.memory.job = false;
+            // creep.memory.job = false;
         }
         if (creep.memory.role == 'miner') {
-            //creep.suicide();
+            // creep.suicide();
             roleMiner.run(creep);
         }
         if (creep.memory.role == 'transfer') {
-//                    delete creep.memory.job;
+            // delete creep.memory.job;
             roleTransfer.run(creep);
-//                    creep.suicide();
+            // creep.suicide();
         }
         if (creep.memory.role == 'filler') {
-//                    delete creep.memory.job;
+            // delete creep.memory.job;
             roleFiller.run(creep);
         }
         if (creep.memory.role == 'test pilot') {
             creep.moveTo(0,25);
         }
     }
+let endAILoopTime = new Date().getTime(); 
+console.log("AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
     // Unit AI end
+console.log("Execution time (Split): " + (endAILoopTime - startRoomLoopTime));
 }
