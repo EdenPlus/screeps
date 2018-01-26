@@ -118,7 +118,7 @@ module.exports.loop = function () {
     
     // Global Execution Time Report Start
     var endLoopTime = new Date().getTime();
-    console.log("-====== GLOBAL EXECUTION TIME ======-");
+    console.log("-====== TOTAL SCRIPT EXECUTION TIME ======-");
     console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
     console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
     console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
