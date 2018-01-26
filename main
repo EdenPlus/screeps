@@ -122,5 +122,42 @@ module.exports.loop = function () {
     console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
     console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
     console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
+    
+    const CPU_LIMIT = 100; // MS allowed per tick
+    const BUCKET_LIMIT = 500; // MS allowed to be save in bucket
+    const EXEC_TIMES_LIMIT = 20; // Limit to how many global execution times can be stored
+    
+    var execTime = (endLoopTime - startLoopTime); // Last split
+    
+    if (!Memory.bucket) Memory.bucket = 0;
+    
+    if (execTime <= CPU_LIMIT) {
+        if (Memory.bucket < BUCKET_LIMIT) {
+            Memory.bucket += (CPU_LIMIT - execTime);
+            if (Memory.bucket > 500) {
+                Memory.bucket = 500;
+            }
+        }
+    }
+    else if (execTime > CPU_LIMIT) {
+        Memory.bucket - (execTime - CPU_LIMIT);
+        if (Memory.bucket < 0) {
+            Memory.bucket = 0;
+        }
+    }
+    
+    if (!Memory.execTimes) Memory.execTimes = [];
+    Memory.execTimes.push(execTime);
+    while (Memory.execTimes.length > EXEC_TIMES_LIMIT) {
+        Memory.execTimes.splice(0, 1);
+    }
+    
+    var tempSum = 0;
+    for (var i in Memory.execTimes) {
+        tempSum += Memory.execTimes[i];
+    }
+    
+    console.log("Bucket: " + Memory.bucket + "/" + BUCKET_LIMIT);
+    console.log("Average execution cost (Should be below limit): " + (tempSum / Memory.execTimes.length) + "/" + CPU_LIMIT);
     // Global Execution Time Report End
 }
