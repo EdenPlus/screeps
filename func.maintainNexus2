@@ -6,10 +6,25 @@ var maintainNexus2 = {
         if (!curRoom.memory.nexus.nexusSize) curRoom.memory.nexus.nexusSize = 2;
         if (!curRoom.memory.nexus.nexusLimiter) curRoom.memory.nexus.nexusLimiter = 2;
         if (!curRoom.memory.nexus.usedCoords) curRoom.memory.nexus.usedCoords = [];
+        if (!curRoom.memory.nexus.sourceRoads) curRoom.memory.nexus.sourceRoads = [];
+        if (!curRoom.memory.nexus.sourceRoadTileMinimum) curRoom.memory.nexus.sourceRoadTileMinimum = 2;
+        if (!curRoom.memory.nexus.sourceRoadOffset) curRoom.memory.nexus.sourceRoadOffset = 0;
+        if (!Memory.chemistry) {
+            Memory.chemistry = {};
+            Memory.chemistry.mineralsBeingMined = {};
+            Memory.chemistry.labs = {};
+            Memory.chemistry.labs.catalyst = {};
+            Memory.chemistry.labs.utrium = {};
+            Memory.chemistry.labs.lemergium = {};
+            Memory.chemistry.labs.keanium = {};
+            Memory.chemistry.labs.zynthium = {};
+            Memory.chemistry.labs.ghodium = {};
+        }
         
         if (!curRoom.memory.nexus.spawnLocs) {
             curRoom.memory.nexus.spawnLocs = [];
-            curRoom.memory.nexus.spawnLocs.push({x: curSpawn.x, y: curSpawn.y});
+            curRoom.memory.nexus.spawnLocs.push({x: curSpawn.pos.x, y: curSpawn.pos.y});
+            curRoom.memory.nexus.usedCoords.push({x: curSpawn.pos.x, y: curSpawn.pos.y});
         }
         if (!curRoom.memory.nexus.powerSpawnLocs) curRoom.memory.nexus.powerSpawnLocs = [];
         if (!curRoom.memory.nexus.towerLocs) curRoom.memory.nexus.towerLocs = [];
@@ -21,23 +36,97 @@ var maintainNexus2 = {
         if (!curRoom.memory.nexus.labLocs) curRoom.memory.nexus.labLocs = [];
         if (!curRoom.memory.nexus.observerLocs) curRoom.memory.nexus.observerLocs = [];
         if (!curRoom.memory.nexus.extractorLocs) curRoom.memory.nexus.extractorLocs = [];
-        
-        const spawnMax = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN]["8"];
-        const powerSpawnMax = CONTROLLER_STRUCTURES[STRUCTURE_POWER_SPAWN]["8"];
-        const towerMax = CONTROLLER_STRUCTURES[STRUCTURE_TOWER]["8"];
-        const terminalMax = CONTROLLER_STRUCTURES[STRUCTURE_TERMINAL]["8"];
-        const storageMax = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE]["8"];
-        const extensionMax = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION]["8"];
-        
-        const linkMax = CONTROLLER_STRUCTURES[STRUCTURE_LINK]["8"];
-        const containerMax = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER]["8"];
-        const observerMax = CONTROLLER_STRUCTURES[STRUCTURE_OBSERVER]["8"];
-        const extractorMax = CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR]["8"];
-        const labMax = CONTROLLER_STRUCTURES[STRUCTURE_LAB]["8"];
-        
+        // Sources
+        var sourcesInRoom = curRoom.find(FIND_SOURCES);
+        var sourceCount = sourcesInRoom.length;
+        // Max Controller Level
+        var maxControllerLevel = "8";
+        // Spawns
+        var spawnMax = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][maxControllerLevel];
+        var powerSpawnMax = CONTROLLER_STRUCTURES[STRUCTURE_POWER_SPAWN][maxControllerLevel];
+        // Combat
+        var towerMax = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][maxControllerLevel];
+        var observerMax = CONTROLLER_STRUCTURES[STRUCTURE_OBSERVER][maxControllerLevel];
+        // Market
+        var terminalMax = CONTROLLER_STRUCTURES[STRUCTURE_TERMINAL][maxControllerLevel];
+        // Energy
+        var storageMax = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][maxControllerLevel];
+        var linkMax = CONTROLLER_STRUCTURES[STRUCTURE_LINK][maxControllerLevel];
+        var containerMax = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][maxControllerLevel];
+        var extensionMax = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][maxControllerLevel];
+        // Minerals
+        var mineralsInRoom = curRoom.find(FIND_MINERALS);
+        var mineralCount = mineralsInRoom.length;
+        var extractorMax = CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][maxControllerLevel];
+        // Labs
+        var labMax = CONTROLLER_STRUCTURES[STRUCTURE_LAB][maxControllerLevel];
+        // Initial Spawn
         var spawnPos = curSpawn.pos;
         
-        if (curRoom.memory.nexus.spawnLocs.length < spawnMax) {
+        function getOpenTiles (tilePosition) {
+            var openTiles = [];
+            var curX = tilePosition.x;
+            var curY = tilePosition.y;
+            var adjCoords = [{x: curX - 1, y: curY - 1}, {x: curX, y: curY - 1}, {x: curX + 1, y: curY - 1}, {x: curX - 1, y: curY}, {x: curX, y: curY}, {x: curX + 1, y: curY}, {x: curX - 1, y: curY + 1}, {x: curX, y: curY + 1}, {x: curX + 1, y: curY + 1}];
+            for (var i in adjCoords) {
+                if (Game.map.getTerrainAt(adjCoords[i].x, adjCoords[i].y, curRoom.name) !== "wall") {
+                    openTiles.push(adjCoords[i]);
+                }
+            }
+            return openTiles;
+        }
+        
+        /*if (curRoom.memory.nexus.linkLocs.length < sourceCount) {
+            var curSourceRoad;
+            sourceGrab:
+            for (var a in sourcesInRoom) {
+                if (a == curRoom.memory.nexus.linkLocs.length) {
+                    curSourceRoad = curRoom.findPath(curSpawn.pos,sourcesInRoom[a].pos, {ignoreCreeps: true});
+                    break sourceGrab;
+                }
+            }
+            var openTiles = []; //getOpenTiles(curSourceRoad[(curSourceRoad.length - curRoom.memory.nexus.sourceRoadOffset)]);
+            tileGrab:
+            for (var a in curSourceRoad) {
+                if (a == (curSourceRoad.length - curRoom.memory.nexus.sourceRoadOffset)) {
+                    openTiles = getOpenTiles(curSourceRoad[a]);
+                    break tileGrab;
+                }
+            }
+            if (openTiles.length >= curRoom.memory.nexus.sourceRoadTileMinimum) {
+                var nextCoord = curSourceRoad[curSourceRoad.length - curRoom.memory.nexus.sourceRoadOffset - 1];
+                var prevCoord = curSourceRoad[curSourceRoad.length - curRoom.memory.nexus.sourceRoadOffset - 1];
+                if (curRoom.memory.nexus.sourceRoadOffset > 0) {
+                    prevCoord = curSourceRoad[curSourceRoad.length - curRoom.memory.nexus.sourceRoadOffset + 1];
+                }
+                checkIfNotInPath:
+                for (var b in openTiles) {
+                    var curTile = openTiles[b];
+                    if (!(curTile.x == nextCoord.x && curTile.y == nextCoord.y) && !(curTile.x == prevCoord.x && curTile.y == prevCoord.y)) {
+                        var isUsedLoc = false;
+                        dupeCheck:
+                        for (var c in curRoom.memory.nexus.usedCoords) {
+                            if (curRoom.memory.nexus.usedCoords[c].x == curTile.x && curRoom.memory.nexus.usedCoords[c].y == curTile.y) {
+                                isUsedLoc = true;
+                                break dupeCheck;
+                            }
+                        }
+                        if (!isUsedLoc) {
+                            curRoom.memory.nexus.linkLocs.push({x: curTile.x, y: curTile.y});
+                            curRoom.memory.nexus.usedCoords.push({x: curTile.x, y: curTile.y});
+                            break checkIfNotInPath;
+                        }
+                    }
+                }
+                curRoom.memory.nexus.sourceRoadOffset = 0;
+                curRoom.memory.nexus.sourceRoadTileMinimum = 2;
+            }
+            else {
+                curRoom.memory.nexus.sourceRoadOffset++;
+                curRoom.memory.nexus.sourceRoadTileMinimum = 3;
+            }
+        }
+        else */if (curRoom.memory.nexus.spawnLocs.length < spawnMax) {
             var curX = curRoom.memory.nexus.nexusSize;
             var curY = 0;
             if (curX >= 0) {
@@ -47,25 +136,28 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
                     isUsedLocPY = true;
                     break dupeCheck;
                 }
+            }
+            dupeCheck2:
+            for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y - curY)) {
                     isUsedLocNY = true;
-                    break dupeCheck;
+                    break dupeCheck2;
                 }
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.spawnLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.spawnLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -75,6 +167,7 @@ var maintainNexus2 = {
                 }
             }
         }
+        /*
         else if (curRoom.memory.nexus.powerSpawnLocs.length < powerSpawnMax) {
             var curX = curRoom.memory.nexus.nexusSize;
             var curY = 0;
@@ -85,7 +178,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -99,11 +192,11 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.powerSpawnLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.powerSpawnLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -123,7 +216,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -137,11 +230,49 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.towerLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.towerLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
+            }
+            else {
+                curRoom.memory.nexus.nexusSize--;
+                if (curRoom.memory.nexus.nexusSize < (curRoom.memory.nexus.nexusLimiter * -1)) {
+                    curRoom.memory.nexus.nexusLimiter += 2;
+                    curRoom.memory.nexus.nexusSize = 0 + curRoom.memory.nexus.nexusLimiter;
+                }
+            }
+        }
+        else if (curRoom.memory.nexus.observerLocs.length < observerMax) {
+            var curX = curRoom.memory.nexus.nexusSize;
+            var curY = 0;
+            if (curX >= 0) {
+                curY = curRoom.memory.nexus.nexusLimiter - curRoom.memory.nexus.nexusSize;
+            }
+            else if (curX < 0) {
+                curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
+            }
+            var isUsedLocPY = false;
+            var isUsedLocNY = false;
+            dupeCheck:
+            for (var i in curRoom.memory.nexus.usedCoords) {
+                if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
+                    isUsedLocPY = true;
+                    break dupeCheck;
+                }
+                if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y - curY)) {
+                    isUsedLocNY = true;
+                    break dupeCheck;
+                }
+            }
+            if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
+                curRoom.memory.nexus.observerLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
+            }
+            else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
+                curRoom.memory.nexus.observerLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -161,7 +292,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -175,11 +306,11 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.terminalLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.terminalLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -199,7 +330,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -213,11 +344,11 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.storageLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.storageLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -227,7 +358,7 @@ var maintainNexus2 = {
                 }
             }
         }
-        else if (curRoom.memory.nexus.linkLocs.length < 1) {
+        else if (curRoom.memory.nexus.linkLocs.length < 1 || curRoom.memory.nexus.linkLocs.length == sourceCount) {
             var curX = curRoom.memory.nexus.nexusSize;
             var curY = 0;
             if (curX >= 0) {
@@ -237,7 +368,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -251,11 +382,11 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.linkLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.linkLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -275,7 +406,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -289,11 +420,11 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.containerLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.containerLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -313,7 +444,7 @@ var maintainNexus2 = {
                 curY = (curRoom.memory.nexus.nexusLimiter * -1) - curRoom.memory.nexus.nexusSize;
             }
             var isUsedLocPY = false;
-            var isUsedLocNY = false
+            var isUsedLocNY = false;
             dupeCheck:
             for (var i in curRoom.memory.nexus.usedCoords) {
                 if (curRoom.memory.nexus.usedCoords[i].x == (spawnPos.x + curX) && curRoom.memory.nexus.usedCoords[i].y == (spawnPos.y + curY)) {
@@ -327,11 +458,11 @@ var maintainNexus2 = {
             }
             if (!isUsedLocPY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y + curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.extensionLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y + curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y + curY)});
             }
             else if (!isUsedLocNY && Game.map.getTerrainAt(spawnPos.x + curX, spawnPos.y - curY, curRoom.name) != 'wall') {
                 curRoom.memory.nexus.extensionLocs.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
-                curRoom.memory.nexus.usedCoords += {x: (spawnPos.x + curX), y: (spawnPos.y - curY)};
+                curRoom.memory.nexus.usedCoords.push({x: (spawnPos.x + curX), y: (spawnPos.y - curY)});
             }
             else {
                 curRoom.memory.nexus.nexusSize--;
@@ -341,245 +472,28 @@ var maintainNexus2 = {
                 }
             }
         }
+        /*else if (curRoom.memory.nexus.extractorLocs.length < mineralCount && curRoom.memory.nexus.extractorLocs.length < extractorMax) {
+            if (mineralCount > extractorMax) {
+                for (var i in mineralsInRoom) {
+                    var unminedMineral = false;
+                    for (var j in Memory.chemistry.mineralsBeingMined) {
+                        if (mineralsInRoom[i].mineralType !== Memory.chemistry.mineralsBeingMined[j]) {
+                            unminedMineral = true;
+                        }
+                    }
+                    if (!newMineral)
+                }
+            }
+        }
+        else if (Memory.chemistry.labs.length < Memory.chemistry.labRoomsMinimum) {
+            
+        }*/
         
-        var temp = "";
+        var temp = "Used coords: ";
         for (var i in curRoom.memory.nexus.usedCoords) {
-            temp += "[" + curRoom.memory.nexus.usedCoords.x + "," + curRoom.memory.nexus.usedCoords.y + "] ";
+            temp += "[" + curRoom.memory.nexus.usedCoords[i].x + "," + curRoom.memory.nexus.usedCoords[i].y + "] ";
         }
-        console.log();
-        /*
-        fillNexusMap:
-        while (curSpawn.memory.nexus.length < extensionCount) {
-            var a = curSpawn.memory.nexusSize;
-            while (a >= 0) {
-                var b = curSpawn.memory.nexusSize - a;
-                // x + a, y + a
-                var curCoord = {x: spawnPos.x + a, y: spawnPos.y + b};
-                var isDupe = false;
-                // Check if coordinate is dupe
-                for (var i in curSpawn.memory.nexus) {
-                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // Validate if not dupe
-                if (!isDupe) {
-                    // Check tile
-                    var isBadLoc = false;
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
-                        isBadLoc = true;
-                    }
-                    else {
-                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
-                            isBadLoc = true;
-                        }
-                        else {
-                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                            tileCheck:
-                            for (var i in tile) {
-                                if (tile[i].type == LOOK_STRUCTURES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                            }
-                        }
-                    }
-                    // Check build queue
-                    if (curRoom.memory.buildQueue) {
-                        buildQueueCheck:
-                        for (var i in curRoom.memory.buildQueue) {
-                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
-                                isBadLoc = true;
-                                break buildQueueCheck;
-                            }
-                        }
-                    }
-                    if (!isBadLoc) {
-                        // Add coordinate to nexus
-                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                        // Break loop on size cap
-                        if (curSpawn.memory.nexus.length >= extensionCount) {
-                            break fillNexusMap;
-                        }
-                    }
-                }
-                
-                // x +  a, y - b
-                curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
-                isDupe = false;
-                // Check if coordinate is dupe
-                for (var i in curSpawn.memory.nexus) {
-                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // Validate if not dupe
-                if (!isDupe) {
-                    // Check tile
-                    var isBadLoc = false;
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
-                        isBadLoc = true;
-                    }
-                    else {
-                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
-                            isBadLoc = true;
-                        }
-                        else {
-                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                            tileCheck:
-                            for (var i in tile) {
-                                if (tile[i].type == LOOK_STRUCTURES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                            }
-                        }
-                    }
-                    // Check build queue
-                    if (curRoom.memory.buildQueue) {
-                        buildQueueCheck:
-                        for (var i in curRoom.memory.buildQueue) {
-                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
-                                isBadLoc = true;
-                                break buildQueueCheck;
-                            }
-                        }
-                    }
-                    if (!isBadLoc) {
-                        // Add coordinate to nexus
-                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                        // Break loop on size cap
-                        if (curSpawn.memory.nexus.length >= extensionCount) {
-                            break fillNexusMap;
-                        }
-                    }
-                }
-                
-                // x - a, y + b
-                curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
-                isDupe = false;
-                // Check if coordinate is dupe
-                for (var i in curSpawn.memory.nexus) {
-                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // Validate if not dupe
-                if (!isDupe) {
-                    // Check tile
-                    var isBadLoc = false;
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
-                        isBadLoc = true;
-                    }
-                    else {
-                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
-                            isBadLoc = true;
-                        }
-                        else {
-                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                            tileCheck:
-                            for (var i in tile) {
-                                if (tile[i].type == LOOK_STRUCTURES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                            }
-                        }
-                    }
-                    // Check build queue
-                    if (curRoom.memory.buildQueue) {
-                        buildQueueCheck:
-                        for (var i in curRoom.memory.buildQueue) {
-                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
-                                isBadLoc = true;
-                                break buildQueueCheck;
-                            }
-                        }
-                    }
-                    if (!isBadLoc) {
-                        // Add coordinate to nexus
-                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                        // Break loop on size cap
-                        if (curSpawn.memory.nexus.length >= extensionCount) {
-                            break fillNexusMap;
-                        }
-                    }
-                }
-                
-                // x - a, y - b
-                curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
-                isDupe = false;
-                // Check if coordinate is dupe
-                for (var i in curSpawn.memory.nexus) {
-                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
-                        isDupe = true;
-                    }
-                }
-                // Validate if not dupe
-                if (!isDupe) {
-                    // Check tile
-                    var isBadLoc = false;
-                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
-                        isBadLoc = true;
-                    }
-                    else {
-                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
-                            isBadLoc = true;
-                        }
-                        else {
-                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
-                            tileCheck:
-                            for (var i in tile) {
-                                if (tile[i].type == LOOK_STRUCTURES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
-                                    isBadLoc = true;
-                                    break tileCheck;
-                                }
-                            }
-                        }
-                    }
-                    // Check build queue
-                    if (curRoom.memory.buildQueue) {
-                        buildQueueCheck:
-                        for (var i in curRoom.memory.buildQueue) {
-                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
-                                isBadLoc = true;
-                                break buildQueueCheck;
-                            }
-                        }
-                    }
-                    if (!isBadLoc) {
-                        // Add coordinate to nexus
-                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
-                        // Break loop on size cap
-                        if (curSpawn.memory.nexus.length >= extensionCount) {
-                            break fillNexusMap;
-                        }
-                    }
-                }
-                a--;
-            }
-            // Increases the nexus boundary if we no longer have tiles that are capable of being used in the nexus
-            if (curSpawn.memory.nexus.length <= extensionCount) {
-                curSpawn.memory.nexusSize += 2;
-            }
-        }
-        */
+        console.log(temp);
     }
 }
 
