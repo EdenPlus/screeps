@@ -155,10 +155,12 @@ var maintainStructures = {
                     costMatrix.set(trial4[a].pos.x, trial4[a].pos.y, 255);
                 }
             }}), STRUCTURE_CONTAINER);
+            /*
             queueBuild(spawns[0].pos.x + 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x - 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y + 1, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y - 1, STRUCTURE_ROAD);
+            */
             curRoom.memory.sourceRoad[0] = true;
         }
         
@@ -291,7 +293,7 @@ var maintainStructures = {
         if (containers.length == 4) {
             queueBuild(containers[3].pos.x, containers[3].pos.y, STRUCTURE_RAMPART);
         }
-        
+        /*
         // Queue building of roads around extensions **IMPROVE THIS
         if (!(Game.time % 1000)) {
             for (let i in extensions) {
@@ -301,7 +303,7 @@ var maintainStructures = {
                 queueBuild(extensions[i].pos.x, extensions[i].pos.y - 1, STRUCTURE_ROAD);
             }
         }
-        
+        */
         if (sites < MAXSITES && curRoom.memory.buildQueue[0]) {
             let site = curRoom.memory.buildQueue[0];
             curRoom.createConstructionSite(site.x, site.y, site.type)
