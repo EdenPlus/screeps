@@ -83,13 +83,14 @@ var maintainStructures = {
         }
         
         // Change to a filter system
-        if (curRoom.controller.level >= 2) {
+        if (curRoom.controller.level >= 1) {
             var numPlannedRoads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 0).length;
             if (numPlannedRoads) {
                 for (var i in curRoom.memory.plan.planQueue) {
                     if (curRoom.memory.plan.planQueue[i].structureType == 0) {
                         queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_ROAD);
                         curRoom.memory.plan.planQueue.splice(i, 1);
+                        numPlannedRoads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 0).length;
                     }
                 }
             }
