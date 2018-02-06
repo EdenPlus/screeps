@@ -1,243 +1,187 @@
-var maintainNexus = {
-    
-    run: function(curRoom) {
-        var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
-        if (!curRoom.memory.plan && curRoom.memory.plan != false) curRoom.memory.plan = {};
-        if (!curRoom.memory.plan.planQueue) curRoom.memory.plan.planQueue = [];
-        if (!curRoom.memory.plan.offset) curRoom.memory.plan.offset = 1;
-        if (!curRoom.memory.plan.isSorted) curRoom.memory.plan.isSorted = false;
-        if (!curRoom.memory.plan.finale && curRoom.memory.plan.finale != false) curRoom.memory.plan.finale = false;
-        if (!curRoom.memory.plan.NW && curRoom.memory.plan.NW != false) curRoom.memory.plan.NW = true;
-        if (!curRoom.memory.plan.SW && curRoom.memory.plan.SW != false) curRoom.memory.plan.SW = true;
-        if (!curRoom.memory.plan.NE && curRoom.memory.plan.NE != false) curRoom.memory.plan.NE = true;
-        if (!curRoom.memory.plan.SE && curRoom.memory.plan.SE != false) curRoom.memory.plan.SE = true;
-        
-        function mapExtensions (roadPos, xA, xB, xC, yA, yB, yC) {
-            var xShift = true;
-            var yShift = true;
-            if (xShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(xA, roadPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: xA, y: roadPos.y, structureType: 1});
-                        queuedInTick++;
-                    }
-                    else {
-                        xShift = false;
-                    }
-                }
-                else {
-                    return;
-                }
-            }
-            if (yShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(roadPos.x, yA, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yA, structureType: 1});
-                        queuedInTick++;
-                    }
-                    else {
-                        yShift = false;
-                    }
-                }
-                else {
-                    return;
-                }
-            }
-            if (!xShift && !yShift) {
-                return;
-            }
-            if (xShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(xB, roadPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: xB, y: roadPos.y, structureType: 1});
-                        queuedInTick++;
-                    }
-                    else {
-                        xShift = false;
-                    }
-                }
-                else {
-                    return;
-                }
-            }
-            if (yShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(roadPos.x, yB, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yB, structureType: 1});
-                        queuedInTick++;
-                    }
-                    else {
-                        yShift = false;
-                    }
-                }
-                else {
-                    return;
-                }
-            }
-            if (!xShift && !yShift) {
-                return;
-            }
-            if (xShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(xC, roadPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: xC, y: roadPos.y, structureType: 0});
-                        queuedInTick++;
-                    }
-                    else {
-                        xShift = false;
-                    }
-                }
-                else {
-                    return;
-                }
-            }
-            if (yShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(roadPos.x, yC, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yC, structureType: 0});
-                        queuedInTick++;
-                    }
-                    else {
-                        yShift = false;
-                    }
-                }
-                else {
-                    return
-                }
-            }
-            if (!xShift && !yShift) {
-                return;
-            }
-        }
-        
-        if (curRoom.memory.plan) {
-            var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 1);
-            var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
-            var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
-            var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
-            var maxExtensions = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION]["8"];
-            var queuedInTick = 0;
+// Function stuff
+var maintainCreeps = require('func.maintainCreeps');
+var maintainStructures = require('func.maintainStructures');
+var maintainNexus = require('func.maintainNexus');
+var statusReport = require('func.statusReport');
+
+// Role Stuff
+var roleHarvester = require('role.harvester');
+var roleBuilder = require('role.builder');
+var roleUpgrader = require('role.upgrader');
+var roleRepairer = require('role.repairer');
+var roleMiner = require('role.miner');
+var roleTransfer = require('role.transfer');
+var roleFiller = require('role.filler');
+var roleTower = require('role.tower');
+var roleFighter = require('role.fighter');
+var roleHealer = require('role.healer');
+
+module.exports.loop = function () {
+    var startLoopTime = new Date().getTime();
+    var startRoomLoopTime = new Date().getTime();
+    for (var a in Game.rooms) {
+        if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
+            // Function for status report
+            var startStatusReportTime = new Date().getTime();
+            statusReport.run(Game.rooms[a]);
+            var endStatusReportTime = new Date().getTime(); 
             
-            if (curRoom.memory.plan.NW) {
-                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    var curPos = {x: (curSpawn.pos.x - curRoom.memory.plan.offset), y: (curSpawn.pos.y - curRoom.memory.plan.offset)};
-                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
-                        mapExtensions(curPos, (curPos.x - 1), (curPos.x - 2), (curPos.x - 3), (curPos.y - 1), (curPos.y - 2), (curPos.y - 3));
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset), y: (curSpawn.pos.y - curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
-                        curRoom.memory.plan.NW = false;
-                    }
-                }
-                else {
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 2), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 2), structureType: 0});
-                    curRoom.memory.plan.NW = false;
-                }
+            // Function for creep maintenance
+            var startCreepMainTime = new Date().getTime();
+            maintainCreeps.run(Game.rooms[a]);
+            var endCreepMainTime = new Date().getTime(); 
+            
+            var startNexusMainTime = new Date().getTime();
+            maintainNexus.run(Game.rooms[a]);
+            var endNexusMainTime = new Date().getTime(); 
+            
+            // If statement to reduce resource consumption for building maintenance
+            if (!(Game.time % 10)) {
+                var startStructMainTime = new Date().getTime();
+                maintainStructures.run(Game.rooms[a]);
+                var endStructMainTime = new Date().getTime(); 
             }
-            if (curRoom.memory.plan.SW) {
-                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    var curPos = {x: (curSpawn.pos.x - curRoom.memory.plan.offset), y: (curSpawn.pos.y + curRoom.memory.plan.offset)};
-                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
-                        mapExtensions(curPos, (curPos.x - 1), (curPos.x - 2), (curPos.x - 3), (curPos.y + 1), (curPos.y + 2), (curPos.y + 3));
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset), y: (curSpawn.pos.y + curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
-                        curRoom.memory.plan.SW = false;
-                    }
+            
+            // Tower AI Start
+            var startTowerLoopTime = new Date().getTime();
+            var towers = Game.rooms[a].find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_TOWER;
                 }
-                else {
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 2), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 2), structureType: 0});
-                    curRoom.memory.plan.SW = false;
-                }
+            });
+            
+            for (let x in towers) {
+                roleTower.run(towers[x]);
             }
-            if (curRoom.memory.plan.NE) {
-                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    var curPos = {x: (curSpawn.pos.x + curRoom.memory.plan.offset), y: (curSpawn.pos.y - curRoom.memory.plan.offset)};
-                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
-                        mapExtensions(curPos, (curPos.x + 1), (curPos.x + 2), (curPos.x + 3), (curPos.y - 1), (curPos.y - 2), (curPos.y - 3));
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset), y: (curSpawn.pos.y - curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
-                        curRoom.memory.plan.NE = false;
-                    }
-                }
-                else {
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 2), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 2), structureType: 0});
-                    curRoom.memory.plan.NE = false;
-                }
+            var endTowerLoopTime = new Date().getTime(); 
+            // Tower AI end
+            // Room Execution Time Report Start
+            console.log("-===== ROOM MANAGEMENT TIMES =====-")
+            console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
+            console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
+            if (!(Game.time % 10)) {
+                console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
+                console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
             }
-            if (curRoom.memory.plan.SE) {
-                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    var curPos = {x: (curSpawn.pos.x + curRoom.memory.plan.offset), y: (curSpawn.pos.y + curRoom.memory.plan.offset)};
-                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
-                        mapExtensions(curPos, (curPos.x + 1), (curPos.x + 2), (curPos.x + 3), (curPos.y + 1), (curPos.y + 2), (curPos.y + 3));
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset), y: (curSpawn.pos.y + curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset), structureType: 0});
-                        curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
-                        curRoom.memory.plan.SE = false;
-                    }
-                }
-                else {
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 2), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
-                    curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 2), structureType: 0});
-                    curRoom.memory.plan.SE = false;
-                }
-            }
-            if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                curRoom.memory.plan.offset++;
-            }
-            else if (!curRoom.memory.plan.finale) {
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 1), y: (curSpawn.pos.y), structureType: 4});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 2), y: (curSpawn.pos.y), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 3), y: (curSpawn.pos.y), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 1), y: (curSpawn.pos.y), structureType: 2});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 2), y: (curSpawn.pos.y), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 3), y: (curSpawn.pos.y), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 1), structureType: 3});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 2), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 3), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 1), structureType: 2});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 2), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 3), structureType: 0});
-                /*
-                var sorted = curRoom.memory.plan.planQueue.slice(0);
-                sorted.sort(function(a,b) {
-                    return a.x - b.x;
-                });
-                sorted.sort(function(a,b) {
-                    var x = a.structureType;
-                    var y = b.structureType;
-                    return x < y ? -1 : x > y ? 1 : 0;
-                });
-                curRoom.memory.plan.planQueue = sorted;
-                */
-                curRoom.memory.plan.finale = true;
-            }
-            else if (curRoom.memory.plan.planQueue.length == 0) {
-                curRoom.memory.plan = false;
-            }
-            queuedInTick = 0;
+            console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
+            // Room Execution Time Report End
         }
     }
+    var endRoomLoopTime = new Date().getTime(); 
+    
+    // Unit AI start
+    var startAILoopTime = new Date().getTime();
+    for (var name in Game.creeps) {
+        var creep = Game.creeps[name];
+        //creep.suicide();
+        if (creep.memory.role == 'healer') {
+            roleHealer.run(creep);
+        }
+        if (creep.memory.role == 'fighter') {
+            delete creep.memory.job;
+            roleFighter.run(creep);
+        }
+        if (creep.memory.role == 'harvester') {
+            // creep.suicide();
+            roleHarvester.run(creep);
+        }
+        if (creep.memory.role == 'builder') {
+            // creep.suicide();
+            roleBuilder.run(creep);
+        }
+        if (creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+        if (creep.memory.role == 'repairer') {
+            roleRepairer.run(creep);
+            // creep.memory.job = false;
+        }
+        if (creep.memory.role == 'miner') {
+            // creep.suicide();
+            roleMiner.run(creep);
+        }
+        if (creep.memory.role == 'transfer') {
+            // delete creep.memory.job;
+            roleTransfer.run(creep);
+            // creep.suicide();
+        }
+        if (creep.memory.role == 'filler') {
+            // delete creep.memory.job;
+            roleFiller.run(creep);
+        }
+        if (creep.memory.role == 'test pilot') {
+            creep.moveTo(0,25);
+        }
+    }
+    var endAILoopTime = new Date().getTime();
+    // Unit AI end
+    
+    // Global Execution Time Report Start
+    var endLoopTime = new Date().getTime();
+    console.log("-====== SCRIPT EXECUTION TIME ======-");
+    console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
+    console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
+    console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
+    
+    if (!Memory.bucket) Memory.bucket = 0;
+    if (!Memory.execTimes) Memory.execTimes = [];
+    
+    var CPU_LIMIT = Game.cpu.limit; // Base MS allowed per tick
+    var CPU_LIMIT_CAP = 300; // Cap for CPU_LIMIT
+    var CPU_TICK_LIMIT = Game.cpu.tickLimit; // MS allowed per tick w/ bucket
+    var BUCKET = Game.cpu.bucket; // MS in bucket
+    var BUCKET_LIMIT = 10000; // Bucket MS cap
+    var BUCKET_TICK_LIMIT = 500; // MS in bucket allowed to be used per tick
+    var EXEC_TIMES_LIMIT = 50; // Limit to how many global execution times can be stored
+    
+    // Set CPU_LIMIT if sim
+    if ((!CPU_LIMIT && CPU_LIMIT != 0) || CPU_LIMIT == "Infinity") {
+        CPU_LIMIT = 30 + ((Game.gcl.level - 1) * 10);
+        if (CPU_LIMIT > CPU_LIMIT_CAP) {
+            CPU_LIMIT = CPU_LIMIT_CAP;
+        }
+    }
+    
+    // Set BUCKET if sim
+    if ((!BUCKET && BUCKET != 0) || BUCKET == "Infinity") {
+        BUCKET = 0 + Memory.bucket;
+    }
+    
+    // Set CPU_TICK_LIMIT is sim
+    if ((!CPU_TICK_LIMIT && CPU_TICK_LIMIT != 0) || CPU_TICK_LIMIT == "Infinity") {
+        CPU_TICK_LIMIT = CPU_LIMIT + BUCKET;
+        if (CPU_TICK_LIMIT > CPU_LIMIT + BUCKET_TICK_LIMIT) {
+            CPU_TICK_LIMIT = CPU_LIMIT + BUCKET_TICK_LIMIT;
+        }
+    }
+    
+    var execTime = (endLoopTime - startLoopTime); // Last split
+    
+    if (execTime <= CPU_LIMIT) {
+        Memory.bucket += (CPU_LIMIT - execTime);
+        if (Memory.bucket > BUCKET_LIMIT) {
+            Memory.bucket = BUCKET_LIMIT;
+        }
+    }
+    else if (execTime > CPU_LIMIT) {
+        Memory.bucket -= (execTime - CPU_LIMIT);
+        if (Memory.bucket < 0) {
+            Memory.bucket = 0;
+        }
+    }
+    BUCKET = Memory.bucket;
+    
+    Memory.execTimes.push(execTime);
+    while (Memory.execTimes.length > EXEC_TIMES_LIMIT) {
+        Memory.execTimes.splice(0, 1);
+    }
+    
+    var tempSum = 0;
+    for (var i in Memory.execTimes) {
+        tempSum += Memory.execTimes[i];
+    }
+    
+    console.log("Average (of past " + EXEC_TIMES_LIMIT + ") execution cost (Should be below limit): " + (tempSum / Memory.execTimes.length) + "/" + CPU_LIMIT);
+    console.log("CPU_LIMIT: " + CPU_LIMIT + " | CPU_LIMIT_CAP: " + CPU_LIMIT_CAP + " | CPU_TICK_LIMIT: " + CPU_TICK_LIMIT + " | BUCKET: " + BUCKET + " | BUCKET_LIMIT: " + BUCKET_LIMIT + " | BUCKET_TICK_LIMIT: " + BUCKET_TICK_LIMIT);
+    // Global Execution Time Report End
 }
-
-module.exports = maintainNexus;
