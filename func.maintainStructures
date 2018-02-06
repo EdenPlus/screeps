@@ -82,8 +82,7 @@ var maintainStructures = {
             }
         }
         
-        // Change to a filter system
-        if (curRoom.controller.level >= 1) {
+        if (curRoom.controller.level >= 2) {
             var numPlannedRoads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 0).length;
             if (numPlannedRoads) {
                 for (var i in curRoom.memory.plan.planQueue) {
