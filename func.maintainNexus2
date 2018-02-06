@@ -1,4 +1,4 @@
-var maintainNexus2 = {
+var maintainNexus = {
     
     run: function(curRoom) {
         var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
@@ -206,12 +206,16 @@ var maintainNexus2 = {
                 curRoom.memory.plan.offset++;
             }
             else if (!curRoom.memory.plan.finale) {
+                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 1), y: (curSpawn.pos.y), structureType: 4});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 2), y: (curSpawn.pos.y), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 3), y: (curSpawn.pos.y), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 1), y: (curSpawn.pos.y), structureType: 2});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 2), y: (curSpawn.pos.y), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 3), y: (curSpawn.pos.y), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 1), structureType: 3});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 2), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 3), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 1), structureType: 2});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 2), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 3), structureType: 0});
                 var byName = curRoom.memory.plan.planQueue.slice(0);
@@ -231,4 +235,4 @@ var maintainNexus2 = {
     }
 }
 
-module.exports = maintainNexus2;
+module.exports = maintainNexus;
