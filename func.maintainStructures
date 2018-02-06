@@ -81,7 +81,17 @@ var maintainStructures = {
                 queueBuild(curRoom.controller.pos.x + i, curRoom.controller.pos.y - 4, STRUCTURE_ROAD);
             }
         }
+        
         // Change to a filter system
+        if (curRoom.controller.level >= 2) {
+            for (var i in curRoom.memory.planQueue) {
+                if (curRoom.memory.plan.planQueue[i].structureType = 0) {
+                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_ROAD);
+                    curRoom.memory.plan.planQueue.splice(i, 1);
+                }
+            }
+        }
+        
         if (curRoom.memory.plan.planQueue.length) {
             if (curRoom.controller.level >= 2) {
                 if (curRoom.memory.plan.planQueue[0].structureType == 0) {
@@ -297,10 +307,10 @@ var maintainStructures = {
         // Queue building of roads around extensions **IMPROVE THIS
         if (!(Game.time % 1000)) {
             for (let i in extensions) {
-                queueBuild(extensions[i].pos.x + 1, extensions[i].pos.y, STRUCTURE_ROAD);
-                queueBuild(extensions[i].pos.x - 1, extensions[i].pos.y, STRUCTURE_ROAD);
-                queueBuild(extensions[i].pos.x, extensions[i].pos.y + 1, STRUCTURE_ROAD);
-                queueBuild(extensions[i].pos.x, extensions[i].pos.y - 1, STRUCTURE_ROAD);
+                //queueBuild(extensions[i].pos.x + 1, extensions[i].pos.y, STRUCTURE_ROAD);
+                //queueBuild(extensions[i].pos.x - 1, extensions[i].pos.y, STRUCTURE_ROAD);
+                //queueBuild(extensions[i].pos.x, extensions[i].pos.y + 1, STRUCTURE_ROAD);
+                //queueBuild(extensions[i].pos.x, extensions[i].pos.y - 1, STRUCTURE_ROAD);
                 var extTile = curRoom.lookAt(extensions[i].pos.x, extensions[i].pos.y);
                 for (let j in extTile) {
                     if (extTile[j].structureType == STRUCTURE_ROAD) {
