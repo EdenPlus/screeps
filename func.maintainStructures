@@ -255,7 +255,7 @@ var maintainStructures = {
                 }
                 if (!isBadLoc) {
                     // Queue construction of tower
-                    queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    queueBuild(towerCoords[i].x, towerCoords[i].y, STRUCTURE_TOWER);
                     numTowersQueued++;
                     // Break loop on size cap
                     if (numTowers + numTowersQueued >= towerCap) {
