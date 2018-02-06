@@ -84,8 +84,8 @@ var maintainStructures = {
         
         // Rework this to shift the planQueue with every iteration, checking if the returned item can be built, and appending it back to the end of the planQueue if it can't
         /*
-        if (planQueue.length) {
-            var firstItem = planQueue.shift();
+        if (curRoom.memory.plan.planQueue.length) {
+            var firstItem = curRoom.memory.plan.planQueue.shift();
             switch (firstItem.structureType) {
                 case 0:
                     var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_ROAD).length;
@@ -157,7 +157,6 @@ var maintainStructures = {
                     break;
             }
         }
-        
         */
         if (curRoom.controller.level >= 2) {
             var numPlannedRoads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 0).length;
