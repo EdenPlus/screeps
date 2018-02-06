@@ -43,7 +43,7 @@ var maintainNexus2 = {
                     return;
                 }
             }
-            if (!xShift & !yShift) {
+            if (!xShift && !yShift) {
                 return;
             }
             if (xShift) {
@@ -74,7 +74,7 @@ var maintainNexus2 = {
                     return;
                 }
             }
-            if (!xShift & !yShift) {
+            if (!xShift && !yShift) {
                 return;
             }
             if (xShift) {
@@ -105,7 +105,7 @@ var maintainNexus2 = {
                     return
                 }
             }
-            if (!xShift & !yShift) {
+            if (!xShift && !yShift) {
                 return;
             }
         }
@@ -150,14 +150,14 @@ var maintainNexus2 = {
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 2), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 2), structureType: 0});
-                        curRoom.memory.plan.NW = false;
+                        curRoom.memory.plan.SW = false;
                     }
                 }
                 else {
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 2), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - curRoom.memory.plan.offset - 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 2), structureType: 0});
-                    curRoom.memory.plan.NW = false;
+                    curRoom.memory.plan.SW = false;
                 }
             }
             if (curRoom.memory.plan.NE) {
@@ -171,14 +171,14 @@ var maintainNexus2 = {
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 2), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 2), structureType: 0});
-                        curRoom.memory.plan.NW = false;
+                        curRoom.memory.plan.NE = false;
                     }
                 }
                 else {
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 2), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 1), structureType: 0});
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y - curRoom.memory.plan.offset - 2), structureType: 0});
-                    curRoom.memory.plan.NW = false;
+                    curRoom.memory.plan.NE = false;
                 }
             }
             if (curRoom.memory.plan.SE) {
@@ -192,30 +192,26 @@ var maintainNexus2 = {
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 2), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                         curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 2), structureType: 0});
-                        curRoom.memory.plan.NW = false;
+                        curRoom.memory.plan.SE = false;
                     }
                 }
                 else {
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 2), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 1), structureType: 0});
                     curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + curRoom.memory.plan.offset + 1), y: (curSpawn.pos.y + curRoom.memory.plan.offset + 2), structureType: 0});
-                    curRoom.memory.plan.NW = false;
+                    curRoom.memory.plan.SE = false;
                 }
             }
             if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
                 curRoom.memory.plan.offset++;
             }
             else if (!curRoom.memory.plan.finale) {
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 1), y: (curSpawn.pos.y), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 2), y: (curSpawn.pos.y), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x - 3), y: (curSpawn.pos.y), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 1), y: (curSpawn.pos.y), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 2), y: (curSpawn.pos.y), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x + 3), y: (curSpawn.pos.y), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 1), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 2), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y - 3), structureType: 0});
-                curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 1), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 2), structureType: 0});
                 curRoom.memory.plan.planQueue.push({x: (curSpawn.pos.x), y: (curSpawn.pos.y + 3), structureType: 0});
                 var byName = curRoom.memory.plan.planQueue.slice(0);
