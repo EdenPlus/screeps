@@ -82,6 +82,47 @@ var maintainStructures = {
             }
         }
         
+        // Rework this to shift the planQueue with every iteration, checking if the returned item can be built, and appending it back to the end of the planQueue if it can't
+        /*
+        if (planQueue.length) {
+            var firstItem = planQueue.shift();
+            switch (firstItem.structureType) {
+                case 0:
+                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_ROAD).length;
+                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
+                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
+                    var limit = CONTROLLER_STRUCTURES[STRUCTURE_ROAD][curRoom.controller.level];
+                    
+                    if (trial + trial2 + trial3 < limit) {
+                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_ROAD);
+                    }
+                    else {
+                        curRoom.memory.plan.planQueue.push(firstItem);
+                    }
+                    break;
+                case 1:
+                    var limit = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level];
+                    
+                    break;
+                case 2:
+                    var limit = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][curRoom.controller.level];
+                    
+                    break;
+                case 3:
+                    var limit = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][curRoom.controller.level];
+                    
+                    break;
+                case 4:
+                    var limit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
+                    
+                    break;
+                default:
+                    curRoom.memory.plan.planQueue.push(firstItem);
+                    break;
+            }
+        }
+        
+        */
         if (curRoom.controller.level >= 2) {
             var numPlannedRoads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 0).length;
             if (numPlannedRoads) {
