@@ -84,187 +84,185 @@ var maintainStructures = {
         
         // Road: 0 | Extension: 1 | Tower: 2 | Spawn: 3 | Power Spawn: 4 | Storage: 5 | Link: 6 | Lab: 7 | Terminal: 8 | Observer: 9 | Extractor: 10 | Container: 11 | 
         // Rework to the buildQueue iteration of the planQueue
-        if (curRoom.controller.level >= 2) {
-            if (curRoom.memory.plan.planQueue.length) {
-                if (curRoom.memory.buildQueue.length < 5) {
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_ROAD).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
-                    var curLimit = CONTROLLER_STRUCTURES[STRUCTURE_ROAD][curRoom.controller.level];
-                    if (trial + trial2 + trial3 < curLimit) {
-                        findFirst:
-                        for (var i in curRoom.memory.plan.planQueue) {
-                            if (curRoom.memory.plan.planQueue[i].structureType == 0) {
-                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_ROAD);
-                                curRoom.memory.plan.planQueue.splice(i, 1);
-                                break findFirst;
-                            }
+        if (curRoom.memory.plan.planQueue.length) {
+            if (curRoom.memory.buildQueue.length < 5) {
+                var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_ROAD).length;
+                var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
+                var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
+                var curLimit = CONTROLLER_STRUCTURES[STRUCTURE_ROAD][curRoom.controller.level];
+                if (trial + trial2 + trial3 < curLimit) {
+                    findFirst:
+                    for (var i in curRoom.memory.plan.planQueue) {
+                        if (curRoom.memory.plan.planQueue[i].structureType == 0) {
+                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_ROAD);
+                            curRoom.memory.plan.planQueue.splice(i, 1);
+                            break findFirst;
+                        }
+                    }
+                }
+            }
+            else {
+                let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION).length;
+                let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
+                let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
+                let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level];
+                if (trial + trial2 + trial3 < curLimit) {
+                    findFirst:
+                    for (var i in curRoom.memory.plan.planQueue) {
+                        if (curRoom.memory.plan.planQueue[i].structureType == 1) {
+                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_EXTENSION);
+                            curRoom.memory.plan.planQueue.splice(i, 1);
+                            break findFirst;
                         }
                     }
                 }
                 else {
-                    let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION).length;
-                    let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
-                    let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
-                    let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level];
+                    let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_TOWER).length;
+                    let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_TOWER).length;
+                    let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_TOWER).length;
+                    let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][curRoom.controller.level];
                     if (trial + trial2 + trial3 < curLimit) {
                         findFirst:
                         for (var i in curRoom.memory.plan.planQueue) {
-                            if (curRoom.memory.plan.planQueue[i].structureType == 1) {
-                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_EXTENSION);
+                            if (curRoom.memory.plan.planQueue[i].structureType == 2) {
+                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_TOWER);
                                 curRoom.memory.plan.planQueue.splice(i, 1);
                                 break findFirst;
                             }
                         }
                     }
                     else {
-                        let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_TOWER).length;
-                        let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_TOWER).length;
-                        let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_TOWER).length;
-                        let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][curRoom.controller.level];
+                        let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_SPAWN).length;
+                        let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_SPAWN).length;
+                        let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_SPAWN).length;
+                        let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][curRoom.controller.level];
                         if (trial + trial2 + trial3 < curLimit) {
                             findFirst:
                             for (var i in curRoom.memory.plan.planQueue) {
-                                if (curRoom.memory.plan.planQueue[i].structureType == 2) {
-                                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_TOWER);
+                                if (curRoom.memory.plan.planQueue[i].structureType == 3) {
+                                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_SPAWN);
                                     curRoom.memory.plan.planQueue.splice(i, 1);
                                     break findFirst;
                                 }
                             }
                         }
                         else {
-                            let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_SPAWN).length;
-                            let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_SPAWN).length;
-                            let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_SPAWN).length;
-                            let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][curRoom.controller.level];
+                            let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_POWER_SPAWN).length;
+                            let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_POWER_SPAWN).length;
+                            let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_POWER_SPAWN).length;
+                            let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_POWER_SPAWN][curRoom.controller.level];
                             if (trial + trial2 + trial3 < curLimit) {
                                 findFirst:
                                 for (var i in curRoom.memory.plan.planQueue) {
-                                    if (curRoom.memory.plan.planQueue[i].structureType == 3) {
-                                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_SPAWN);
+                                    if (curRoom.memory.plan.planQueue[i].structureType == 4) {
+                                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_POWER_SPAWN);
                                         curRoom.memory.plan.planQueue.splice(i, 1);
                                         break findFirst;
                                     }
                                 }
                             }
                             else {
-                                let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_POWER_SPAWN).length;
-                                let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_POWER_SPAWN).length;
-                                let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_POWER_SPAWN).length;
-                                let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_POWER_SPAWN][curRoom.controller.level];
+                                let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_STORAGE).length;
+                                let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_STORAGE).length;
+                                let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_STORAGE).length;
+                                let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][curRoom.controller.level];
                                 if (trial + trial2 + trial3 < curLimit) {
                                     findFirst:
                                     for (var i in curRoom.memory.plan.planQueue) {
-                                        if (curRoom.memory.plan.planQueue[i].structureType == 4) {
-                                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_POWER_SPAWN);
+                                        if (curRoom.memory.plan.planQueue[i].structureType == 5) {
+                                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_STORAGE);
                                             curRoom.memory.plan.planQueue.splice(i, 1);
                                             break findFirst;
                                         }
                                     }
                                 }
                                 else {
-                                    let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_STORAGE).length;
-                                    let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_STORAGE).length;
-                                    let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_STORAGE).length;
-                                    let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][curRoom.controller.level];
+                                    let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_LINK).length;
+                                    let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LINK).length;
+                                    let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LINK).length;
+                                    let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
                                     if (trial + trial2 + trial3 < curLimit) {
                                         findFirst:
                                         for (var i in curRoom.memory.plan.planQueue) {
-                                            if (curRoom.memory.plan.planQueue[i].structureType == 5) {
-                                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_STORAGE);
+                                            if (curRoom.memory.plan.planQueue[i].structureType == 6) {
+                                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_LINK);
                                                 curRoom.memory.plan.planQueue.splice(i, 1);
                                                 break findFirst;
                                             }
                                         }
                                     }
                                     else {
-                                        let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_LINK).length;
-                                        let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LINK).length;
-                                        let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LINK).length;
-                                        let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
+                                        let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_LAB).length;
+                                        let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
+                                        let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
+                                        let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LAB][curRoom.controller.level];
                                         if (trial + trial2 + trial3 < curLimit) {
                                             findFirst:
                                             for (var i in curRoom.memory.plan.planQueue) {
-                                                if (curRoom.memory.plan.planQueue[i].structureType == 6) {
-                                                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_LINK);
+                                                if (curRoom.memory.plan.planQueue[i].structureType == 7) {
+                                                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_LAB);
                                                     curRoom.memory.plan.planQueue.splice(i, 1);
                                                     break findFirst;
                                                 }
                                             }
                                         }
                                         else {
-                                            let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_LAB).length;
-                                            let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
-                                            let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
-                                            let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LAB][curRoom.controller.level];
+                                            let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_TERMINAL).length;
+                                            let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_TERMINAL).length;
+                                            let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_TERMINAL).length;
+                                            let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
                                             if (trial + trial2 + trial3 < curLimit) {
                                                 findFirst:
                                                 for (var i in curRoom.memory.plan.planQueue) {
-                                                    if (curRoom.memory.plan.planQueue[i].structureType == 7) {
-                                                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_LAB);
+                                                    if (curRoom.memory.plan.planQueue[i].structureType == 8) {
+                                                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_TERMINAL);
                                                         curRoom.memory.plan.planQueue.splice(i, 1);
                                                         break findFirst;
                                                     }
                                                 }
                                             }
                                             else {
-                                                let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_TERMINAL).length;
-                                                let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_TERMINAL).length;
-                                                let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_TERMINAL).length;
-                                                let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
+                                                let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_OBSERVER).length;
+                                                let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_OBSERVER).length;
+                                                let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_OBSERVER).length;
+                                                let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_OBSERVER][curRoom.controller.level];
                                                 if (trial + trial2 + trial3 < curLimit) {
                                                     findFirst:
                                                     for (var i in curRoom.memory.plan.planQueue) {
-                                                        if (curRoom.memory.plan.planQueue[i].structureType == 8) {
-                                                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_TERMINAL);
+                                                        if (curRoom.memory.plan.planQueue[i].structureType == 9) {
+                                                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_OBSERVER);
                                                             curRoom.memory.plan.planQueue.splice(i, 1);
                                                             break findFirst;
                                                         }
                                                     }
                                                 }
                                                 else {
-                                                    let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_OBSERVER).length;
-                                                    let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_OBSERVER).length;
-                                                    let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_OBSERVER).length;
-                                                    let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_OBSERVER][curRoom.controller.level];
+                                                    let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTRACTOR).length;
+                                                    let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTRACTOR).length;
+                                                    let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTRACTOR).length;
+                                                    let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][curRoom.controller.level];
                                                     if (trial + trial2 + trial3 < curLimit) {
                                                         findFirst:
                                                         for (var i in curRoom.memory.plan.planQueue) {
-                                                            if (curRoom.memory.plan.planQueue[i].structureType == 9) {
-                                                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_OBSERVER);
+                                                            if (curRoom.memory.plan.planQueue[i].structureType == 10) {
+                                                                queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_EXTRACTOR);
                                                                 curRoom.memory.plan.planQueue.splice(i, 1);
                                                                 break findFirst;
                                                             }
                                                         }
                                                     }
                                                     else {
-                                                        let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTRACTOR).length;
-                                                        let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTRACTOR).length;
-                                                        let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTRACTOR).length;
-                                                        let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][curRoom.controller.level];
+                                                        let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_CONTAINER).length;
+                                                        let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_CONTAINER).length;
+                                                        let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_CONTAINER).length;
+                                                        let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][curRoom.controller.level];
                                                         if (trial + trial2 + trial3 < curLimit) {
                                                             findFirst:
                                                             for (var i in curRoom.memory.plan.planQueue) {
-                                                                if (curRoom.memory.plan.planQueue[i].structureType == 10) {
-                                                                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_EXTRACTOR);
+                                                                if (curRoom.memory.plan.planQueue[i].structureType == 11) {
+                                                                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_CONTAINER);
                                                                     curRoom.memory.plan.planQueue.splice(i, 1);
                                                                     break findFirst;
-                                                                }
-                                                            }
-                                                        }
-                                                        else {
-                                                            let trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_CONTAINER).length;
-                                                            let trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_CONTAINER).length;
-                                                            let trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_CONTAINER).length;
-                                                            let curLimit = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][curRoom.controller.level];
-                                                            if (trial + trial2 + trial3 < curLimit) {
-                                                                findFirst:
-                                                                for (var i in curRoom.memory.plan.planQueue) {
-                                                                    if (curRoom.memory.plan.planQueue[i].structureType == 11) {
-                                                                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_CONTAINER);
-                                                                        curRoom.memory.plan.planQueue.splice(i, 1);
-                                                                        break findFirst;
-                                                                    }
                                                                 }
                                                             }
                                                         }
