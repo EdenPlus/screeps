@@ -26,9 +26,6 @@ var maintainNexus = {
                         xShift = false;
                     }
                 }
-                else {
-                    return;
-                }
             }
             if (yShift) {
                 if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
@@ -39,9 +36,6 @@ var maintainNexus = {
                     else {
                         yShift = false;
                     }
-                }
-                else {
-                    return;
                 }
             }
             if (!xShift && !yShift) {
@@ -57,9 +51,6 @@ var maintainNexus = {
                         xShift = false;
                     }
                 }
-                else {
-                    return;
-                }
             }
             if (yShift) {
                 if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
@@ -71,39 +62,26 @@ var maintainNexus = {
                         yShift = false;
                     }
                 }
-                else {
-                    return;
-                }
             }
             if (!xShift && !yShift) {
                 return;
             }
             if (xShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(xC, roadPos.y, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: xC, y: roadPos.y, structureType: 0});
-                        queuedInTick++;
-                    }
-                    else {
-                        xShift = false;
-                    }
+                if (Game.map.getTerrainAt(xC, roadPos.y, curRoom.name) !== 'wall') {
+                    curRoom.memory.plan.planQueue.push({x: xC, y: roadPos.y, structureType: 0});
+                    queuedInTick++;
                 }
                 else {
-                    return;
+                    xShift = false;
                 }
             }
             if (yShift) {
-                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
-                    if (Game.map.getTerrainAt(roadPos.x, yC, curRoom.name) !== 'wall') {
-                        curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yC, structureType: 0});
-                        queuedInTick++;
-                    }
-                    else {
-                        yShift = false;
-                    }
+                if (Game.map.getTerrainAt(roadPos.x, yC, curRoom.name) !== 'wall') {
+                    curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yC, structureType: 0});
+                    queuedInTick++;
                 }
                 else {
-                    return
+                    yShift = false;
                 }
             }
             if (!xShift && !yShift) {
