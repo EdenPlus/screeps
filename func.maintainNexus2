@@ -476,7 +476,49 @@ var maintainNexus = {
                         }
                         break;
                     case 8:
+                        /*
+                          R T R
+                        R L R L R
+                        L L L L R
+                        L L L L R
+                        R R R R R
+                        5x5
+                        */
+                        if (!curRoom.memory.plan.labOffset) curRoom.memory.plan.labOffset = 1;
+                        if (!curRoom.memory.plan.labCardinal && !(curRoom.memory.plan.labCardinal >= 0)) curRoom.memory.plan.labCardinal = 0;
+                        if (!curRoom.memory.plan.labShift && !(curRoom.memory.plan.labShift >= 0)) curRoom.memory.plan.labShift = 0;
                         
+                        switch (curRoom.memory.plan.labCardinal) {
+                            case 0:
+                                var area = curRoom.lookAtArea((storageLoc.y - (5 + curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.x - (5 + curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.y - (curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.x - (curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), true);
+                                var walls = _.filter(area, (schematic) => schematic.terrain == 'wall');
+                                var reservedTiles = 0 //_.filter(area, (schematic) => for (var i in ));
+                                
+                                if (walls + reservedTiles == 0) {
+                                    
+                                }
+                                else if (curRoom.memory.plan.labShift < curRoom.memory.labOffset) {
+                                    curRoom.memory.plan.labShift++;
+                                }
+                                else {
+                                    curRoom.memory.plan.labShift = 0;
+                                    curRoom.memory.plan.labCardinal++;
+                                }
+                                break;
+                            case 1:
+                                
+                                break;
+                            case 2:
+                                
+                                break;
+                            case 3:
+                                
+                                break;
+                            default:
+                                curRoom.memory.plan.labCardinal = 0;
+                                curRoom.memory.plan.labOffset++;
+                                break;
+                        }
                         break;
                     default:
                         break;
