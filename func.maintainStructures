@@ -179,7 +179,7 @@ var maintainStructures = {
                                     trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
                                     trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
                                     curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LAB][curRoom.controller.level];
-                                    if (trial + trial2 + trial3 < curLimit) {
+                                    if (trial + trial2 + trial3 < curLimit && false) {
                                         findFirst:
                                         for (var i in curRoom.memory.plan.planQueue) {
                                             if (curRoom.memory.plan.planQueue[i].structureType == 7) {
@@ -193,7 +193,7 @@ var maintainStructures = {
                                         trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_TERMINAL).length;
                                         trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_TERMINAL).length;
                                         trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_TERMINAL).length;
-                                        curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
+                                        curLimit = CONTROLLER_STRUCTURES[STRUCTURE_TERMINAL][curRoom.controller.level];
                                         if (trial + trial2 + trial3 < curLimit) {
                                             findFirst:
                                             for (var i in curRoom.memory.plan.planQueue) {
@@ -209,7 +209,7 @@ var maintainStructures = {
                                             trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_OBSERVER).length;
                                             trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_OBSERVER).length;
                                             curLimit = CONTROLLER_STRUCTURES[STRUCTURE_OBSERVER][curRoom.controller.level];
-                                            if (trial + trial2 + trial3 < curLimit) {
+                                            if (trial + trial2 + trial3 < curLimit && false) {
                                                 findFirst:
                                                 for (var i in curRoom.memory.plan.planQueue) {
                                                     if (curRoom.memory.plan.planQueue[i].structureType == 9) {
@@ -224,7 +224,7 @@ var maintainStructures = {
                                                 trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTRACTOR).length;
                                                 trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTRACTOR).length;
                                                 curLimit = CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR][curRoom.controller.level];
-                                                if (trial + trial2 + trial3 < curLimit) {
+                                                if (trial + trial2 + trial3 < curLimit && false) {
                                                     findFirst:
                                                     for (var i in curRoom.memory.plan.planQueue) {
                                                         if (curRoom.memory.plan.planQueue[i].structureType == 10) {
@@ -239,7 +239,7 @@ var maintainStructures = {
                                                     trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_CONTAINER).length;
                                                     trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_CONTAINER).length;
                                                     curLimit = CONTROLLER_STRUCTURES[STRUCTURE_CONTAINER][curRoom.controller.level];
-                                                    if (trial + trial2 + trial3 < curLimit) {
+                                                    if (trial + trial2 + trial3 < curLimit && false) {
                                                         findFirst:
                                                         for (var i in curRoom.memory.plan.planQueue) {
                                                             if (curRoom.memory.plan.planQueue[i].structureType == 11) {
@@ -443,6 +443,7 @@ var maintainStructures = {
         var curSpawn = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN)[0];
         var towerCap = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][curRoom.controller.level];
         var spawnPos = curSpawn.pos;
+        var storageLoc = {x: (spawnPos.x - 1), y: spawnPos.y};
         
         var numTowersQueued = 0;
         for (var i in curRoom.memory.buildQueue) {
@@ -451,7 +452,7 @@ var maintainStructures = {
             }
         }
         
-        var towerCoords = [{x: spawnPos.x - 5, y: spawnPos.y - 1},{x: spawnPos.x - 5, y: spawnPos.y + 1},{x: spawnPos.x + 5, y: spawnPos.y - 1},{x: spawnPos.x + 5, y: spawnPos.y + 1},{x: spawnPos.x - 1, y: spawnPos.y - 5},{x: spawnPos.x - 1, y: spawnPos.y + 5},{x: spawnPos.x + 1, y: spawnPos.y - 5},{x: spawnPos.x + 1, y: spawnPos.y + 5}];
+        var towerCoords = [{x: storageLoc.x - 5, y: storageLoc.y - 1},{x: storageLoc.x - 5, y: storageLoc.y + 1},{x: storageLoc.x + 5, y: storageLoc.y - 1},{x: storageLoc.x + 5, y: storageLoc.y + 1},{x: storageLoc.x - 1, y: storageLoc.y - 5},{x: storageLoc.x - 1, y: storageLoc.y + 5},{x: storageLoc.x + 1, y: storageLoc.y - 5},{x: storageLoc.x + 1, y: storageLoc.y + 5}];
         
         if (numTowers + numTowersQueued < towerCap && extensions.length == CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level]) {
             doCoords:
