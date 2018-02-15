@@ -14,17 +14,10 @@ var roleHarvester = {
         }
         
         if (creep.memory.working) {
-            var spawns = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_SPAWN && structure.energy < structure.energyCapacity);
-                }
-            });
+            var allStructuresInRoom = creep.room.find(FIND_STRUCTURES);
             
-            var extensions = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION && structure.energy < structure.energyCapacity);
-                }
-            });
+            var spawns = _.filter(allStructuresInRoom, (structure) => (structure.structureType == STRUCTURE_SPAWN && structure.energy < structure.energyCapacity));
+            var extensions = _.filter(allStructuresInRoom, (structure) => (structure.structureType == STRUCTURE_EXTENSION && structure.energy < structure.energyCapacity));
             
                 
             if (!creep.memory.job) {
@@ -60,8 +53,10 @@ var roleHarvester = {
             
         }
         
-        var numTransfers = _.sum(Game.creeps, (creep) => creep.memory.role == 'transfer');
-        var numMiners = _.sum(Game.creeps, (creep) => creep.memory.role == 'miner');
+        var allCreepsInRoom = creep.room.find(FIND_MY_CREEPS);
+        
+        var numTransfers = _.sum(allCreepsInRoom, (creep) => creep.memory.role == 'transfer');
+        var numMiners = _.sum(allCreepsInRoom, (creep) => creep.memory.role == 'miner');
         
         if (numTransfers > 0 && numMiners > 0) {
             creep.memory.role = 'builder';
