@@ -179,7 +179,7 @@ var maintainStructures = {
                                     trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
                                     trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
                                     curLimit = CONTROLLER_STRUCTURES[STRUCTURE_LAB][curRoom.controller.level];
-                                    if (trial + trial2 + trial3 < curLimit && false) {
+                                    if (trial + trial2 + trial3 < curLimit) {
                                         findFirst:
                                         for (var i in curRoom.memory.plan.planQueue) {
                                             if (curRoom.memory.plan.planQueue[i].structureType == 7) {
