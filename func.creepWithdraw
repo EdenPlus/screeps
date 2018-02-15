@@ -1,7 +1,6 @@
 // This function handles creep energy withdrawal
 // creepWithdraw.run(creep);
 
-
 var creepWithdraw = {
     
     run: function(creep) {
@@ -9,24 +8,13 @@ var creepWithdraw = {
         if (!creep.memory.job) {
             var drops = creep.room.find(FIND_DROPPED_RESOURCES);
             
-            var spawns = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_SPAWN && structure.energy > 50);
-                }
-                
-            });
-        
-            var extensions = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION && structure.energy > 0);
-                }
-            });
+            var allStructuresInRoom = creep.room.find(FIND_STRUCTURES);
             
-            var containers = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_CONTAINER && structure.store.energy >= 800);
-                }
-            });
+            var spawns = _.filter(allStructuresInRoom, (structure) => (structure.structureType == STRUCTURE_SPAWN && structure.energy > 50));
+        
+            var extensions = _.filter(allStructuresInRoom, (structure) => (structure.structureType == STRUCTURE_EXTENSION && structure.energy > 0));
+            
+            var containers = _.filter(allStructuresInRoom, (structure) => (structure.structureType == STRUCTURE_CONTAINER && structure.store.energy >= 800));
 
             if (creep.room.storage && creep.room.storage.store.energy > 0) {
                     creep.memory.job = creep.room.storage.id;
@@ -49,7 +37,7 @@ var creepWithdraw = {
             
         } else {
             
-            if (Memory.status == 'unpaused' || creep.memory.role == 'filler') {
+            if (creep.room.memory.status == 'unpaused' || creep.memory.role == 'filler') {
                 
                 if (creep.withdraw(Game.getObjectById(creep.memory.job), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(Game.getObjectById(creep.memory.job));
