@@ -4,15 +4,15 @@ var maintainNexus = {
         var firstSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
         var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
         if (!curRoom.memory.plan && curRoom.memory.plan != false) curRoom.memory.plan = {};
-        if (!curRoom.memory.plan.planQueue) curRoom.memory.plan.planQueue = [];
-        if (!curRoom.memory.plan.offset) curRoom.memory.plan.offset = 1;
-        if (!curRoom.memory.plan.isSorted) curRoom.memory.plan.isSorted = false;
-        if (!curRoom.memory.plan.labs && !(curRoom.memory.plan.labs >= 0)) curRoom.memory.plan.labs = 0;
-        if (!curRoom.memory.plan.finale && curRoom.memory.plan.finale != false) curRoom.memory.plan.finale = false;
-        if (!curRoom.memory.plan.NW && curRoom.memory.plan.NW != false) curRoom.memory.plan.NW = true;
-        if (!curRoom.memory.plan.SW && curRoom.memory.plan.SW != false) curRoom.memory.plan.SW = true;
-        if (!curRoom.memory.plan.NE && curRoom.memory.plan.NE != false) curRoom.memory.plan.NE = true;
-        if (!curRoom.memory.plan.SE && curRoom.memory.plan.SE != false) curRoom.memory.plan.SE = true;
+        if (!curRoom.memory.plan.planQueue && curRoom.memory.plan != false) curRoom.memory.plan.planQueue = [];
+        if (!curRoom.memory.plan.offset && curRoom.memory.plan != false) curRoom.memory.plan.offset = 1;
+        if (!curRoom.memory.plan.isSorted && curRoom.memory.plan != false) curRoom.memory.plan.isSorted = false;
+        if (!curRoom.memory.plan.labs && !(curRoom.memory.plan.labs >= 0) && curRoom.memory.plan != false) curRoom.memory.plan.labs = 0;
+        if (!curRoom.memory.plan.finale && curRoom.memory.plan.finale != false && curRoom.memory.plan != false) curRoom.memory.plan.finale = false;
+        if (!curRoom.memory.plan.NW && curRoom.memory.plan.NW != false && curRoom.memory.plan != false) curRoom.memory.plan.NW = true;
+        if (!curRoom.memory.plan.SW && curRoom.memory.plan.SW != false && curRoom.memory.plan != false) curRoom.memory.plan.SW = true;
+        if (!curRoom.memory.plan.NE && curRoom.memory.plan.NE != false && curRoom.memory.plan != false) curRoom.memory.plan.NE = true;
+        if (!curRoom.memory.plan.SE && curRoom.memory.plan.SE != false && curRoom.memory.plan != false) curRoom.memory.plan.SE = true;
         
         function mapExtensions (roadPos, xA, xB, xC, yA, yB, yC) {
             var xShift = true;
@@ -90,7 +90,7 @@ var maintainNexus = {
             }
         }
         
-        if (curRoom.memory.plan) {
+        if (curRoom.memory.plan && curRoom.memory.plan != false) {
             var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 1);
             var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION);
             var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
@@ -483,7 +483,7 @@ var maintainNexus = {
                         L L L L R
                         R R R R R
                         5x5
-                        */
+                        
                         if (!curRoom.memory.plan.labOffset) curRoom.memory.plan.labOffset = 1;
                         if (!curRoom.memory.plan.labCardinal && !(curRoom.memory.plan.labCardinal >= 0)) curRoom.memory.plan.labCardinal = 0;
                         if (!curRoom.memory.plan.labShift && !(curRoom.memory.plan.labShift >= 0)) curRoom.memory.plan.labShift = 0;
@@ -519,6 +519,7 @@ var maintainNexus = {
                                 curRoom.memory.plan.labOffset++;
                                 break;
                         }
+                        */
                         break;
                     default:
                         break;
