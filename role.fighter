@@ -1,7 +1,7 @@
 var roleFighter = {
     run: function (creep) {
         
-        var fighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter');
+        //var fighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter');
 
         if (creep.hits < (creep.hitsMax /2)) {  
             creep.say(creep.hits+'/'+creep.hitsMax);
