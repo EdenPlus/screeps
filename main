@@ -31,12 +31,12 @@ module.exports.loop = function () {
             maintainCreeps.run(Game.rooms[a]);
             var endCreepMainTime = new Date().getTime(); 
             
+            var startNexusMainTime = new Date().getTime();
+            maintainNexus.run(Game.rooms[a]);
+            var endNexusMainTime = new Date().getTime(); 
+            
             // If statement to reduce resource consumption for building maintenance
             if (!(Game.time % 10)) {
-                var startNexusMainTime = new Date().getTime();
-                maintainNexus.run(Game.rooms[a]);
-                var endNexusMainTime = new Date().getTime(); 
-                
                 var startStructMainTime = new Date().getTime();
                 maintainStructures.run(Game.rooms[a]);
                 var endStructMainTime = new Date().getTime(); 
@@ -164,11 +164,12 @@ module.exports.loop = function () {
         }
     }
     else if (execTime > CPU_LIMIT) {
-        Memory.bucket - (execTime - CPU_LIMIT);
+        Memory.bucket -= (execTime - CPU_LIMIT);
         if (Memory.bucket < 0) {
             Memory.bucket = 0;
         }
     }
+    BUCKET = Memory.bucket;
     
     Memory.execTimes.push(execTime);
     while (Memory.execTimes.length > EXEC_TIMES_LIMIT) {
