@@ -44,12 +44,11 @@ module.exports.loop = function () {
             // Tower AI end
         }
     }
-    
     // Unit AI start
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         
-//        creep.suicide();
+//                creep.suicide();
         
         if (creep.memory.role == 'healer') {
             roleHealer.run(creep);
@@ -59,11 +58,11 @@ module.exports.loop = function () {
             roleFighter.run(creep);
         }
         if (creep.memory.role == 'harvester') {
-//            creep.suicide();
+//                    creep.suicide();
             roleHarvester.run(creep);
         }
         if (creep.memory.role == 'builder') {
-//            creep.suicide();
+//                    creep.suicide();
             roleBuilder.run(creep);
         }
         if (creep.memory.role == 'upgrader') {
@@ -71,19 +70,19 @@ module.exports.loop = function () {
         }
         if (creep.memory.role == 'repairer') {
             roleRepairer.run(creep);
-//            creep.memory.job = false;
+//                    creep.memory.job = false;
         }
         if (creep.memory.role == 'miner') {
             //creep.suicide();
             roleMiner.run(creep);
         }
         if (creep.memory.role == 'transfer') {
-//            delete creep.memory.job;
+//                    delete creep.memory.job;
             roleTransfer.run(creep);
-//            creep.suicide();
+//                    creep.suicide();
         }
         if (creep.memory.role == 'filler') {
-//            delete creep.memory.job;
+//                    delete creep.memory.job;
             roleFiller.run(creep);
         }
         if (creep.memory.role == 'test pilot') {
