@@ -6,7 +6,7 @@ var roleMiner = {
             
 //            console.log(creep.name+' says, "No job yet."');
             
-            var containers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_CONTAINER);
+            //var containers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_CONTAINER);
             
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -14,7 +14,11 @@ var roleMiner = {
                 }
             });
             
-            var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
+            //var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
+            
+            var allCreepsInRoom = creep.room.find(FIND_MY_CREEPS);
+            
+            var miners = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'miner');
             
 //            console.log('there are '+miners.length+' miners');
             for (let i in containers) {

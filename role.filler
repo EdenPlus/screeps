@@ -26,13 +26,13 @@ var roleFiller = {
         
         if (creep.memory.working) {
             
-            if (!Memory.tickCheck) {
-                Memory.tickCheck = {time:-1};
+            if (!creep.room.memory.tickCheck) {
+                creep.room.memory.tickCheck = {time:-1};
             }
             
-            if (Memory.tickCheck.time != Game.time) {
-                Memory.tickCheck.time = Game.time;
-                Memory.tickCheck.jobs = creep.room.find(FIND_STRUCTURES, {
+            if (creep.room.memory.tickCheck.time != Game.time) {
+                creep.room.memory.tickCheck.time = Game.time;
+                creep.room.memory.tickCheck.jobs = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return ((structure.structureType == STRUCTURE_SPAWN ||
                         structure.structureType == STRUCTURE_EXTENSION ||
@@ -42,7 +42,7 @@ var roleFiller = {
                 });
             }
             
-            var jobs = Memory.tickCheck.jobs;
+            var jobs = creep.room.memory.tickCheck.jobs;
             
             var spawns = _.filter(jobs, (structure) => structure.structureType == STRUCTURE_SPAWN);
             
@@ -118,7 +118,7 @@ var roleFiller = {
             if (creep.room.energyAvailable == creep.room.energyCapacityAvailable) {
                 
                 var drops = creep.room.find(FIND_DROPPED_RESOURCES, (drop) => drop.amount > 500);
-                Memory.drops = drops;
+                creep.room.memory.drops = drops;
                 
                 if (drops.length) {
                     

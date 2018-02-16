@@ -1,22 +1,24 @@
 var maintainNexus = {
     
-    run: function() {
-        if (!Game.spawns['Spawn1'].memory.nexus) Game.spawns['Spawn1'].memory.nexus = [];
-        if (!Game.spawns['Spawn1'].memory.nexusSize) Game.spawns['Spawn1'].memory.nexusSize = 4;
+    run: function(curRoom) {
+        var curSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
+        if (!curSpawn.memory.nexus) curSpawn.memory.nexus = [];
+        if (!curSpawn.memory.nexusSize) curSpawn.memory.nexusSize = 4;
         
-        var extensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][Game.rooms['sim'].controller.level];
-        var spawnPos = Game.spawns['Spawn1'].pos;
+        var extensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level];
+        var spawnPos = curSpawn.pos;
         
         fillNexusMap:
-        while (Game.spawns['Spawn1'].memory.nexus.length < extensionCount) {
-            var a = Game.spawns['Spawn1'].memory.nexusSize;
+        while (curSpawn.memory.nexus.length < extensionCount) {
+            var a = curSpawn.memory.nexusSize;
             while (a >= 0) {
-                var b = Game.spawns['Spawn1'].memory.nexusSize - a;
+                var b = curSpawn.memory.nexusSize - a;
+                // x + a, y + a
                 var curCoord = {x: spawnPos.x + a, y: spawnPos.y + b};
                 var isDupe = false;
                 // Check if coordinate is dupe
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
+                for (var i in curSpawn.memory.nexus) {
+                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
                         isDupe = true;
                     }
                 }
@@ -24,27 +26,33 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i][0] == 'structure') {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
                             isBadLoc = true;
-                            break tileCheck;
                         }
-                        if (tile[i][0] == 'constructionSite') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                            }
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -52,19 +60,20 @@ var maintainNexus = {
                     }
                     if (!isBadLoc) {
                         // Add coordinate to nexus
-                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
                         // Break loop on size cap
-                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) {
+                        if (curSpawn.memory.nexus.length >= extensionCount) {
                             break fillNexusMap;
                         }
                     }
                 }
                 
+                // x +  a, y - b
                 curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
                 isDupe = false;
                 // Check if coordinate is dupe
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
+                for (var i in curSpawn.memory.nexus) {
+                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
                         isDupe = true;
                     }
                 }
@@ -72,27 +81,33 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i][0] == 'structure') {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
                             isBadLoc = true;
-                            break tileCheck;
                         }
-                        if (tile[i][0] == 'constructionSite') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                            }
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -100,19 +115,20 @@ var maintainNexus = {
                     }
                     if (!isBadLoc) {
                         // Add coordinate to nexus
-                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
                         // Break loop on size cap
-                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) {
+                        if (curSpawn.memory.nexus.length >= extensionCount) {
                             break fillNexusMap;
                         }
                     }
                 }
                 
+                // x - a, y + b
                 curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
                 isDupe = false;
                 // Check if coordinate is dupe
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
+                for (var i in curSpawn.memory.nexus) {
+                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
                         isDupe = true;
                     }
                 }
@@ -120,27 +136,33 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i][0] == 'structure') {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
                             isBadLoc = true;
-                            break tileCheck;
                         }
-                        if (tile[i][0] == 'constructionSite') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                            }
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -148,19 +170,20 @@ var maintainNexus = {
                     }
                     if (!isBadLoc) {
                         // Add coordinate to nexus
-                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
                         // Break loop on size cap
-                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) {
+                        if (curSpawn.memory.nexus.length >= extensionCount) {
                             break fillNexusMap;
                         }
                     }
                 }
                 
+                // x - a, y - b
                 curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
                 isDupe = false;
                 // Check if coordinate is dupe
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
-                    if (Game.spawns['Spawn1'].memory.nexus[i].x == curCoord.x && Game.spawns['Spawn1'].memory.nexus[i].y == curCoord.y) {
+                for (var i in curSpawn.memory.nexus) {
+                    if (curSpawn.memory.nexus[i].x == curCoord.x && curSpawn.memory.nexus[i].y == curCoord.y) {
                         isDupe = true;
                     }
                 }
@@ -168,27 +191,33 @@ var maintainNexus = {
                 if (!isDupe) {
                     // Check tile
                     var isBadLoc = false;
-                    var tile = Game.spawns['Spawn1'].room.lookAt(curCoord.x, curCoord.y);
-                    tileCheck:
-                    for (var i in tile) {
-                        if (tile[i][0] == 'structure') {
+                    if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
                             isBadLoc = true;
-                            break tileCheck;
                         }
-                        if (tile[i][0] == 'constructionSite') {
-                            isBadLoc = true;
-                            break tileCheck;
-                        }
-                        if (tile[i][1] == 'wall') {
-                            isBadLoc = true;
-                            break tileCheck;
+                        else {
+                            var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                            tileCheck:
+                            for (var i in tile) {
+                                if (tile[i].type == LOOK_STRUCTURES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                                if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                    isBadLoc = true;
+                                    break tileCheck;
+                                }
+                            }
                         }
                     }
                     // Check build queue
-                    if (Memory.buildQueue) {
+                    if (curRoom.memory.buildQueue) {
                         buildQueueCheck:
-                        for (var i in Memory.buildQueue) {
-                            if (Memory.buildQueue[i].x == curCoord.x && Memory.buildQueue[i].y == curCoord.y) {
+                        for (var i in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
                                 isBadLoc = true;
                                 break buildQueueCheck;
                             }
@@ -196,17 +225,18 @@ var maintainNexus = {
                     }
                     if (!isBadLoc) {
                         // Add coordinate to nexus
-                        Game.spawns['Spawn1'].memory.nexus.push({x: curCoord.x, y: curCoord.y});
+                        curSpawn.memory.nexus.push({x: curCoord.x, y: curCoord.y});
                         // Break loop on size cap
-                        if (Game.spawns['Spawn1'].memory.nexus.length >= extensionCount) {
+                        if (curSpawn.memory.nexus.length >= extensionCount) {
                             break fillNexusMap;
                         }
                     }
                 }
                 a--;
             }
-            if (Game.spawns['Spawn1'].memory.nexus.length <= extensionCount) {
-                Game.spawns['Spawn1'].memory.nexusSize += 2;
+            // Increases the nexus boundary if we no longer have tiles that are capable of being used in the nexus
+            if (curSpawn.memory.nexus.length <= extensionCount) {
+                curSpawn.memory.nexusSize += 2;
             }
         }
     }

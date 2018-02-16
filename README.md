@@ -1,16 +1,20 @@
 # screeps
 Jeff and Justen's collaboration to make Jeff's Screeps code suck less (that should be easy).
 
-/* From status report:
- This code is supposed to record in memory the tick at which each controller level was reached.
- It was used as a benchmark for whether certain building and creep strategies were faster than others.
-        Why does this exist?
-        // Controller level up tick recorder start
-        if (!curRoom.memory.levelTime) {
-            curRoom.memory.levelTime = [];
-        } else if (!curRoom.memory.levelTime[curRoom.controller.level]) {
-            curRoom.memory.levelTime[curRoom.controller.level] =
-                { level: curRoom.controller.level, time: Game.time}
-        }
-        // Controller level up tick recorder end
-*/
+## Notes
+```javascript
+room.find(...)
+```
+is faster than 
+```javascript
+_.filter(Game...)
+```
+as per [this post](https://screeps.com/forum/topic/1409/game-creeps-filter-vs-room-find-find_my_creeps/2). It searches only that room, and if it's done once for all members of a category (Like FIND_MY_CREEPS) then filtered for something more specific (Like creep.memory.role == 'fighter')
+#### An example of this:
+```javascript
+var allCreepsInRoom = Game.rooms['sim'].find(FIND_MY_CREEPS);
+
+var harvesters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'harvester');
+var builders = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'builder');
+var upgraders = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'upgrader');
+```

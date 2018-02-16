@@ -1,0 +1,552 @@
+var maintainNexus = {
+    
+    run: function(curRoom) {
+        var firstSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
+        var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
+        if (!curRoom.memory.plan && curRoom.memory.plan != false) curRoom.memory.plan = {};
+        if (!curRoom.memory.plan.planQueue && curRoom.memory.plan != false) curRoom.memory.plan.planQueue = [];
+        if (!curRoom.memory.plan.offset && curRoom.memory.plan != false) curRoom.memory.plan.offset = 1;
+        if (!curRoom.memory.plan.isSorted && curRoom.memory.plan != false) curRoom.memory.plan.isSorted = false;
+        if (!curRoom.memory.plan.labs && !(curRoom.memory.plan.labs >= 0) && curRoom.memory.plan != false) curRoom.memory.plan.labs = 0;
+        if (!curRoom.memory.plan.finale && curRoom.memory.plan.finale != false && curRoom.memory.plan != false) curRoom.memory.plan.finale = false;
+        if (!curRoom.memory.plan.NW && curRoom.memory.plan.NW != false && curRoom.memory.plan != false) curRoom.memory.plan.NW = true;
+        if (!curRoom.memory.plan.SW && curRoom.memory.plan.SW != false && curRoom.memory.plan != false) curRoom.memory.plan.SW = true;
+        if (!curRoom.memory.plan.NE && curRoom.memory.plan.NE != false && curRoom.memory.plan != false) curRoom.memory.plan.NE = true;
+        if (!curRoom.memory.plan.SE && curRoom.memory.plan.SE != false && curRoom.memory.plan != false) curRoom.memory.plan.SE = true;
+        
+        function mapExtensions (roadPos, xA, xB, xC, yA, yB, yC) {
+            var xShift = true;
+            var yShift = true;
+            if (xShift) {
+                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    if (Game.map.getTerrainAt(xA, roadPos.y, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: xA, y: roadPos.y, structureType: 1});
+                        queuedInTick++;
+                    }
+                    else {
+                        xShift = false;
+                    }
+                }
+            }
+            if (yShift) {
+                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    if (Game.map.getTerrainAt(roadPos.x, yA, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yA, structureType: 1});
+                        queuedInTick++;
+                    }
+                    else {
+                        yShift = false;
+                    }
+                }
+            }
+            if (!xShift && !yShift) {
+                return;
+            }
+            if (xShift) {
+                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    if (Game.map.getTerrainAt(xB, roadPos.y, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: xB, y: roadPos.y, structureType: 1});
+                        queuedInTick++;
+                    }
+                    else {
+                        xShift = false;
+                    }
+                }
+            }
+            if (yShift) {
+                if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    if (Game.map.getTerrainAt(roadPos.x, yB, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yB, structureType: 1});
+                        queuedInTick++;
+                    }
+                    else {
+                        yShift = false;
+                    }
+                }
+            }
+            if (!xShift && !yShift) {
+                return;
+            }
+            if (xShift) {
+                if (Game.map.getTerrainAt(xC, roadPos.y, curRoom.name) !== 'wall') {
+                    curRoom.memory.plan.planQueue.push({x: xC, y: roadPos.y, structureType: 0});
+                    queuedInTick++;
+                }
+                else {
+                    xShift = false;
+                }
+            }
+            if (yShift) {
+                if (Game.map.getTerrainAt(roadPos.x, yC, curRoom.name) !== 'wall') {
+                    curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yC, structureType: 0});
+                    queuedInTick++;
+                }
+                else {
+                    yShift = false;
+                }
+            }
+            if (!xShift && !yShift) {
+                return;
+            }
+        }
+        
+        if (curRoom.memory.plan && curRoom.memory.plan != false) {
+            var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType == 1);
+            var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION);
+            var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
+            var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
+            var maxExtensions = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION]["8"];
+            var queuedInTick = 0;
+            
+            if (curRoom.memory.plan.NW) {
+                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    var curPos = {x: (storageLoc.x - curRoom.memory.plan.offset), y: (storageLoc.y - curRoom.memory.plan.offset)};
+                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
+                        mapExtensions(curPos, (curPos.x - 1), (curPos.x - 2), (curPos.x - 3), (curPos.y - 1), (curPos.y - 2), (curPos.y - 3));
+                    }
+                    else {
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset), y: (storageLoc.y - curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 1), y: (storageLoc.y - curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset), y: (storageLoc.y - curRoom.memory.plan.offset - 1), structureType: 0});
+                        curRoom.memory.plan.NW = false;
+                    }
+                }
+                else {
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 1), y: (storageLoc.y - curRoom.memory.plan.offset - 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 2), y: (storageLoc.y - curRoom.memory.plan.offset - 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 1), y: (storageLoc.y - curRoom.memory.plan.offset - 2), structureType: 0});
+                    curRoom.memory.plan.NW = false;
+                }
+            }
+            if (curRoom.memory.plan.SW) {
+                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    var curPos = {x: (storageLoc.x - curRoom.memory.plan.offset), y: (storageLoc.y + curRoom.memory.plan.offset)};
+                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
+                        mapExtensions(curPos, (curPos.x - 1), (curPos.x - 2), (curPos.x - 3), (curPos.y + 1), (curPos.y + 2), (curPos.y + 3));
+                    }
+                    else {
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset), y: (storageLoc.y + curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 1), y: (storageLoc.y + curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset), y: (storageLoc.y + curRoom.memory.plan.offset + 1), structureType: 0});
+                        curRoom.memory.plan.SW = false;
+                    }
+                }
+                else {
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 1), y: (storageLoc.y + curRoom.memory.plan.offset + 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 2), y: (storageLoc.y + curRoom.memory.plan.offset + 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x - curRoom.memory.plan.offset - 1), y: (storageLoc.y + curRoom.memory.plan.offset + 2), structureType: 0});
+                    curRoom.memory.plan.SW = false;
+                }
+            }
+            if (curRoom.memory.plan.NE) {
+                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    var curPos = {x: (storageLoc.x + curRoom.memory.plan.offset), y: (storageLoc.y - curRoom.memory.plan.offset)};
+                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
+                        mapExtensions(curPos, (curPos.x + 1), (curPos.x + 2), (curPos.x + 3), (curPos.y - 1), (curPos.y - 2), (curPos.y - 3));
+                    }
+                    else {
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset), y: (storageLoc.y - curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 1), y: (storageLoc.y - curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset), y: (storageLoc.y - curRoom.memory.plan.offset - 1), structureType: 0});
+                        curRoom.memory.plan.NE = false;
+                    }
+                }
+                else {
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 1), y: (storageLoc.y - curRoom.memory.plan.offset - 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 2), y: (storageLoc.y - curRoom.memory.plan.offset - 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 1), y: (storageLoc.y - curRoom.memory.plan.offset - 2), structureType: 0});
+                    curRoom.memory.plan.NE = false;
+                }
+            }
+            if (curRoom.memory.plan.SE) {
+                if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                    var curPos = {x: (storageLoc.x + curRoom.memory.plan.offset), y: (storageLoc.y + curRoom.memory.plan.offset)};
+                    if (Game.map.getTerrainAt(curPos.x, curPos.y, curRoom.name) !== 'wall') {
+                        curRoom.memory.plan.planQueue.push({x: curPos.x, y: curPos.y, structureType: 0});
+                        mapExtensions(curPos, (curPos.x + 1), (curPos.x + 2), (curPos.x + 3), (curPos.y + 1), (curPos.y + 2), (curPos.y + 3));
+                    }
+                    else {
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset), y: (storageLoc.y + curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 1), y: (storageLoc.y + curRoom.memory.plan.offset), structureType: 0});
+                        curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset), y: (storageLoc.y + curRoom.memory.plan.offset + 1), structureType: 0});
+                        curRoom.memory.plan.SE = false;
+                    }
+                }
+                else {
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 1), y: (storageLoc.y + curRoom.memory.plan.offset + 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 2), y: (storageLoc.y + curRoom.memory.plan.offset + 1), structureType: 0});
+                    curRoom.memory.plan.planQueue.push({x: (storageLoc.x + curRoom.memory.plan.offset + 1), y: (storageLoc.y + curRoom.memory.plan.offset + 2), structureType: 0});
+                    curRoom.memory.plan.SE = false;
+                }
+            }
+            if (trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
+                curRoom.memory.plan.offset++;
+            }
+            else if (curRoom.memory.plan.labs != true) {
+                switch (curRoom.memory.plan.labs) {
+                    case 0:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y - 4), (storageLoc.x - 9), (storageLoc.y - 1), (storageLoc.x - 6));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            R T R R
+                            L R L R
+                            L L L L
+                            L L L L
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 4), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 4), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 3), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 3), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 2), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 1:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y + 1), (storageLoc.x - 9), (storageLoc.y + 4), (storageLoc.x - 6));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            L L L L
+                            L L L L
+                            L R L R
+                            R T R R
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 4), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 4), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 3), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 3), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 2), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 2:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y - 9), (storageLoc.x - 4), (storageLoc.y - 6), (storageLoc.x - 1));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            R L L L
+                            T R L L
+                            R L L L
+                            R R L L
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 9), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 8), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 7), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 8), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 6), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 6), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 3:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y - 9), (storageLoc.x + 1), (storageLoc.y - 6), (storageLoc.x + 4));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            L L L R
+                            L L R T
+                            L L L R
+                            L L R R
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 9), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 8), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 7), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 8), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 6), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 6), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 4:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y - 4), (storageLoc.x + 6), (storageLoc.y - 1), (storageLoc.x + 9));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            R R T R
+                            R L R L
+                            L L L L
+                            L L L L
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 4), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 4), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 3), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 3), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 2), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 1), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 5:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y + 1), (storageLoc.x + 6), (storageLoc.y + 4), (storageLoc.x + 9));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            L L L L
+                            L L L L
+                            R L R L
+                            R R T R
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 4), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 4), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 4), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 3), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 3), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 3), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 2), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 2), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 1), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 6:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y + 6), (storageLoc.x - 4), (storageLoc.y + 9), (storageLoc.x - 1));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            R R L L
+                            R L L L
+                            T R L L
+                            R L L L
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 9), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 8), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 7), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 8), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 6), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 6), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 7:
+                        var area = curRoom.lookForAtArea(LOOK_TERRAIN, (storageLoc.y + 6), (storageLoc.x + 1), (storageLoc.y + 9), (storageLoc.x + 4));
+                        var walls = _.filter(area, (schematic) => schematic.terrain == "wall").length;
+                        
+                        if (!walls) {
+                            /*
+                            L L R R
+                            L L L R
+                            L L R T
+                            L L L R
+                            */
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 9), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 8), structureType: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 7), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 8), structureType: 0});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 6), structureType: 0});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 6), structureType: 7});
+                            
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 9), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 8), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 7), structureType: 7});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 6), structureType: 7});
+                            curRoom.memory.plan.labs = true;
+                        }
+                        else {
+                            curRoom.memory.plan.labs++;
+                        }
+                        break;
+                    case 8:
+                        /*
+                          R T R
+                        R L R L R
+                        L L L L R
+                        L L L L R
+                        R R R R R
+                        5x5
+                        
+                        if (!curRoom.memory.plan.labOffset) curRoom.memory.plan.labOffset = 1;
+                        if (!curRoom.memory.plan.labCardinal && !(curRoom.memory.plan.labCardinal >= 0)) curRoom.memory.plan.labCardinal = 0;
+                        if (!curRoom.memory.plan.labShift && !(curRoom.memory.plan.labShift >= 0)) curRoom.memory.plan.labShift = 0;
+                        
+                        switch (curRoom.memory.plan.labCardinal) {
+                            case 0:
+                                var area = curRoom.lookAtArea((storageLoc.y - (5 + curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.x - (5 + curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.y - (curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.x - (curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), true);
+                                var walls = _.filter(area, (schematic) => schematic.terrain == 'wall');
+                                var reservedTiles = 0 //_.filter(area, (schematic) => for (var i in ));
+                                
+                                if (walls + reservedTiles == 0) {
+                                    
+                                }
+                                else if (curRoom.memory.plan.labShift < curRoom.memory.labOffset) {
+                                    curRoom.memory.plan.labShift++;
+                                }
+                                else {
+                                    curRoom.memory.plan.labShift = 0;
+                                    curRoom.memory.plan.labCardinal++;
+                                }
+                                break;
+                            case 1:
+                                
+                                break;
+                            case 2:
+                                
+                                break;
+                            case 3:
+                                
+                                break;
+                            default:
+                                curRoom.memory.plan.labCardinal = 0;
+                                curRoom.memory.plan.labOffset++;
+                                break;
+                        }
+                        */
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if (!curRoom.memory.plan.finale) {
+                // Road: 0 | Extension: 1 | Tower: 2 | Spawn: 3 | Power Spawn: 4 | Storage: 5 | Link: 6 | Lab: 7 | Terminal: 8 | Observer: 9 | Extractor: 10 | Container: 11 | 
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y), structureType: 5});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y), structureType: 6});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 1), structureType: 3});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 2), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 3), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 1), structureType: 3});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 2), structureType: 0});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 3), structureType: 0});
+                curRoom.memory.plan.finale = true;
+            }
+            else if (curRoom.memory.plan.planQueue.length == 0) {
+                curRoom.memory.plan = false;
+            }
+            queuedInTick = 0;
+        }
+    }
+}
+
+module.exports = maintainNexus;
