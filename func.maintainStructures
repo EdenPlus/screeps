@@ -1,54 +1,76 @@
 var maintainStructures = {
     
-    run: function() {
-        if (!Memory.repairSites) Memory.repairSites = [];
-        if (!Memory.sourceRoad) Memory.sourceRoad = [];
-        if (!Memory.buildQueue) Memory.buildQueue = [];
+    run: function(curRoom) {
+        if (!curRoom.memory.repairSites) curRoom.memory.repairSites = [];
+        if (!curRoom.memory.sourceRoad) curRoom.memory.sourceRoad = [];
+        if (!curRoom.memory.buildQueue) curRoom.memory.buildQueue = [];
         
         const MAXSITES = 3;
-        
+        /*
         var spawns = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_SPAWN);
         var extensions = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_EXTENSION);
-        var containers = Game.rooms['sim'].find(FIND_STRUCTURES, {
+        
+        var containers = curRoom.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_CONTAINER;
             }
         });
-        var sources = Game.rooms['sim'].find(FIND_SOURCES);
         
-        var constructionSites = Game.rooms['sim'].find(FIND_CONSTRUCTION_SITES);
+        var spawns = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_SPAWN && structure.room == curRoom));
+        var extensions = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_EXTENSION && structure.room == curRoom));
+        var containers = _.filter(Game.structures, (structure) => (structure.structureType == STRUCTURE_CONTAINER && structure.room == curRoom));
+        
+        var sources = curRoom.find(FIND_SOURCES);
+        
+        var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
         var sites = constructionSites.length;
         
         var numFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter').length;
         var numHealers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer').length;
         var numTowers = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
+        */
+        
+        var allStructuresInRoom = curRoom.find(FIND_STRUCTURES);
+        
+        var spawns = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN);
+        var extensions = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_EXTENSION);
+        var containers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_CONTAINER);
+        
+        var sources = curRoom.find(FIND_SOURCES);
+        
+        var constructionSites = curRoom.find(FIND_CONSTRUCTION_SITES);
+        var sites = constructionSites.length;
+        
+        var allCreepsInRoom = curRoom.find(FIND_MY_CREEPS);
+        
+        var numFighters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'fighter').length;
+        var numHealers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'healer').length;
+        var numTowers = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_TOWER).length;
         
         if (!(Game.time % 100) && !sites) {
-             var repairSites = Game.rooms['sim'].find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    if (Game.rooms['sim'].find(FIND_HOSTILE_CREEPS).length) {
+             var repairSites = _.filter(allStructuresInRoom, (structure) => {
+                    if (curRoom.find(FIND_HOSTILE_CREEPS).length) {
                         return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART);
                     } else {
                         return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
                     }
-                }
-            });
-            Memory.repairSites = [];
+                });
+            curRoom.memory.repairSites = [];
             for (let i in repairSites) {
-                Memory.repairSites[i] = repairSites[i].id;
+                curRoom.memory.repairSites[i] = repairSites[i].id;
             }
         }
         
         // Function to add new construction sites to a list for building
         function queueBuild(x, y, type) {
-            if (!Memory.buildQueue) Memory.buildQueue = [];
-            for (let i in Memory.buildQueue) {
-                if (x == Memory.buildQueue[i].x && y == Memory.buildQueue[i].y) {
+            if (!curRoom.memory.buildQueue) curRoom.memory.buildQueue = [];
+            for (let i in curRoom.memory.buildQueue) {
+                if (x == curRoom.memory.buildQueue[i].x && y == curRoom.memory.buildQueue[i].y) {
                     return -1;
                 }
             }
-            if ((!Game.rooms['sim'].lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
-                Memory.buildQueue.push({x:x,y:y,type:type});
+            if ((!curRoom.lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
+                curRoom.memory.buildQueue.push({x:x,y:y,type:type});
             }
         }
         
@@ -65,82 +87,295 @@ var maintainStructures = {
         
         // Build road around controller
         function buildControllerRoad() {
-            var path = Game.rooms['sim'].findPath(spawns[0].pos,Game.rooms['sim'].controller.pos, {ignoreCreeps: true});
+            var path = curRoom.findPath(spawns[0].pos,curRoom.controller.pos, {ignoreCreeps: true});
             for (let i = 0; i < (path.length - 5); i++) {
                 queueBuild(path[i].x,path[i].y, STRUCTURE_ROAD);
             }
             for (let i = -3; i <= 3; i++) {
-                queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y + 4, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x + i, curRoom.controller.pos.y + 4, STRUCTURE_ROAD);
             }
             for (let i = 3; i >= -3; i--) {
-                queueBuild(Game.rooms['sim'].controller.pos.x - 4, Game.rooms['sim'].controller.pos.y + i, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x - 4, curRoom.controller.pos.y + i, STRUCTURE_ROAD);
             }
             for (let i = 3; i >= -3; i--) {
-                queueBuild(Game.rooms['sim'].controller.pos.x + 4, Game.rooms['sim'].controller.pos.y + i, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x + 4, curRoom.controller.pos.y + i, STRUCTURE_ROAD);
             }
             for (let i = -3; i <= 3; i++) {
-                queueBuild(Game.rooms['sim'].controller.pos.x + i, Game.rooms['sim'].controller.pos.y - 4, STRUCTURE_ROAD);
+                queueBuild(curRoom.controller.pos.x + i, curRoom.controller.pos.y - 4, STRUCTURE_ROAD);
             }
         }
         
         // Extension queue start
-        if (Game.spawns['Spawn1'].memory.nexus.length) {
-            if (extensions.length < Game.spawns['Spawn1'].memory.nexus.length) {
-                for (var i in Game.spawns['Spawn1'].memory.nexus) {
+        var curSpawn = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN)[0];
+        
+        if (curSpawn.memory.nexus.length) {
+            if (extensions.length < curSpawn.memory.nexus.length) {
+                for (var i in curSpawn.memory.nexus) {
                     var isBuilt = false;
                     builtCheck:
                     for (var j in extensions) {
-                        if (Game.spawns['Spawn1'].memory.nexus[i].x == extensions[j].x && Game.spawns['Spawn1'].memory.nexus[i].y == extensions[j].y) {
+                        if (curSpawn.memory.nexus[i].x == extensions[j].x && curSpawn.memory.nexus[i].y == extensions[j].y) {
                             isBuilt = true;
                             break builtCheck;
                         }
                     }
                     if (!isBuilt) {
-                        queueBuild(Game.spawns['Spawn1'].memory.nexus[i].x, Game.spawns['Spawn1'].memory.nexus[i].y, STRUCTURE_EXTENSION);
+                        queueBuild(curSpawn.memory.nexus[i].x, curSpawn.memory.nexus[i].y, STRUCTURE_EXTENSION);
                     }
                 }
             }
         }
         // Extension queue end
         
-        if (extensions.length == 5 && !Memory.sourceRoad[0]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+        if (extensions.length >= 5 && !curRoom.memory.sourceRoad[0]) {
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             queueBuild(spawns[0].pos.x + 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x - 1, spawns[0].pos.y, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y + 1, STRUCTURE_ROAD);
             queueBuild(spawns[0].pos.x, spawns[0].pos.y - 1, STRUCTURE_ROAD);
-            Memory.sourceRoad[0] = true;
+            curRoom.memory.sourceRoad[0] = true;
         }
         
-        if (containers.length == 1 && !Memory.sourceRoad[1]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
-            Memory.sourceRoad[1] = true;
+        if (containers.length == 1 && !curRoom.memory.sourceRoad[1]) {
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            curRoom.memory.sourceRoad[1] = true;
         }
         
-        if (containers.length == 2 && !Memory.sourceRoad[2]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+        if (containers.length == 2 && !curRoom.memory.sourceRoad[2]) {
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
             buildControllerRoad();
-            Memory.sourceRoad[2] = true;
+            curRoom.memory.sourceRoad[2] = true;
         }
         
-        if (Game.rooms['sim'].controller.level >= 3 && extensions.length == 5) {
-            queueBuild(Game.spawns['Spawn1'].pos.x + 2,Game.spawns['Spawn1'].pos.y, STRUCTURE_TOWER);
+        var towerCap = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][curRoom.controller.level];
+        var spawnPos = curSpawn.pos;
+        
+        var numTowersQueued = 0;
+        for (var i in curRoom.memory.buildQueue) {
+            if (curRoom.memory.buildQueue[i].type == STRUCTURE_TOWER) {
+                numTowersQueued++;
+            }
         }
         
-        if (Game.rooms['sim'].controller.level >= 5 && extensions.length == 20) {
-            queueBuild(Game.spawns['Spawn1'].pos.x,Game.spawns['Spawn1'].pos.y + 2, STRUCTURE_TOWER);
+        towerQueue:
+        while (numTowers + numTowersQueued < towerCap && extensions.length == CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level]) {
+            var a = 2;
+            while (a >= 0) {
+                var b = 2 - a;
+                // x + a, y + a
+                var curCoord = {x: spawnPos.x + a, y: spawnPos.y + b};
+                // Check tile
+                var isBadLoc = false;
+                // Check if tile is a wall
+                if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                    isBadLoc = true;
+                }
+                else {
+                    // Check if there are errors looking at the tile
+                    if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                        tileCheck:
+                        for (var i in tile) {
+                            // Check if tile has a structure
+                            if (tile[i].type == LOOK_STRUCTURES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                            // Check if tile has a construction site
+                            if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                        }
+                    }
+                }
+                // Check build queue
+                if (curRoom.memory.buildQueue) {
+                    buildQueueCheck:
+                    for (var i in curRoom.memory.buildQueue) {
+                        if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
+                        }
+                    }
+                }
+                if (!isBadLoc) {
+                    // Queue construction of tower
+                    queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
+                    // Break loop on size cap
+                    if (numTowers + numTowersQueued >= towerCap) {
+                        break towerQueue;
+                    }
+                }
+                
+                // x +  a, y - b
+                curCoord = {x: spawnPos.x + a, y: spawnPos.y - b};
+                // Check tile
+                isBadLoc = false;
+                // Check if tile is a wall
+                if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                    isBadLoc = true;
+                }
+                else {
+                    // Check if there are errors looking at the tile
+                    if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                        tileCheck:
+                        for (var i in tile) {
+                            // Check if tile has a structure
+                            if (tile[i].type == LOOK_STRUCTURES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                            // Check if tile has a construction site
+                            if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                        }
+                    }
+                }
+                // Check build queue
+                if (curRoom.memory.buildQueue) {
+                    buildQueueCheck:
+                    for (var i in curRoom.memory.buildQueue) {
+                        if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
+                        }
+                    }
+                }
+                if (!isBadLoc) {
+                    // Queue construction of tower
+                    queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
+                    // Break loop on size cap
+                    if (numTowers + numTowersQueued >= towerCap) {
+                        break towerQueue;
+                    }
+                }
+                
+                // x - a, y + b
+                curCoord = {x: spawnPos.x - a, y: spawnPos.y + b};
+                // Check tile
+                isBadLoc = false;
+                // Check if tile is a wall
+                if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                    isBadLoc = true;
+                }
+                else {
+                    // Check if there are errors looking at the tile
+                    if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                        tileCheck:
+                        for (var i in tile) {
+                            // Check if tile has a structure
+                            if (tile[i].type == LOOK_STRUCTURES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                            // Check if tile has a construction site
+                            if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                        }
+                    }
+                }
+                // Check build queue
+                if (curRoom.memory.buildQueue) {
+                    buildQueueCheck:
+                    for (var i in curRoom.memory.buildQueue) {
+                        if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
+                        }
+                    }
+                }
+                if (!isBadLoc) {
+                    // Queue construction of tower
+                    queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
+                    // Break loop on size cap
+                    if (numTowers + numTowersQueued >= towerCap) {
+                        break towerQueue;
+                    }
+                }
+                
+                // x - a, y - b
+                curCoord = {x: spawnPos.x - a, y: spawnPos.y - b};
+                // Check tile
+                isBadLoc = false;
+                // Check if tile is a wall
+                if (Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == 'wall' || Game.map.getTerrainAt(curCoord.x, curCoord.y, curRoom.name) == ERR_NOT_IN_RANGE) {
+                    isBadLoc = true;
+                }
+                else {
+                    // Check if there are errors looking at the tile
+                    if (curRoom.lookAt(curCoord.x, curCoord.y) < 0) {
+                        isBadLoc = true;
+                    }
+                    else {
+                        var tile = curRoom.lookAt(curCoord.x, curCoord.y);
+                        tileCheck:
+                        for (var i in tile) {
+                            // Check if tile has a structure
+                            if (tile[i].type == LOOK_STRUCTURES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                            // Check if tile has a construction site
+                            if (tile[i].type == LOOK_CONSTRUCTION_SITES) {
+                                isBadLoc = true;
+                                break tileCheck;
+                            }
+                        }
+                    }
+                }
+                // Check build queue
+                if (curRoom.memory.buildQueue) {
+                    buildQueueCheck:
+                    for (var i in curRoom.memory.buildQueue) {
+                        if (curRoom.memory.buildQueue[i].x == curCoord.x && curRoom.memory.buildQueue[i].y == curCoord.y) {
+                            isBadLoc = true;
+                            break buildQueueCheck;
+                        }
+                    }
+                }
+                if (!isBadLoc) {
+                    // Queue construction of tower
+                    queueBuild(curCoord.x, curCoord.y, STRUCTURE_TOWER);
+                    numTowersQueued++;
+                    // Break loop on size cap
+                    if (numTowers + numTowersQueued >= towerCap) {
+                        break towerQueue;
+                    }
+                }
+                
+                a--;
+            }
         }
         
-        if (numTowers && !Memory.sourceRoad[3]) {
-            buildRoad(Game.rooms['sim'].findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
-            Memory.sourceRoad[3] = true;
+        if (numTowers && !curRoom.memory.sourceRoad[3]) {
+            buildRoad(curRoom.findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true}), STRUCTURE_CONTAINER);
+            curRoom.memory.sourceRoad[3] = true;
         }
         
         if (containers.length == 4) {
             queueBuild(containers[3].pos.x, containers[3].pos.y, STRUCTURE_RAMPART);
         }
         
-        // queue building of roads around extensions **IMPROVE THIS
+        // Queue building of roads around extensions **IMPROVE THIS
         if (!(Game.time % 1000)) {
             for (let i in extensions) {
                 queueBuild(extensions[i].pos.x + 1, extensions[i].pos.y, STRUCTURE_ROAD);
@@ -150,10 +385,10 @@ var maintainStructures = {
             }
         }
         
-        if (sites < MAXSITES && Memory.buildQueue[0]) {
-            let site = Memory.buildQueue[0];
-            Game.rooms['sim'].createConstructionSite(site.x, site.y, site.type)
-            Memory.buildQueue.shift();
+        if (sites < MAXSITES && curRoom.memory.buildQueue[0]) {
+            let site = curRoom.memory.buildQueue[0];
+            curRoom.createConstructionSite(site.x, site.y, site.type)
+            curRoom.memory.buildQueue.shift();
         }
     }
 }

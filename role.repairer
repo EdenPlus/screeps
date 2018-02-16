@@ -25,13 +25,13 @@ var roleRepairer = {
         
         
         if (creep.memory.working) {
-            var targets = Memory.repairSites;
+            var targets = creep.room.memory.repairSites;
             
 //            console.log('Repair report: '+targets.length);
             
             if (!creep.memory.job && targets.length) {
                 creep.memory.job = targets[0];
-                Memory.repairSites.shift();
+                creep.room.memory.repairSites.shift();
                 creep.say('repair');
                 //console.log(creep.name+' got a new job: '+Game.getObjectById(creep.memory.job));
             }

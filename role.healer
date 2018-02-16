@@ -8,20 +8,25 @@ var roleHealer = {
 
         var enemies = creep.room.find(FIND_HOSTILE_CREEPS);
         
-        var healers = _.filter(Game.creeps, (creep) => creep.memory.role == 'healer' && creep.hits < creep.hitsMax);
-        var fighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter');
-        var injFighters = _.filter(Game.creeps, (creep) => creep.memory.role == 'fighter' && creep.hits < creep.hitsMax);
+        var allCreepsInRoom = creep.room.find(FIND_MY_CREEPS);
+        
+        var healers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'healer' && creep.hits < creep.hitsMax);
+        var fighters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'fighter');
+        var injFighters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'fighter' && creep.hits < creep.hitsMax);
         
 //        console.log('Enemies in room: '+enemies.length);
         
         if (enemies.length > 0) {
             var buddies = injFighters.concat(healers);
         } else {
+            /*
             var buddies = creep.room.find(FIND_MY_CREEPS, {
                 filter: (buddy) => {
                     return (buddy.hits < buddy.hitsMax);
                 } 
             });
+            */
+            var buddies = _.filter(allCreepsInRoom, (creep) => creep.hits < creep.hitsMax);
         }
         
         

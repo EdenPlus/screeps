@@ -1,7 +1,10 @@
+// Function stuff
 var maintainCreeps = require('func.maintainCreeps');
 var maintainStructures = require('func.maintainStructures');
 var maintainNexus = require('func.maintainNexus');
 var statusReport = require('func.statusReport');
+
+// Role Stuff
 var roleHarvester = require('role.harvester');
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
@@ -14,33 +17,38 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-    // Function for the status report
-    statusReport.run();
-    
-    // Maintenance start
-    maintainCreeps.run();
-    
-    if (!(Game.time % 10)) {
-        maintainNexus.run();
-        maintainStructures.run();
-    }
-    // Maintenance end
-    
-    // Unit AI start
-    var towers = Game.rooms['sim'].find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_TOWER;
+    for (var a in Game.rooms) {
+        if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
+            // Function for status report
+            statusReport.run(Game.rooms[a]);
+            
+            // Function for creep maintenance
+            maintainCreeps.run(Game.rooms[a]);
+            
+            // If statement to reduce resource consumption for building maintenance
+            if (!(Game.time % 10)) {
+                maintainNexus.run(Game.rooms[a]);
+                maintainStructures.run(Game.rooms[a]);
+            }
+            
+            // Tower AI Start
+            var towers = Game.rooms[a].find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_TOWER;
+                }
+            });
+            
+            for (let x in towers) {
+                roleTower.run(towers[x]);
+            }
+            // Tower AI end
         }
-    });
-    
-    for (let x in towers) {
-        roleTower.run(towers[x]);
     }
-    
+    // Unit AI start
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         
-//        creep.suicide();
+//                creep.suicide();
         
         if (creep.memory.role == 'healer') {
             roleHealer.run(creep);
@@ -50,11 +58,11 @@ module.exports.loop = function () {
             roleFighter.run(creep);
         }
         if (creep.memory.role == 'harvester') {
-//            creep.suicide();
+//                    creep.suicide();
             roleHarvester.run(creep);
         }
         if (creep.memory.role == 'builder') {
-//            creep.suicide();
+//                    creep.suicide();
             roleBuilder.run(creep);
         }
         if (creep.memory.role == 'upgrader') {
@@ -62,19 +70,19 @@ module.exports.loop = function () {
         }
         if (creep.memory.role == 'repairer') {
             roleRepairer.run(creep);
-//            creep.memory.job = false;
+//                    creep.memory.job = false;
         }
         if (creep.memory.role == 'miner') {
             //creep.suicide();
             roleMiner.run(creep);
         }
         if (creep.memory.role == 'transfer') {
-//            delete creep.memory.job;
+//                    delete creep.memory.job;
             roleTransfer.run(creep);
-//            creep.suicide();
+//                    creep.suicide();
         }
         if (creep.memory.role == 'filler') {
-//            delete creep.memory.job;
+//                    delete creep.memory.job;
             roleFiller.run(creep);
         }
         if (creep.memory.role == 'test pilot') {
