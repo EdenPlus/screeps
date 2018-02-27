@@ -46,7 +46,7 @@ var maintainStructures = {
                     return -1;
                 }
             }
-            if ((!curRoom.lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART) {
+            if ((!curRoom.lookForAt(LOOK_STRUCTURES,x,y)[0]) || type == STRUCTURE_RAMPART || type == STRUCTURE_ROAD) {
                 curRoom.memory.buildQueue.push({x:x,y:y,type:type});
             }
         }
@@ -82,8 +82,35 @@ var maintainStructures = {
             }
         }
         
-        // Road: 0 | Extension: 1 | Tower: 2 | Spawn: 3 | Power Spawn: 4 | Storage: 5 | Link: 6 | Lab: 7 | Terminal: 8 | Observer: 9 | Extractor: 10 | Container: 11 | 
-        // Rework to the buildQueue iteration of the planQueue
+        if (!(Game.time % 5)) {
+            if (curRoom.memory.structuresAtRisk.length) {
+                for (var a in curRoom.memory.structuresAtRisk) {
+                    var curTile = curRoom.lookAt(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
+                    var isDestroyed = true;
+                    tileChecker:
+                    for (var b in curTile) {
+                        if (curTile[b].type === 'structure' && curTile[b].structureType === curRoom.memory.structuresAtRisk[a].t) {
+                            if ((curTile[b].hits / curTile[b].hitsMax) >= 0.25) {
+                                curRoom.memory.structuresAtRisk.splice(a, 1);
+                                isDestroyed = false;
+                                break tileChecker;
+                            }
+                        }
+                        else if (curTile[b].type === 'constructionSite' && curTile[b].structureType === curRoom.memory.structuresAtRisk[a].t) {
+                            isDestroyed = false;
+                        }
+                    }
+                    if (isDestroyed) {
+                        queueBuild(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y, curRoom.memory.structuresAtRisk[a].t);
+                    }
+                }
+            }
+        }
+        
+        // Road: 0          | Extension: 1  | Tower: 2      | Spawn: 3
+        // Power Spawn: 4   | Storage: 5    | Link: 6       | Lab: 7
+        // Terminal: 8      | Observer: 9   | Extractor: 10 | Container: 11
+        
         if (curRoom.memory.plan.planQueue.length) {
             var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION).length;
             var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
@@ -276,94 +303,7 @@ var maintainStructures = {
                 }
             }
         }
-        /*
-        if (curRoom.memory.plan.planQueue.length) {
-            var firstItem = curRoom.memory.plan.planQueue.shift();
-            switch (firstItem.structureType) {
-                case 0:
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_ROAD).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_ROAD).length;
-                    var structLimit = CONTROLLER_STRUCTURES[STRUCTURE_ROAD][curRoom.controller.level];
-                    
-                    if (trial + trial2 + trial3 < structLimit) {
-                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_ROAD);
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push(firstItem);
-                    }
-                    break;
-                case 1:
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION).length;
-                    var structLimit = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][curRoom.controller.level];
-                    
-                    if (trial + trial2 + trial3 < structLimit) {
-                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_EXTENSION);
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push(firstItem);
-                    }
-                    break;
-                case 2:
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_SPAWN).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_SPAWN).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_SPAWN).length;
-                    var structLimit = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][curRoom.controller.level];
-                    
-                    if (trial + trial2 + trial3 < structLimit) {
-                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_SPAWN);
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push(firstItem);
-                    }
-                    break;
-                case 3:
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_STORAGE).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_STORAGE).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_STORAGE).length;
-                    var structLimit = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][curRoom.controller.level];
-                    
-                    if (trial + trial2 + trial3 < structLimit) {
-                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_STORAGE);
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push(firstItem);
-                    }
-                    break;
-                case 4:
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_LINK).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LINK).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LINK).length;
-                    var structLimit = CONTROLLER_STRUCTURES[STRUCTURE_LINK][curRoom.controller.level];
-                    
-                    if (trial + trial2 + trial3 < structLimit) {
-                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_LINK);
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push(firstItem);
-                    }
-                    break;
-                case 5:
-                    var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_LAB).length;
-                    var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
-                    var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_LAB).length;
-                    var structLimit = CONTROLLER_STRUCTURES[STRUCTURE_LAB][curRoom.controller.level];
-                    
-                    if (trial + trial2 + trial3 < structLimit) {
-                        queueBuild(firstItem.x, firstItem.y, STRUCTURE_LAB);
-                    }
-                    else {
-                        curRoom.memory.plan.planQueue.push(firstItem);
-                    }
-                    break;
-                default:
-                    curRoom.memory.plan.planQueue.push(firstItem);
-                    break;
-            }
-        }
-        */
+        
         if (extensions.length >= 5 && !curRoom.memory.sourceRoad[0]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
                 var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.structureType >= 1);
