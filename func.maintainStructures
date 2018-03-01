@@ -100,6 +100,7 @@ var maintainStructures = {
             }
         }
         
+        // Function to work through the structures that may be destroyed
         if (!(Game.time % 5)) {
             if (curRoom.memory.structuresAtRisk.length) {
                 for (var a in curRoom.memory.structuresAtRisk) {
@@ -129,7 +130,7 @@ var maintainStructures = {
         // Power Spawn: 4   | Storage: 5    | Link: 6       | Lab: 7
         // Terminal: 8      | Observer: 9   | Extractor: 10 | Container: 11
         
-        // Function to test if we are able to build the next structure
+        // Function to test if we are below the limit of a given structure
         function checkLimit (structType) {
             var trial = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == structType).length;
             var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == structType).length;
