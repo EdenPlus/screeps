@@ -186,8 +186,10 @@ var maintainStructures = {
         // This will visualize the blueprint of the nexus 
         if (!(Game.time % 100)) {
             new RoomVisual(curRoom.name).clear();
-            for (var a in curRoom.memory.plan.planQueue) {
-                visualizeBlueprint(curRoom.name, curRoom.memory.plan.planQueue[a].structureType, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
+            if (curRoom.memory.plan.planQueue.length) {
+                for (var a in curRoom.memory.plan.planQueue) {
+                    visualizeBlueprint(curRoom.name, curRoom.memory.plan.planQueue[a].structureType, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
+                }
             }
         }
         
