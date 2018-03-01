@@ -475,6 +475,7 @@ var maintainNexus = {
                             curRoom.memory.plan.labs++;
                         }
                         break;
+                        /*
                     case 8:
                         /*
                           R T R
@@ -483,7 +484,7 @@ var maintainNexus = {
                         L L L L R
                         R R R R R
                         5x5
-                        */
+                        * /
                         if (!curRoom.memory.plan.labOffset) curRoom.memory.plan.labOffset = 1;
                         if (!curRoom.memory.plan.labCardinal && !(curRoom.memory.plan.labCardinal >= 0)) curRoom.memory.plan.labCardinal = 0;
                         if (!curRoom.memory.plan.labShift && !(curRoom.memory.plan.labShift >= 0)) curRoom.memory.plan.labShift = 0;
@@ -709,6 +710,7 @@ var maintainNexus = {
                                 break;
                         }
                         break;
+                        */
                     default:
                         break;
                 }
@@ -749,7 +751,7 @@ var maintainNexus = {
                 var isDupe = false;
                 uniqueCheck:
                 for (var b in curRoom.memory.structuresAtRisk) {
-                    if (curStructure.x === curRoom.memory.structuresAtRisk.x && curStructure.y === curRoom.memory.structuresAtRisk.y && curStructure.t === curRoom.memory.structuresAtRisk.t) {
+                    if (curStructure.x === curRoom.memory.structuresAtRisk[b].x && curStructure.y === curRoom.memory.structuresAtRisk[b].y && curStructure.t === curRoom.memory.structuresAtRisk[b].t) {
                         isDupe = true;
                         break uniqueCheck;
                     }
