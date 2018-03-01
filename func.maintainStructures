@@ -100,63 +100,6 @@ var maintainStructures = {
             }
         }
         
-        // Function to visualize the planQueue
-        function visualizeBlueprint(curRoomName, structType, x, y) {
-            var rads = 0.55;
-            switch (structType) {
-                case 0:
-                    // Road: #bdbdbd
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#bdbdbd', radius: rads, stroke: '#bdbdbd'});
-                    break;
-                case 1:
-                    // Extension: #ffed1c
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ffed1c', radius: rads, stroke: '#ffed1c'});
-                    break;
-                case 2:
-                    // Tower: #ff1697
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ff1697', radius: rads, stroke: '#ff1697'});
-                    break;
-                case 3:
-                    // Spawn: #b135ff
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#b135ff', radius: rads, stroke: '#b135ff'});
-                    break;
-                case 4:
-                    // Power Spawn: #ff0000
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ff0000', radius: rads, stroke: '#ff0000'});
-                    break;
-                case 5:
-                    // Storage: #dbff16
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#dbff16', radius: rads, stroke: '#dbff16'});
-                    break;
-                case 6:
-                    // Link: #deff5b
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#deff5b', radius: rads, stroke: '#deff5b'});
-                    break;
-                case 7:
-                    // Lab: #7c39ff
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#7c39ff', radius: rads, stroke: '#7c39ff'});
-                    break;
-                case 8:
-                    // Terminal: #55ff91
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#55ff91', radius: rads, stroke: '#55ff91'});
-                    break;
-                case 9:
-                    // Observer: #5bff86
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#5bff86', radius: rads, stroke: '#5bff86'});
-                    break;
-                case 10:
-                    // Extractor: #a0a0a0
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#a0a0a0', radius: rads, stroke: '#a0a0a0'});
-                    break;
-                case 11:
-                    // Container: #ffe847
-                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ffe847', radius: rads, stroke: '#ffe847'});
-                    break;
-                default:
-                    break;
-            }
-        }
-        
         // Function to work through the structures that may be destroyed
         if (!(Game.time % 5)) {
             if (curRoom.memory.structuresAtRisk.length) {
@@ -179,16 +122,6 @@ var maintainStructures = {
                     if (isDestroyed) {
                         queueBuild(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y, curRoom.memory.structuresAtRisk[a].t);
                     }
-                }
-            }
-        }
-        
-        // This will visualize the blueprint of the nexus 
-        if (!(Game.time % 100)) {
-            new RoomVisual(curRoom.name).clear();
-            if (curRoom.memory.plan.planQueue.length) {
-                for (var a in curRoom.memory.plan.planQueue) {
-                    visualizeBlueprint(curRoom.name, curRoom.memory.plan.planQueue[a].structureType, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
                 }
             }
         }
