@@ -3,6 +3,7 @@ var maintainCreeps = require('func.maintainCreeps');
 var maintainStructures = require('func.maintainStructures');
 var maintainNexus = require('func.maintainNexus');
 var statusReport = require('func.statusReport');
+var visualizePlans = require('func.visualizePlans');
 
 // Role Stuff
 var roleHarvester = require('role.harvester');
@@ -31,6 +32,7 @@ module.exports.loop = function () {
             maintainCreeps.run(Game.rooms[a]);
             var endCreepMainTime = new Date().getTime(); 
             
+            // Nexus Maintenance
             var startNexusMainTime = new Date().getTime();
             maintainNexus.run(Game.rooms[a]);
             var endNexusMainTime = new Date().getTime(); 
@@ -41,6 +43,11 @@ module.exports.loop = function () {
                 maintainStructures.run(Game.rooms[a]);
                 var endStructMainTime = new Date().getTime(); 
             }
+            
+            // Plans Visual
+            var startPlansVisualTime = new Date().getTime();
+            visualizePlans.run(Game.rooms[a]);
+            var endPlansVisualTime = new Date().getTime(); 
             
             // Tower AI Start
             var startTowerLoopTime = new Date().getTime();
@@ -59,10 +66,11 @@ module.exports.loop = function () {
             console.log("-===== ROOM MANAGEMENT TIMES =====-")
             console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
             console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
+            console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
             if (!(Game.time % 10)) {
-                console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
                 console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
             }
+            console.log("Plans Visual - Start: " + startPlansVisualTime + " | End: " + endPlansVisualTime + " | Split: " + (endPlansVisualTime - startPlansVisualTime));
             console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
             // Room Execution Time Report End
         }
