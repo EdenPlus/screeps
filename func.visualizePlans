@@ -1,0 +1,90 @@
+var visualizePlans = {
+    
+    run: function(curRoom) {
+        // Function to visualize the planQueue
+        function visualizeBlueprint(curRoomName, structType, x, y) {
+            var rads = 0.5;
+            var structColor = false;
+            switch (structType) {
+                case (1 || STRUCTURE_ROAD):
+                    // Road
+                    structColor = '#bdbdbd';
+                    break;
+                case (2 || STRUCTURE_EXTENSION):
+                    // Extension
+                    structColor = '#ffed1c';
+                    break;
+                case (3 || STRUCTURE_TOWER):
+                    // Tower
+                    structColor = '#ff1697';
+                    break;
+                case (4 || STRUCTURE_SPAWN):
+                    // Spawn
+                    structColor = '#b135ff';
+                    break;
+                case (5 || STRUCTURE_POWER_SPAWN):
+                    // Power Spawn
+                    structColor = '#ff0000';
+                    break;
+                case (6 || STRUCTURE_STORAGE):
+                    // Storage
+                    structColor = '#dbff16';
+                    break;
+                case (7 || STRUCTURE_LINK):
+                    // Link
+                    structColor = '#deff5b';
+                    break;
+                case (8 || STRUCTURE_LAB):
+                    // Lab
+                    structColor = '#7c39ff';
+                    break;
+                case (9 || STRUCTURE_TERMINAL):
+                    // Terminal
+                    structColor = '#55ff91';
+                    break;
+                case (10 || STRUCTURE_OBSERVER):
+                    // Observer
+                    structColor = '#5bff86';
+                    break;
+                case (11 || STRUCTURE_EXTRACTOR):
+                    // Extractor
+                    structColor = '#a0a0a0';
+                    break;
+                case (12 || STRUCTURE_CONTAINER):
+                    // Container
+                    structColor = '#ffe847';
+                    break;
+                default:
+                    // Error in colors
+                    structColor = false;
+                    break;
+            }
+            if (structColor) {
+                new RoomVisual(curRoomName).circle(x, y, {fill: structColor, radius: rads, stroke: structColor});
+            }
+        }
+        
+        // Visualize planQueue
+        if (curRoom.memory.plan.planQueue.length) {
+            for (var a in curRoom.memory.plan.planQueue) {
+                visualizeBlueprint(curRoom.name, curRoom.memory.plan.planQueue[a].type, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
+            }
+        }
+        
+        // Visualize buildQueue
+        if (curRoom.memory.buildQueue.length) {
+            for (var a in curRoom.memory.buildQueue) {
+                visualizeBlueprint(curRoom.name, curRoom.memory.buildQueue[a].type, curRoom.memory.buildQueue[a].x, curRoom.memory.buildQueue[a].y);
+            }
+        }
+        
+        // Visualize structuresAtRisk
+        if (curRoom.memory.structuresAtRisk.length) {
+            for (var a in curRoom.memory.structuresAtRisk) {
+                visualizeBlueprint(curRoom.name, curRoom.memory.structuresAtRisk[a].t, curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
+            }
+        }
+    }
+}
+
+module.exports = visualizePlans;
