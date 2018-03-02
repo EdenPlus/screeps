@@ -475,6 +475,7 @@ var maintainNexus = {
                             curRoom.memory.plan.labs++;
                         }
                         break;
+                        /*
                     case 8:
                         /*
                           R T R
@@ -483,21 +484,60 @@ var maintainNexus = {
                         L L L L R
                         R R R R R
                         5x5
-                        
+                        * /
                         if (!curRoom.memory.plan.labOffset) curRoom.memory.plan.labOffset = 1;
                         if (!curRoom.memory.plan.labCardinal && !(curRoom.memory.plan.labCardinal >= 0)) curRoom.memory.plan.labCardinal = 0;
                         if (!curRoom.memory.plan.labShift && !(curRoom.memory.plan.labShift >= 0)) curRoom.memory.plan.labShift = 0;
+                        var labO = curRoom.memory.plan.labOffset;
+                        var labS = curRoom.memory.plan.labShift;
                         
                         switch (curRoom.memory.plan.labCardinal) {
                             case 0:
-                                var area = curRoom.lookAtArea((storageLoc.y - (5 + curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.x - (5 + curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.y - (curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), (storageLoc.x - (curRoom.memory.plan.labOffset - curRoom.memory.plan.labShift)), true);
+                                //     -Y
+                                //     #| 
+                                // -x --+-- +x
+                                //      | 
+                                //     +Y
+                                var area = curRoom.lookAtArea(  (storageLoc.y - (4 + labO - labS)),
+                                                                (storageLoc.x - (4 + labO - labS)),
+                                                                (storageLoc.y - (0 + labO - labS)),
+                                                                (storageLoc.x - (0 + labO - labS)), true);
                                 var walls = _.filter(area, (schematic) => schematic.terrain == 'wall');
-                                var reservedTiles = 0 //_.filter(area, (schematic) => for (var i in ));
+                                var builtTiles = _.filter(area, (schematic) => schematic.type == 'structure' && schematic.structure.structureType != STRUCTURE_ROAD);
+                                var reservedTiles = {};
                                 
-                                if (walls + reservedTiles == 0) {
-                                    
+                                for (var a in area) {
+                                    for (var b in curRoom.memory.plan.planQueue) {
+                                        if (area[a].x == curRoom.memory.plan.planQueue[b].x && area[a].y == curRoom.memory.plan.planQueue[b].y) {
+                                            reservedTiles.push(curRoom.memory.plan.planQueue[b]);
+                                        }
+                                    }
                                 }
-                                else if (curRoom.memory.plan.labShift < curRoom.memory.labOffset) {
+                                if (walls.length + builtTiles.length == 0) {
+                                    var isOpenArea = true;
+                                    checkReservedTiles:
+                                    for (var a in reservedTiles) {
+                                        if (reservedTiles[a].structureType != 0) {
+                                            isOpenArea = false;
+                                            break checkReservedTiles;
+                                        }
+                                    }
+                                    if (isOpenArea) {
+                                        var structArr = {
+                                            {                                                                                     {x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 0},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 8},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 0}                                                                                     },
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 0},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 7},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 0},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 7},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0}}};
+                                        for (var a in structArr) {
+                                            for (var b in structArr[a]) {
+                                                curRoom.memory.plan.planQueue.push({x: structArr[a][b].x, y: structArr[a][b].y, structureType: structArr[a][b].t});
+                                                curRoom.memory.plan.labs = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (labS < labO) {
                                     curRoom.memory.plan.labShift++;
                                 }
                                 else {
@@ -506,21 +546,171 @@ var maintainNexus = {
                                 }
                                 break;
                             case 1:
+                                //     -Y
+                                //      |#
+                                // -x --+-- +x
+                                //      | 
+                                //     +Y
+                                var area = curRoom.lookAtArea(  (storageLoc.y - (4 + labO - labS)),
+                                                                (storageLoc.x + (0 + labO - labS)),
+                                                                (storageLoc.y - (0 + labO - labS)),
+                                                                (storageLoc.x + (4 + labO - labS)), true);
+                                var walls = _.filter(area, (schematic) => schematic.terrain == 'wall');
+                                var builtTiles = _.filter(area, (schematic) => schematic.type == 'structure' && schematic.structure.structureType != STRUCTURE_ROAD);
+                                var reservedTiles = {};
                                 
+                                for (var a in area) {
+                                    for (var b in curRoom.memory.plan.planQueue) {
+                                        if (area[a].x == curRoom.memory.plan.planQueue[b].x && area[a].y == curRoom.memory.plan.planQueue[b].y) {
+                                            reservedTiles.push(curRoom.memory.plan.planQueue[b]);
+                                        }
+                                    }
+                                }
+                                if (walls.length + builtTiles.length == 0) {
+                                    var isOpenArea = true;
+                                    checkReservedTiles:
+                                    for (var a in reservedTiles) {
+                                        if (reservedTiles[a].structureType != 0) {
+                                            isOpenArea = false;
+                                            break checkReservedTiles;
+                                        }
+                                    }
+                                    if (isOpenArea) {
+                                        var structArr = {
+                                            {                                                                                     {x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 0},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 8},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 0}                                                                                     },
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 0},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 7},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 0},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 7},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0}}};
+                                        for (var a in structArr) {
+                                            for (var b in structArr[a]) {
+                                                curRoom.memory.plan.planQueue.push({x: structArr[a][b].x, y: structArr[a][b].y, structureType: structArr[a][b].t});
+                                                curRoom.memory.plan.labs = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (labS < labO) {
+                                    curRoom.memory.plan.labShift++;
+                                }
+                                else {
+                                    curRoom.memory.plan.labShift = 0;
+                                    curRoom.memory.plan.labCardinal++;
+                                }
                                 break;
                             case 2:
+                                //     -Y
+                                //      | 
+                                // -x --+-- +x
+                                //     #| 
+                                //     +Y
+                                var area = curRoom.lookAtArea(  (storageLoc.y + (0 + labO - labS)),
+                                                                (storageLoc.x - (4 + labO - labS)),
+                                                                (storageLoc.y + (4 + labO - labS)),
+                                                                (storageLoc.x - (0 + labO - labS)), true);
+                                var walls = _.filter(area, (schematic) => schematic.terrain == 'wall');
+                                var builtTiles = _.filter(area, (schematic) => schematic.type == 'structure' && schematic.structure.structureType != STRUCTURE_ROAD);
+                                var reservedTiles = {};
                                 
+                                for (var a in area) {
+                                    for (var b in curRoom.memory.plan.planQueue) {
+                                        if (area[a].x == curRoom.memory.plan.planQueue[b].x && area[a].y == curRoom.memory.plan.planQueue[b].y) {
+                                            reservedTiles.push(curRoom.memory.plan.planQueue[b]);
+                                        }
+                                    }
+                                }
+                                if (walls.length + builtTiles.length == 0) {
+                                    var isOpenArea = true;
+                                    checkReservedTiles:
+                                    for (var a in reservedTiles) {
+                                        if (reservedTiles[a].structureType != 0) {
+                                            isOpenArea = false;
+                                            break checkReservedTiles;
+                                        }
+                                    }
+                                    if (isOpenArea) {
+                                        var structArr = {
+                                            {                                                                                     {x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 0},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 8},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 0}                                                                                     },
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 0},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 7},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 0},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 7},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 7},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 7},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 0},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0}}};
+                                        for (var a in structArr) {
+                                            for (var b in structArr[a]) {
+                                                curRoom.memory.plan.planQueue.push({x: structArr[a][b].x, y: structArr[a][b].y, structureType: structArr[a][b].t});
+                                                curRoom.memory.plan.labs = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (labS < labO) {
+                                    curRoom.memory.plan.labShift++;
+                                }
+                                else {
+                                    curRoom.memory.plan.labShift = 0;
+                                    curRoom.memory.plan.labCardinal++;
+                                }
                                 break;
                             case 3:
+                                //     -Y
+                                //      | 
+                                // -x --+-- +x
+                                //      |#
+                                //     +Y
+                                var area = curRoom.lookAtArea(  (storageLoc.y + (0 + labO - labS)),
+                                                                (storageLoc.x + (0 + labO - labS)),
+                                                                (storageLoc.y + (4 + labO - labS)),
+                                                                (storageLoc.x + (4 + labO - labS)), true);
+                                var walls = _.filter(area, (schematic) => schematic.terrain == 'wall');
+                                var builtTiles = _.filter(area, (schematic) => schematic.type == 'structure' && schematic.structure.structureType != STRUCTURE_ROAD);
+                                var reservedTiles = {};
                                 
+                                for (var a in area) {
+                                    for (var b in curRoom.memory.plan.planQueue) {
+                                        if (area[a].x == curRoom.memory.plan.planQueue[b].x && area[a].y == curRoom.memory.plan.planQueue[b].y) {
+                                            reservedTiles.push(curRoom.memory.plan.planQueue[b]);
+                                        }
+                                    }
+                                }
+                                if (walls.length + builtTiles.length == 0) {
+                                    var isOpenArea = true;
+                                    checkReservedTiles:
+                                    for (var a in reservedTiles) {
+                                        if (reservedTiles[a].structureType != 0) {
+                                            isOpenArea = false;
+                                            break checkReservedTiles;
+                                        }
+                                    }
+                                    if (isOpenArea) {
+                                        var structArr = {
+                                            {                                                                                     {x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 0},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 8},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 0}                                                                                     },
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 0},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 7},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 0},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 7},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 7},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 7},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 0}},
+                                            {{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 0}}};
+                                        for (var a in structArr) {
+                                            for (var b in structArr[a]) {
+                                                curRoom.memory.plan.planQueue.push({x: structArr[a][b].x, y: structArr[a][b].y, structureType: structArr[a][b].t});
+                                                curRoom.memory.plan.labs = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (labS < labO) {
+                                    curRoom.memory.plan.labShift++;
+                                }
+                                else {
+                                    curRoom.memory.plan.labShift = 0;
+                                    curRoom.memory.plan.labCardinal++;
+                                }
                                 break;
                             default:
                                 curRoom.memory.plan.labCardinal = 0;
                                 curRoom.memory.plan.labOffset++;
                                 break;
                         }
-                        */
                         break;
+                        */
                     default:
                         break;
                 }
@@ -546,6 +736,103 @@ var maintainNexus = {
             }
             queuedInTick = 0;
         }
+        
+        // Road: 0         | Extension: 1  | Tower: 2      | Spawn: 3
+        // Power Spawn: 4  | Storage: 5    | Link: 6       | Lab: 7
+        // Terminal: 8     | Observer: 9   | Extractor: 10 | Container: 11
+        
+        if (!curRoom.memory.structuresAtRisk) curRoom.memory.structuresAtRisk = [];
+        
+        var damagedStructures = curRoom.find(FIND_STRUCTURES, (schematic) => (schematic.hits / schematic.hitsMax) <= 0.25 || schematic.hits <= (100));
+        
+        for (var a in damagedStructures) {
+            var curStructure = {x: damagedStructures[a].pos.x, y: damagedStructures[a].pos.y, t: damagedStructures[a].structureType};
+            if (curRoom.memory.structuresAtRisk.length) {
+                var isDupe = false;
+                uniqueCheck:
+                for (var b in curRoom.memory.structuresAtRisk) {
+                    if (curStructure.x === curRoom.memory.structuresAtRisk[b].x && curStructure.y === curRoom.memory.structuresAtRisk[b].y && curStructure.t === curRoom.memory.structuresAtRisk[b].t) {
+                        isDupe = true;
+                        break uniqueCheck;
+                    }
+                }
+                if (!isDupe) {
+                    curRoom.memory.structuresAtRisk.push({x: curStructure.x, y: curStructure.y, t: curStructure.t});
+                }
+            }
+            else {
+                curRoom.memory.structuresAtRisk.push({x: curStructure.x, y: curStructure.y, t: curStructure.t});
+            }
+        }
+        
+        
+        // Function to visualize the planQueue
+        function visualizeBlueprint(curRoomName, structType, x, y) {
+            var rads = 0.5;
+            switch (structType) {
+                case 0:
+                    // Road: #bdbdbd
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#bdbdbd', radius: rads, stroke: '#bdbdbd'});
+                    break;
+                case 1:
+                    // Extension: #ffed1c
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ffed1c', radius: rads, stroke: '#ffed1c'});
+                    break;
+                case 2:
+                    // Tower: #ff1697
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ff1697', radius: rads, stroke: '#ff1697'});
+                    break;
+                case 3:
+                    // Spawn: #b135ff
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#b135ff', radius: rads, stroke: '#b135ff'});
+                    break;
+                case 4:
+                    // Power Spawn: #ff0000
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ff0000', radius: rads, stroke: '#ff0000'});
+                    break;
+                case 5:
+                    // Storage: #dbff16
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#dbff16', radius: rads, stroke: '#dbff16'});
+                    break;
+                case 6:
+                    // Link: #deff5b
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#deff5b', radius: rads, stroke: '#deff5b'});
+                    break;
+                case 7:
+                    // Lab: #7c39ff
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#7c39ff', radius: rads, stroke: '#7c39ff'});
+                    break;
+                case 8:
+                    // Terminal: #55ff91
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#55ff91', radius: rads, stroke: '#55ff91'});
+                    break;
+                case 9:
+                    // Observer: #5bff86
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#5bff86', radius: rads, stroke: '#5bff86'});
+                    break;
+                case 10:
+                    // Extractor: #a0a0a0
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#a0a0a0', radius: rads, stroke: '#a0a0a0'});
+                    break;
+                case 11:
+                    // Container: #ffe847
+                    new RoomVisual(curRoomName).circle(x, y, {fill: '#ffe847', radius: rads, stroke: '#ffe847'});
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        // This will visualize the blueprint of the nexus 
+        //if (!(Game.time % 100)) {
+            //new RoomVisual(curRoom.name).clear();
+            if (curRoom.memory.plan.planQueue.length) {
+                for (var a in curRoom.memory.plan.planQueue) {
+                    visualizeBlueprint(curRoom.name, curRoom.memory.plan.planQueue[a].structureType, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
+                }
+            }
+        //}
+        
     }
 }
 
