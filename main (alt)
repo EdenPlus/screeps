@@ -4,7 +4,6 @@ var maintainStructures = require('func.maintainStructures');
 var maintainNexus = require('func.maintainNexus');
 var statusReport = require('func.statusReport');
 var visualizePlans = require('func.visualizePlans');
-var monitorDamagedStructures = require('func.monitorDamagedStructures');
 
 // Role Stuff
 var roleHarvester = require('role.harvester');
@@ -34,9 +33,6 @@ module.exports.loop = function () {
             if (!(Game.time % 10)) {
                 maintainStructures.run(Game.rooms[a]);
             }
-            
-            // Function to monitor damaged structures
-            monitorDamagedStructures.run(Game.rooms[a]);
             
             // Plans Visual
             visualizePlans.run(Game.rooms[a]);
