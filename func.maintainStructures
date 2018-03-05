@@ -110,7 +110,7 @@ var maintainStructures = {
                     tileChecker:
                     for (var b in curTile) {
                         if (curTile[b].type === 'structure' && curTile[b].structure.structureType === curRoom.memory.structuresAtRisk[a].type) {
-                            if (curTile[b].structure.hits >= (curTile[b].structure.hitsMax * 0.25)) {
+                            if (((object.hits / object.hitsMax) >= 0.25)) {
                                 curRoom.memory.structuresAtRisk.splice(a, 1);
                                 isDestroyed = false;
                                 break tileChecker;
@@ -121,11 +121,13 @@ var maintainStructures = {
                             break tileChecker;
                         }
                     }
-                    dupeChecker:
-                    for (var b in curRoom.memory.buildQueue) {
-                        if (curRoom.memory.buildQueue[b].x == curRoom.memory.structuresAtRisk[a].x && curRoom.memory.buildQueue[b].y == curRoom.memory.structuresAtRisk[a].y && curRoom.memory.buildQueue[b].type == curRoom.memory.structuresAtRisk[a].type) {
-                            isQueued = true;
-                            break dupeChecker;
+                    if (curRoom.memory.buildQueue.length) {
+                        dupeChecker:
+                        for (var b in curRoom.memory.buildQueue) {
+                            if (curRoom.memory.buildQueue[b].x == curRoom.memory.structuresAtRisk[a].x && curRoom.memory.buildQueue[b].y == curRoom.memory.structuresAtRisk[a].y && curRoom.memory.buildQueue[b].type == curRoom.memory.structuresAtRisk[a].type) {
+                                isQueued = true;
+                                break dupeChecker;
+                            }
                         }
                     }
                     if (isDestroyed && !isQueued) {
