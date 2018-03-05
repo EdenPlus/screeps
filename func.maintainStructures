@@ -169,7 +169,7 @@ var maintainStructures = {
         }
         
         // This iterates through the planQueue to move stuff into the build queue
-        if (curRoom.memory.plan.planQueue.length) {
+        if (curRoom.memory.plan.planQueue.length && (curRoom.controller.level >= 2)) {
             if (checkLimit(STRUCTURE_EXTENSION)) {
                 queueFirst(STRUCTURE_EXTENSION, 2);
             }
