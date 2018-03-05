@@ -4,6 +4,7 @@ var maintainStructures = require('func.maintainStructures');
 var maintainNexus = require('func.maintainNexus');
 var statusReport = require('func.statusReport');
 var visualizePlans = require('func.visualizePlans');
+var monitorDamagedStructures = require('func.monitorDamagedStructures');
 
 // Role Stuff
 var roleHarvester = require('role.harvester');
@@ -44,6 +45,11 @@ module.exports.loop = function () {
                 var endStructMainTime = new Date().getTime(); 
             }
             
+            // Function to monitor damaged structures
+            var startMonitorDamagedStructuresTime = new Date().getTime();
+            monitorDamagedStructures.run(Game.rooms[a]);
+            var endMonitorDamagedStructuresTime = new Date().getTime(); 
+            
             // Plans Visual
             var startPlansVisualTime = new Date().getTime();
             visualizePlans.run(Game.rooms[a]);
@@ -62,6 +68,7 @@ module.exports.loop = function () {
             }
             var endTowerLoopTime = new Date().getTime(); 
             // Tower AI end
+            
             // Room Execution Time Report Start
             console.log("-===== ROOM MANAGEMENT TIMES =====-")
             console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
@@ -70,6 +77,7 @@ module.exports.loop = function () {
             if (!(Game.time % 10)) {
                 console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
             }
+            console.log("Damaged Structures Management - Start: " + startMonitorDamagedStructuresTime + " | End: " + endMonitorDamagedStructuresTime + " | Split: " + (endMonitorDamagedStructuresTime - startMonitorDamagedStructuresTime));
             console.log("Plans Visual - Start: " + startPlansVisualTime + " | End: " + endPlansVisualTime + " | Split: " + (endPlansVisualTime - startPlansVisualTime));
             console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
             // Room Execution Time Report End
