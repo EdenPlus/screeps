@@ -147,7 +147,13 @@ var maintainStructures = {
             var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == structType).length;
             var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == structType).length;
             var curLimit = CONTROLLER_STRUCTURES[structType][curRoom.controller.level];
-            return (trial + trial2 + trial3 < curLimit);
+            if (trial + trial2 + trial3 < curLimit) {
+                return true;
+            }
+            else {
+                return false;
+            }
+            //return (trial + trial2 + trial3 < curLimit);
         }
         
         // Function to queue the first structure of the given type
@@ -204,7 +210,7 @@ var maintainStructures = {
                                                     queueFirst(STRUCTURE_EXTRACTOR, 11);
                                                 }
                                                 else {
-                                                    if (checkLimit(STRUCTURE_CONTAINER)) {
+                                                    if (checkLimit(STRUCTURE_CONTAINER) && false) {
                                                         queueFirst(STRUCTURE_CONTAINER, 12);
                                                     }
                                                     else if (curRoom.memory.buildQueue.length < 5) {
