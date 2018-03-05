@@ -868,6 +868,30 @@ var maintainNexus = {
         // Power Spawn: 5  | Storage: 6    | Link: 7       | Lab: 8
         // Terminal: 9     | Observer: 10  | Extractor: 11 | Container: 12
         
+        if (!curRoom.memory.structuresAtRisk) curRoom.memory.structuresAtRisk = [];
+        
+        var damagedStructures = curRoom.find(FIND_STRUCTURES, (schematic) => schematic.hits <= (schematic.hitsMax * 0.25) || schematic.hits <= (100));
+        
+        for (var a in damagedStructures) {
+            var curStructure = {x: damagedStructures[a].pos.x, y: damagedStructures[a].pos.y, type: damagedStructures[a].structureType};
+            if (curRoom.memory.structuresAtRisk.length) {
+                var isDupe = false;
+                uniqueCheck:
+                for (var b in curRoom.memory.structuresAtRisk) {
+                    if (curStructure.x === curRoom.memory.structuresAtRisk[b].x && curStructure.y === curRoom.memory.structuresAtRisk[b].y && curStructure.type === curRoom.memory.structuresAtRisk[b].type) {
+                        isDupe = true;
+                        break uniqueCheck;
+                    }
+                }
+                if (!isDupe) {
+                    curRoom.memory.structuresAtRisk.push({x: curStructure.x, y: curStructure.y, type: curStructure.type});
+                }
+            }
+            else {
+                curRoom.memory.structuresAtRisk.push({x: curStructure.x, y: curStructure.y, type: curStructure.type});
+            }
+        }
+        
     }
 }
 
