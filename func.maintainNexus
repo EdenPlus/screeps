@@ -870,7 +870,13 @@ var maintainNexus = {
         
         if (!curRoom.memory.structuresAtRisk) curRoom.memory.structuresAtRisk = [];
         
-        var damagedStructures = curRoom.find(FIND_STRUCTURES, (schematic) => schematic.hits <= (schematic.hitsMax * 0.25) || schematic.hits <= (100));
+        //var damagedStructures = curRoom.find(FIND_STRUCTURES, (schematic) => ((((schematic.hits / schematic.hitsMax) <= 0.25) && (schematic.hitsMax)) && ((schematic.structureType != 'keeperLair') && (schematic.structureType != STRUCTURE_CONTROLLER))));
+        
+        var damagedStructures = curRoom.find(FIND_STRUCTURES, {
+            filter: function (object) {
+                return (((object.hits / object.hitsMax) <= 0.25) && (object.hitsMax));
+            }
+        });
         
         for (var a in damagedStructures) {
             var curStructure = {x: damagedStructures[a].pos.x, y: damagedStructures[a].pos.y, type: damagedStructures[a].structureType};
