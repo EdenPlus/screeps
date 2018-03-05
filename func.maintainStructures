@@ -174,7 +174,7 @@ var maintainStructures = {
                 queueFirst(STRUCTURE_EXTENSION, 2);
             }
             else {
-                if (checkLimit(STRUCTURE_TOWER)) {
+                if (checkLimit(STRUCTURE_TOWER) && false) {
                     queueFirst(STRUCTURE_TOWER, 3);
                 }
                 else {
@@ -182,7 +182,7 @@ var maintainStructures = {
                         queueFirst(STRUCTURE_SPAWN, 4);
                     }
                     else {
-                        if (checkLimit(STRUCTURE_POWER_SPAWN)) {
+                        if (checkLimit(STRUCTURE_POWER_SPAWN) && false) {
                             queueFirst(STRUCTURE_POWER_SPAWN, 5);
                         }
                         else {
@@ -190,7 +190,7 @@ var maintainStructures = {
                                 queueFirst(STRUCTURE_STORAGE, 6);
                             }
                             else {
-                                if (checkLimit(STRUCTURE_LINK)) {
+                                if (checkLimit(STRUCTURE_LINK) && false) {
                                     queueFirst(STRUCTURE_LINK, 7);
                                 }
                                 else {
@@ -202,11 +202,11 @@ var maintainStructures = {
                                             queueFirst(STRUCTURE_TERMINAL, 9);
                                         }
                                         else {
-                                            if (checkLimit(STRUCTURE_OBSERVER)) {
+                                            if (checkLimit(STRUCTURE_OBSERVER) && false) {
                                                 queueFirst(STRUCTURE_OBSERVER, 10);
                                             }
                                             else {
-                                                if (checkLimit(STRUCTURE_EXTRACTOR)) {
+                                                if (checkLimit(STRUCTURE_EXTRACTOR) && false) {
                                                     queueFirst(STRUCTURE_EXTRACTOR, 11);
                                                 }
                                                 else {
