@@ -100,6 +100,41 @@ var maintainStructures = {
             }
         }
         
+        // Function to work through the structures that may be destroyed
+        if (!(Game.time % 5)) {
+            if (curRoom.memory.structuresAtRisk.length) {
+                for (var a in curRoom.memory.structuresAtRisk) {
+                    var curTile = curRoom.lookAt(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
+                    var isDestroyed = true;
+                    var isQueued = false;
+                    tileChecker:
+                    for (var b in curTile) {
+                        if (curTile[b].type === 'structure' && curTile[b].structure.structureType === curRoom.memory.structuresAtRisk[a].type) {
+                            if (curTile[b].structure.hits >= (curTile[b].structure.hitsMax * 0.25)) {
+                                curRoom.memory.structuresAtRisk.splice(a, 1);
+                                isDestroyed = false;
+                                break tileChecker;
+                            }
+                        }
+                        else if (curTile[b].type === 'constructionSite' && curTile[b].constructionSite.structureType === curRoom.memory.structuresAtRisk[a].type) {
+                            isDestroyed = false;
+                            break tileChecker;
+                        }
+                    }
+                    dupeChecker:
+                    for (var b in curRoom.memory.buildQueue) {
+                        if (curRoom.memory.buildQueue[b].x == curRoom.memory.structuresAtRisk[a].x && curRoom.memory.buildQueue[b].y == curRoom.memory.structuresAtRisk[a].y && curRoom.memory.buildQueue[b].type == curRoom.memory.structuresAtRisk[a].type) {
+                            isQueued = true;
+                            break dupeChecker;
+                        }
+                    }
+                    if (isDestroyed && !isQueued) {
+                        queueBuild(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y, curRoom.memory.structuresAtRisk[a].type);
+                    }
+                }
+            }
+        }
+        
         // Road: 1          | Extension: 2  | Tower: 3      | Spawn: 4
         // Power Spawn: 5   | Storage: 6    | Link: 7       | Lab: 8
         // Terminal: 9      | Observer: 10  | Extractor: 11 | Container: 12
