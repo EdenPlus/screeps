@@ -84,6 +84,14 @@ var visualizePlans = {
                 visualizeBlueprint(curRoom.name, curRoom.memory.structuresAtRisk[a].t, curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
             }
         }
+        /*
+        var temp = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 1);
+        for (var a in temp) {
+            console.log("{x:" + temp[a].x + ",y:" + temp[a].y + ",type:" + temp[a].type + "},");
+        }
+        
+        var temp = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type == 2);
+        console.log(temp.length);*/
     }
 }
 
