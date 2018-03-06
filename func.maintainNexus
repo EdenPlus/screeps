@@ -14,14 +14,18 @@ var maintainNexus = {
         if (!curRoom.memory.plan.NE && curRoom.memory.plan.NE != false && curRoom.memory.plan != false) curRoom.memory.plan.NE = true;
         if (!curRoom.memory.plan.SE && curRoom.memory.plan.SE != false && curRoom.memory.plan != false) curRoom.memory.plan.SE = true;
         
+        
+        // Iterate all types by 2 to account for the addition of walls and ramparts
+        
+        
         function mapExtensions (roadPos, xA, xB, xC, yA, yB, yC) {
             var xShift = true;
             var yShift = true;
             if (xShift) {
                 if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
                     if (Game.map.getTerrainAt(xA, roadPos.y, curRoom.name) !== 'wall') {
-                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == xA && schematic.y == roadPos.y && schematic.type == 2).length)) {
-                            curRoom.memory.plan.planQueue.push({x: xA, y: roadPos.y, type: 2});
+                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == xA && schematic.y == roadPos.y && schematic.type == 4).length)) {
+                            curRoom.memory.plan.planQueue.push({x: xA, y: roadPos.y, type: 4});
                             queuedInTick++;
                         }
                     }
@@ -33,8 +37,8 @@ var maintainNexus = {
             if (yShift) {
                 if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
                     if (Game.map.getTerrainAt(roadPos.x, yA, curRoom.name) !== 'wall') {
-                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == roadPos.x && schematic.y == yA && schematic.type == 2).length)) {
-                            curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yA, type: 2});
+                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == roadPos.x && schematic.y == yA && schematic.type == 4).length)) {
+                            curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yA, type: 4});
                             queuedInTick++;
                         }
                     }
@@ -49,8 +53,8 @@ var maintainNexus = {
             if (xShift) {
                 if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
                     if (Game.map.getTerrainAt(xB, roadPos.y, curRoom.name) !== 'wall') {
-                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == xB && schematic.y == roadPos.y && schematic.type == 2).length)) {
-                            curRoom.memory.plan.planQueue.push({x: xB, y: roadPos.y, type: 2});
+                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == xB && schematic.y == roadPos.y && schematic.type == 4).length)) {
+                            curRoom.memory.plan.planQueue.push({x: xB, y: roadPos.y, type: 4});
                             queuedInTick++;
                         }
                     }
@@ -62,8 +66,8 @@ var maintainNexus = {
             if (yShift) {
                 if(trial.length + trial2.length + trial3.length + trial4.length + queuedInTick < maxExtensions) {
                     if (Game.map.getTerrainAt(roadPos.x, yB, curRoom.name) !== 'wall') {
-                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == roadPos.x && schematic.y == yB && schematic.type == 2).length)) {
-                            curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yB, type: 2});
+                        if (!(_.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == roadPos.x && schematic.y == yB && schematic.type == 4).length)) {
+                            curRoom.memory.plan.planQueue.push({x: roadPos.x, y: yB, type: 4});
                             queuedInTick++;
                         }
                     }
@@ -101,7 +105,7 @@ var maintainNexus = {
         }
         
         if (curRoom.memory.plan && curRoom.memory.plan != false) {
-            var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type == 2);
+            var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type == 4);
             var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type == STRUCTURE_EXTENSION);
             var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
             var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == STRUCTURE_EXTENSION);
@@ -256,24 +260,24 @@ var maintainNexus = {
                             L L L L
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 4), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 4), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 4), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 4), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 4), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 3), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 3), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 2), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 2), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 1), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y - 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y - 1), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 0), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 0), type: 1});
@@ -300,24 +304,24 @@ var maintainNexus = {
                             R T R R
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 4), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 4), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 4), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 4), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 4), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 3), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 3), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 2), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 2), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 1), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y + 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y + 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 7), y: (storageLoc.y + 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 6), y: (storageLoc.y + 1), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 9), y: (storageLoc.y - 0), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 8), y: (storageLoc.y - 0), type: 1});
@@ -344,24 +348,24 @@ var maintainNexus = {
                             R R L L
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 9), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 8), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 8), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 7), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y - 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 9), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 9), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 8), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 7), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 7), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y - 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y - 6), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y - 6), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y - 9), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y - 8), type: 1});
@@ -388,24 +392,24 @@ var maintainNexus = {
                             L L R R
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 9), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 8), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 8), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 7), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y - 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 9), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 9), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 8), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 7), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 7), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y - 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y - 6), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y - 6), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y - 9), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y - 8), type: 1});
@@ -432,24 +436,24 @@ var maintainNexus = {
                             L L L L
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 4), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 4), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 4), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 4), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 4), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 3), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 3), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 2), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 2), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 1), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y - 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y - 1), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 0), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 0), type: 1});
@@ -476,24 +480,24 @@ var maintainNexus = {
                             R R T R
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 4), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 4), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 4), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 4), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 4), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 3), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 3), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 3), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 3), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 2), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 2), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 2), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 2), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 1), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 1), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y + 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y + 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 7), y: (storageLoc.y + 1), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 6), y: (storageLoc.y + 1), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 9), y: (storageLoc.y - 0), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 8), y: (storageLoc.y - 0), type: 1});
@@ -520,24 +524,24 @@ var maintainNexus = {
                             R L L L
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 9), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 8), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 8), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 7), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 4), y: (storageLoc.y + 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 9), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 9), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 8), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 7), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 7), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y + 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y + 6), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y + 6), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y + 9), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y + 8), type: 1});
@@ -564,24 +568,24 @@ var maintainNexus = {
                             L L L R
                             */
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 9), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 8), type: 9});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 8), type: 11});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 7), type: 1});
                             //curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 4), y: (storageLoc.y + 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 9), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 9), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 8), type: 1});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 7), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 7), type: 10});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y + 6), type: 1});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y + 6), type: 10});
                             
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 9), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 8), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 7), type: 8});
-                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 6), type: 8});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 9), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 8), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 7), type: 10});
+                            curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 1), y: (storageLoc.y + 6), type: 10});
                             
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y + 9), type: 1});
                             curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 0), y: (storageLoc.y + 8), type: 1});
@@ -644,12 +648,12 @@ var maintainNexus = {
                                         }
                                     }
                                     if (isOpenArea) {
-                                        var structArr = [
-                                                [                                                                                     {x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 9},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 1}                                                                                     ],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 8},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 8},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1}]
+                                        var structArr = 
+                                                [                                                                                      {x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t:  1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 11},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t:  1}                                                                                      ],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t:  1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 10},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t:  1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 10},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1}]
                                             ];
                                         for (var a in structArr) {
                                             for (var b in structArr[a]) {
@@ -699,11 +703,11 @@ var maintainNexus = {
                                     }
                                     if (isOpenArea) {
                                         var structArr = [
-                                                [                                                                                     {x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 9},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 1}                                                                                     ],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 8},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 8},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1}]
+                                                [                                                                                      {x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t:  1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 11},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t:  1}                                                                                      ],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t:  1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 10},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t:  1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 10},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1}]
                                             ];
                                         for (var a in structArr) {
                                             for (var b in structArr[a]) {
@@ -753,11 +757,11 @@ var maintainNexus = {
                                     }
                                     if (isOpenArea) {
                                         var structArr = [
-                                                [                                                                                     {x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 9},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t: 1}                                                                                     ],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 8},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 8},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 8},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 8},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t: 1},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1}]
+                                                [                                                                                      {x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t:  1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 11},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (0 + labO - labS)), t:  1}                                                                                      ],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t:  1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 10},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t:  1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (1 + labO - labS)), t: 10},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (2 + labO - labS)), t: 10},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (3 + labO - labS)), t: 10},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x - (4 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x - (3 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x - (2 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x - (1 + labO - labS)), y: (storageLoc.y - (4 + labO - labS)), t:  1},{x: (storageLoc.x - (0 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1}]
                                             ];
                                         for (var a in structArr) {
                                             for (var b in structArr[a]) {
@@ -807,11 +811,11 @@ var maintainNexus = {
                                     }
                                     if (isOpenArea) {
                                         var structArr = [
-                                                [                                                                                     {x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 9},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 1}                                                                                     ],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 8},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 8},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 8},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 8},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 1}],
-                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t: 1}]
+                                                [                                                                                      {x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t:  1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t: 11},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (0 + labO - labS)), t:  1}                                                                                      ],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t:  1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 10},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t:  1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t: 10},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (1 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t: 10},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (2 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t: 10},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (3 + labO - labS)), t:  1}],
+                                                [{x: (storageLoc.x + (0 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x + (1 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x + (2 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x + (3 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1},{x: (storageLoc.x + (4 + labO - labS)), y: (storageLoc.y + (4 + labO - labS)), t:  1}]
                                             ];
                                         for (var a in structArr) {
                                             for (var b in structArr[a]) {
@@ -841,19 +845,20 @@ var maintainNexus = {
                 }
             }
             else if (!curRoom.memory.plan.finale) {
-                // Road: 1          | Extension: 2  | Tower: 3      | Spawn: 4
-                // Power Spawn: 5   | Storage: 6    | Link: 7       | Lab: 8
-                // Terminal: 9      | Observer: 10  | Extractor: 11 | Container: 12
-                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y), type: 6});
-                curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y), type: 7});
+                // Road: 1          | Rampart: 2    | Wall: 3           | Extension: 4
+                // Tower: 5         | Spawn: 6      | Power Spawn: 7    | Storage: 8
+                // Link: 9          | Lab: 10       | Terminal: 11      | Observer: 12
+                // Extractor: 13    | Container: 14
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y), type: 8});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 1), y: (storageLoc.y), type: 9});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 2), y: (storageLoc.y), type: 1});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x - 3), y: (storageLoc.y), type: 1});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 2), y: (storageLoc.y), type: 1});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x + 3), y: (storageLoc.y), type: 1});
-                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 1), type: 4});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 1), type: 6});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 2), type: 1});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y - 3), type: 1});
-                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 1), type: 4});
+                curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 1), type: 6});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 2), type: 1});
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y + 3), type: 1});
                 curRoom.memory.plan.finale = true;
@@ -864,9 +869,10 @@ var maintainNexus = {
             queuedInTick = 0;
         }
         
-        // Road: 1         | Extension: 2  | Tower: 3      | Spawn: 4
-        // Power Spawn: 5  | Storage: 6    | Link: 7       | Lab: 8
-        // Terminal: 9     | Observer: 10  | Extractor: 11 | Container: 12
+        // Road: 1          | Rampart: 2    | Wall: 3           | Extension: 4
+        // Tower: 5         | Spawn: 6      | Power Spawn: 7    | Storage: 8
+        // Link: 9          | Lab: 10       | Terminal: 11      | Observer: 12
+        // Extractor: 13    | Container: 14
         
         if (!curRoom.memory.structuresAtRisk) curRoom.memory.structuresAtRisk = [];
         
