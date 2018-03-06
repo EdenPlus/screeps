@@ -2,86 +2,156 @@ var visualizePlans = {
     
     run: function(curRoom) {
         // Function to visualize the planQueue
-        function visualizeBlueprint(curRoomName, structType, x, y) {
+        function visualizeBlueprint(curRoomName, queueType, structType, x, y) {
             var rads = 0.5;
-            var structColor = false;
+            var fillColor = false;
+            var strokeColor = false;
+            // Color refs
+            var structColors = {road: '#bdbdbd',        rampart: '#9a9a9a',     wall: '#717171',
+                                extension: '#ffed1c',   tower: '#ff1697',       spawn: '#b135ff',
+                                powerSpawn: '#ff0000',  storage: '#dbff16',     link: '#deff5b',
+                                lab: '#7c39ff',         terminal: '#55ff91',    observer: '#5bff86',
+                                extractor: '#a0a0a0',   container: '#ffe847'                        };
+            var queueColors = {planQueue: '#6200ff', buildQueue: '#dfea38', riskQueue: '#ff640a'};
+            // End Color Refs
             switch (structType) {
-                case (1 || STRUCTURE_ROAD):
-                    // Road
-                    structColor = '#bdbdbd';
+                // Road
+                case 1:
+                    fillColor = structColors.road;
                     break;
-                case (2 || STRUCTURE_EXTENSION):
-                    // Extension
-                    structColor = '#ffed1c';
+                case STRUCTURE_ROAD:
+                    fillColor = structColors.road;
                     break;
-                case (3 || STRUCTURE_TOWER):
-                    // Tower
-                    structColor = '#ff1697';
+                // Rampart
+                case 2:
+                    fillColor = structColors.rampart;
                     break;
-                case (4 || STRUCTURE_SPAWN):
-                    // Spawn
-                    structColor = '#b135ff';
+                case STRUCTURE_RAMPART:
+                    fillColor = structColors.rampart;
                     break;
-                case (5 || STRUCTURE_POWER_SPAWN):
-                    // Power Spawn
-                    structColor = '#ff0000';
+                // Wall
+                case 3:
+                    fillColor = structColors.wall;
                     break;
-                case (6 || STRUCTURE_STORAGE):
-                    // Storage
-                    structColor = '#dbff16';
+                case STRUCTURE_WALL:
+                    fillColor = structColors.wall;
                     break;
-                case (7 || STRUCTURE_LINK):
-                    // Link
-                    structColor = '#deff5b';
+                // Extension
+                case 4:
+                    fillColor = structColors.extension;
                     break;
-                case (8 || STRUCTURE_LAB):
-                    // Lab
-                    structColor = '#7c39ff';
+                case STRUCTURE_EXTENSION:
+                    fillColor = structColors.extension;
                     break;
-                case (9 || STRUCTURE_TERMINAL):
-                    // Terminal
-                    structColor = '#55ff91';
+                // Tower
+                case 5:
+                    fillColor = structColors.tower;
                     break;
-                case (10 || STRUCTURE_OBSERVER):
-                    // Observer
-                    structColor = '#5bff86';
+                case STRUCTURE_TOWER:
+                    fillColor = structColors.tower;
                     break;
-                case (11 || STRUCTURE_EXTRACTOR):
-                    // Extractor
-                    structColor = '#a0a0a0';
+                // Spawn
+                case 6:
+                    fillColor = structColors.spawn;
                     break;
-                case (12 || STRUCTURE_CONTAINER):
-                    // Container
-                    structColor = '#ffe847';
+                case STRUCTURE_SPAWN:
+                    fillColor = structColors.spawn;
                     break;
+                // Power Spawn
+                case 7:
+                    fillColor = structColors.powerSpawn;
+                    break;
+                case STRUCTURE_POWER_SPAWN:
+                    fillColor = structColors.powerSpawn;
+                    break;
+                // Storage
+                case 8:
+                    fillColor = structColors.storage;
+                    break;
+                case STRUCTURE_STORAGE:
+                    fillColor = structColors.storage;
+                    break;
+                // Link
+                case 9:
+                    fillColor = structColors.link;
+                    break;
+                case STRUCTURE_LINK:
+                    fillColor = structColors.link;
+                    break;
+                // Lab
+                case 10:
+                    fillColor = structColors.lab;
+                    break;
+                case STRUCTURE_LAB:
+                    fillColor = structColors.lab;
+                    break;
+                // Terminal
+                case 11:
+                    fillColor = structColors.terminal;
+                    break;
+                case STRUCTURE_TERMINAL:
+                    fillColor = structColors.terminal;
+                    break;
+                // Observer
+                case 12:
+                    fillColor = structColors.observer;
+                    break;
+                case STRUCTURE_OBSERVER:
+                    fillColor = structColors.observer;
+                    break;
+                // Extractor
+                case 13:
+                    fillColor = structColors.extractor;
+                    break;
+                case STRUCTURE_EXTRACTOR:
+                    fillColor = structColors.extractor;
+                    break;
+                // Container
+                case 14:
+                    fillColor = structColors.container;
+                    break;
+                case STRUCTURE_CONTAINER:
+                    fillColor = structColors.container;
+                    break;
+                // Uncolored Items
                 default:
-                    // Error in colors
-                    structColor = false;
+                    fillColor = false;
                     break;
             }
-            if (structColor) {
-                new RoomVisual(curRoomName).circle(x, y, {fill: structColor, radius: rads, stroke: structColor});
+            switch (queueType) {
+                case 'planQueue':
+                    strokeColor = queueColors.planQueue;
+                    break;
+                case 'buildQueue':
+                    strokeColor = queueColors.buildQueue;
+                    break;
+                case 'riskQueue':
+                    strokeColor = queueColors.riskQueue;
+                    break;
+            }
+            if (fillColor) {
+                new RoomVisual(curRoomName).circle(x, y, {fill: fillColor, radius: rads, stroke: strokeColor});
             }
         }
         
         // Visualize planQueue
         if (curRoom.memory.plan.planQueue.length) {
             for (var a in curRoom.memory.plan.planQueue) {
-                visualizeBlueprint(curRoom.name, curRoom.memory.plan.planQueue[a].type, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
+                visualizeBlueprint(curRoom.name, 'planQueue', curRoom.memory.plan.planQueue[a].type, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
             }
         }
         
         // Visualize buildQueue
         if (curRoom.memory.buildQueue.length) {
             for (var a in curRoom.memory.buildQueue) {
-                visualizeBlueprint(curRoom.name, curRoom.memory.buildQueue[a].type, curRoom.memory.buildQueue[a].x, curRoom.memory.buildQueue[a].y);
+                visualizeBlueprint(curRoom.name, 'buildQueue', curRoom.memory.buildQueue[a].type, curRoom.memory.buildQueue[a].x, curRoom.memory.buildQueue[a].y);
             }
         }
         
         // Visualize structuresAtRisk
         if (curRoom.memory.structuresAtRisk.length) {
             for (var a in curRoom.memory.structuresAtRisk) {
-                visualizeBlueprint(curRoom.name, curRoom.memory.structuresAtRisk[a].t, curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
+                visualizeBlueprint(curRoom.name, 'riskQueue', curRoom.memory.structuresAtRisk[a].type, curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
             }
         }
         /*
