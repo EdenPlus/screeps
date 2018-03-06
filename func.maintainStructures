@@ -137,9 +137,10 @@ var maintainStructures = {
             }
         }
         
-        // Road: 1          | Extension: 2  | Tower: 3      | Spawn: 4
-        // Power Spawn: 5   | Storage: 6    | Link: 7       | Lab: 8
-        // Terminal: 9      | Observer: 10  | Extractor: 11 | Container: 12
+        // Road: 1          | Rampart: 2    | Wall: 3           | Extension: 4
+        // Tower: 5         | Spawn: 6      | Power Spawn: 7    | Storage: 8
+        // Link: 9          | Lab: 10       | Terminal: 11      | Observer: 12
+        // Extractor: 13    | Container: 14
         
         // Function to test if we are below the limit of a given structure
         function checkLimit(structType) {
@@ -147,13 +148,7 @@ var maintainStructures = {
             var trial2 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType == structType).length;
             var trial3 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType == structType).length;
             var curLimit = CONTROLLER_STRUCTURES[structType][curRoom.controller.level];
-            if (trial + trial2 + trial3 < curLimit) {
-                return true;
-            }
-            else {
-                return false;
-            }
-            //return (trial + trial2 + trial3 < curLimit);
+            return (trial + trial2 + trial3 < curLimit);
         }
         
         // Function to queue the first structure of the given type
@@ -171,51 +166,57 @@ var maintainStructures = {
         // This iterates through the planQueue to move stuff into the build queue
         if (curRoom.memory.plan.planQueue.length && (curRoom.controller.level >= 2)) {
             if (checkLimit(STRUCTURE_EXTENSION)) {
-                queueFirst(STRUCTURE_EXTENSION, 2);
+                queueFirst(STRUCTURE_EXTENSION, 4);
             }
             else {
                 if (checkLimit(STRUCTURE_TOWER) && false) {
-                    queueFirst(STRUCTURE_TOWER, 3);
+                    queueFirst(STRUCTURE_TOWER, 5);
                 }
                 else {
                     if (checkLimit(STRUCTURE_SPAWN)) {
-                        queueFirst(STRUCTURE_SPAWN, 4);
+                        queueFirst(STRUCTURE_SPAWN, 6);
                     }
                     else {
                         if (checkLimit(STRUCTURE_POWER_SPAWN) && false) {
-                            queueFirst(STRUCTURE_POWER_SPAWN, 5);
+                            queueFirst(STRUCTURE_POWER_SPAWN, 7);
                         }
                         else {
                             if (checkLimit(STRUCTURE_STORAGE)) {
-                                queueFirst(STRUCTURE_STORAGE, 6);
+                                queueFirst(STRUCTURE_STORAGE, 8);
                             }
                             else {
                                 if (checkLimit(STRUCTURE_LINK) && false) {
-                                    queueFirst(STRUCTURE_LINK, 7);
+                                    queueFirst(STRUCTURE_LINK, 9);
                                 }
                                 else {
                                     if (checkLimit(STRUCTURE_LAB)) {
-                                        queueFirst(STRUCTURE_LAB, 8);
+                                        queueFirst(STRUCTURE_LAB, 10);
                                     }
                                     else {
                                         if (checkLimit(STRUCTURE_TERMINAL)) {
-                                            queueFirst(STRUCTURE_TERMINAL, 9);
+                                            queueFirst(STRUCTURE_TERMINAL, 11);
                                         }
                                         else {
                                             if (checkLimit(STRUCTURE_OBSERVER) && false) {
-                                                queueFirst(STRUCTURE_OBSERVER, 10);
+                                                queueFirst(STRUCTURE_OBSERVER, 12);
                                             }
                                             else {
                                                 if (checkLimit(STRUCTURE_EXTRACTOR) && false) {
-                                                    queueFirst(STRUCTURE_EXTRACTOR, 11);
+                                                    queueFirst(STRUCTURE_EXTRACTOR, 13);
                                                 }
                                                 else {
                                                     if (checkLimit(STRUCTURE_CONTAINER) && false) {
-                                                        queueFirst(STRUCTURE_CONTAINER, 12);
+                                                        queueFirst(STRUCTURE_CONTAINER, 14);
                                                     }
                                                     else if (curRoom.memory.buildQueue.length < 5) {
                                                         if (checkLimit(STRUCTURE_ROAD)) {
                                                             queueFirst(STRUCTURE_ROAD, 1);
+                                                        }
+                                                        else if (checkLimit(STRUCTURE_RAMPART) && false) {
+                                                            queueFirst(STRUCTURE_RAMPART, 2);
+                                                        }
+                                                        else if (checkLimit(STRUCTURE_WALL) && false) {
+                                                            queueFirst(STRUCTURE_WALL, 3);
                                                         }
                                                     }
                                                 }
@@ -232,7 +233,7 @@ var maintainStructures = {
         
         if (extensions.length >= 5 && !curRoom.memory.sourceRoad[0]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
-                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 2);
+                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 3);
                 var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => (schematic.type == STRUCTURE_SPAWN || schematic.type == STRUCTURE_WALL || schematic.type == STRUCTURE_EXTENSION || schematic.type == STRUCTURE_LINK || schematic.type == STRUCTURE_STORAGE || schematic.type == STRUCTURE_TOWER || schematic.type == STRUCTURE_OBSERVER || schematic.type == STRUCTURE_POWER_SPAWN || schematic.type == STRUCTURE_LAB || schematic.type == STRUCTURE_TERMINAL || schematic.type == STRUCTURE_NUKER));
                 var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
                 var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
@@ -255,7 +256,7 @@ var maintainStructures = {
         
         if (containers.length == 1 && !curRoom.memory.sourceRoad[1]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[1].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
-                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 2);
+                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 3);
                 var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => (schematic.type == STRUCTURE_SPAWN || schematic.type == STRUCTURE_WALL || schematic.type == STRUCTURE_EXTENSION || schematic.type == STRUCTURE_LINK || schematic.type == STRUCTURE_STORAGE || schematic.type == STRUCTURE_TOWER || schematic.type == STRUCTURE_OBSERVER || schematic.type == STRUCTURE_POWER_SPAWN || schematic.type == STRUCTURE_LAB || schematic.type == STRUCTURE_TERMINAL || schematic.type == STRUCTURE_NUKER));
                 var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
                 var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
@@ -278,7 +279,7 @@ var maintainStructures = {
         
         if (containers.length == 2 && !curRoom.memory.sourceRoad[2]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[3].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
-                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 2);
+                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 3);
                 var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => (schematic.type == STRUCTURE_SPAWN || schematic.type == STRUCTURE_WALL || schematic.type == STRUCTURE_EXTENSION || schematic.type == STRUCTURE_LINK || schematic.type == STRUCTURE_STORAGE || schematic.type == STRUCTURE_TOWER || schematic.type == STRUCTURE_OBSERVER || schematic.type == STRUCTURE_POWER_SPAWN || schematic.type == STRUCTURE_LAB || schematic.type == STRUCTURE_TERMINAL || schematic.type == STRUCTURE_NUKER));
                 var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
                 var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
@@ -359,7 +360,7 @@ var maintainStructures = {
         
         if (numTowers && !curRoom.memory.sourceRoad[3]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[2].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
-                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 2);
+                var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type >= 3);
                 var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => (schematic.type == STRUCTURE_SPAWN || schematic.type == STRUCTURE_WALL || schematic.type == STRUCTURE_EXTENSION || schematic.type == STRUCTURE_LINK || schematic.type == STRUCTURE_STORAGE || schematic.type == STRUCTURE_TOWER || schematic.type == STRUCTURE_OBSERVER || schematic.type == STRUCTURE_POWER_SPAWN || schematic.type == STRUCTURE_LAB || schematic.type == STRUCTURE_TERMINAL || schematic.type == STRUCTURE_NUKER));
                 var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
                 var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
@@ -397,6 +398,7 @@ var maintainStructures = {
                 }
             }
             // Drop dupes from the build queue
+            /*
             for (var a in curRoom.memory.buildQueue) {
                 var curTile = curRoom.lookAt(curRoom.memory.buildQueue[a].x, curRoom.memory.buildQueue[a].y);
                 for (var b in curTile) {
@@ -405,8 +407,14 @@ var maintainStructures = {
                             curRoom.memory.buildQueue.splice(a, 1);
                         }
                     }
+                    else if (curTile[b].type == 'constructionSite') {
+                        if (curTile[b].constructionSite.structureType == curRoom.memory.buildQueue[a].type) {
+                            curRoom.memory.buildQueue.splice(a, 1);
+                        }
+                    }
                 }
             }
+            */
         }
         
         if (sites < MAXSITES && curRoom.memory.buildQueue[0]) {
