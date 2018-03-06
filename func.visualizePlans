@@ -162,6 +162,7 @@ var visualizePlans = {
         
         var temp = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type == 2);
         console.log(temp.length);*/
+        
     }
 }
 
