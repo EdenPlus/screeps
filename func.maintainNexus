@@ -135,9 +135,18 @@ var maintainNexus = {
                     if (Game.map.getTerrainAt(a, b, curRoom.name) !== 'wall') {
                         var tile = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.x == a) && (schematic.y == b)).length;
                         if (!tile) {
-                            var planArea = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.x <= a + 1) && (schematic.x >= a - 1) && (schematic.y <= b + 1) && (schematic.y >= b - 1) && (schematic.type != 2)).length;
-                            if (planArea) {
-                                curRoom.memory.plan.planQueue.push({x: a, y: b, type: 2});
+                            var planArea = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.x <= a + 1) && (schematic.x >= a - 1) && (schematic.y <= b + 1) && (schematic.y >= b - 1) && (schematic.type != 2));
+                            if (planArea.length) {
+                                var extensions = _.filter(planArea, (schematic) => (schematic.type == 4)).length;
+                                if (extensions) {
+                                    var roads = _.filter(planArea, (schematic) => (schematic.type == 1)).length;
+                                    if (roads < 4) {
+                                        curRoom.memory.plan.planQueue.push({x: a, y: b, type: 2});
+                                    }
+                                }
+                                else {
+                                    curRoom.memory.plan.planQueue.push({x: a, y: b, type: 2});
+                                }
                             }
                         }
                     }
@@ -288,7 +297,7 @@ var maintainNexus = {
                 curRoom.memory.plan.offset++;
             }
             else if (curRoom.memory.plan.core != true) {
-                //    Road: 1        |    Rampart: 2      |    Wall: 3         | D  Extension: 4
+                //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
                 // D  Tower: 5       | D  Spawn: 6        |    Power Spawn: 7  | D  Storage: 8
                 //    Link: 9        | D  Lab: 10         | D  Terminal: 11    |    Observer: 12 
                 //    Extractor: 13  | D  Container: 14
@@ -1045,7 +1054,7 @@ var maintainNexus = {
             }
         }
         
-        //    Road: 1        |    Rampart: 2      |    Wall: 3         | D  Extension: 4
+        //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
         // D  Tower: 5       | D  Spawn: 6        |    Power Spawn: 7  | D  Storage: 8
         //    Link: 9        | D  Lab: 10         | D  Terminal: 11    |    Observer: 12 
         //    Extractor: 13  | D  Container: 14
