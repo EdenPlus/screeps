@@ -19,11 +19,14 @@ var maintainCreeps = {
         function bodyCost(body) {
             var cost = 0;
             for (let i in body) {
+                cost += BODYPART_COST[body[i]];
+                /* Old code
                 if (body[i] == WORK) {
                     cost += 100;
                 } else if (body[i] == CARRY || body[i] == MOVE) {
                     cost += 50;
                 }
+                */
             }
             return cost;
         }
