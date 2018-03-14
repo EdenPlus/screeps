@@ -18,7 +18,7 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
-    if (!Memory.tickSpeedReport && Memory.tickSpeedReport !== false) Memory.tickSpeedReport = true;
+    if (!Memory.tickSpeedReport && Memory.tickSpeedReport !== false) Memory.tickSpeedReport = false;
     var startLoopTime = new Date().getTime();
     var startRoomLoopTime = new Date().getTime();
     for (var a in Game.rooms) {
