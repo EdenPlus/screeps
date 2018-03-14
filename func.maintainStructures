@@ -336,12 +336,10 @@ var maintainStructures = {
         // Destroy roads under extensions to conserve resources
         if (!(Game.time % 100)) {
             for (let i in extensions) {
-                var extTile = curRoom.lookAt(extensions[i].pos);
+                var extTile = curRoom.lookForAt(LOOK_STRUCTURES, extensions[i].pos);
                 for (let j in extTile) {
-                    if (extTile[j].type == "structure") {
-                        if (extTile[j].structure.structureType == STRUCTURE_ROAD) {
-                            Game.getObjectById(extTile[j].structure.id).destroy();
-                        }
+                    if (extTile[j].structureType == STRUCTURE_ROAD) {
+                        Game.getObjectById(extTile[j].id).destroy();
                     }
                 }
             }
