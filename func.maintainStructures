@@ -141,19 +141,19 @@ var maintainStructures = {
             }
         }
         
-        // D  Road: 1        |    Rampart: 2      |    Wall: 3         | D  Extension: 4
-        // D  Tower: 5       | D  Spawn: 6        |    Power Spawn: 7  | D  Storage: 8
-        //    Link: 9        | D  Lab: 10         | D  Terminal: 11    |    Observer: 12 
-        //    Extractor: 13  | D  Container: 14
-        
         // Function to test if we are below the limit of a given structure
         function checkLimit(structType, structMarker) {
             var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type === structMarker).length;
-            var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type === structType).length;
-            var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType === structType).length;
-            var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType === structType).length;
-            var curLimit = CONTROLLER_STRUCTURES[structType][curRoom.controller.level];
-            return (trial && trial2 + trial3 + trial4 < curLimit);
+            if (trial) {
+                var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => schematic.type === structType).length;
+                var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => schematic.structureType === structType).length;
+                var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => schematic.structureType === structType).length;
+                var curLimit = CONTROLLER_STRUCTURES[structType][curRoom.controller.level];
+                return (trial2 + trial3 + trial4 < curLimit);
+            }
+            else {
+                return (trial);
+            }
         }
         
         // Function to queue the first structure of the given type
