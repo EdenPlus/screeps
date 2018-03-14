@@ -20,13 +20,6 @@ var maintainCreeps = {
             var cost = 0;
             for (let i in body) {
                 cost += BODYPART_COST[body[i]];
-                /* Old code
-                if (body[i] == WORK) {
-                    cost += 100;
-                } else if (body[i] == CARRY || body[i] == MOVE) {
-                    cost += 50;
-                }
-                */
             }
             return cost;
         }
@@ -36,9 +29,7 @@ var maintainCreeps = {
             let spawns = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN);
             
             for (let x in spawns) {
-//                console.log(spawns[x].canCreateCreep(body,role));
                 if (spawns[x].canCreateCreep(body,{role: role}) == 0) {
-//                    console.log('We can make that!');
                     console.log('New '+role+': '+spawns[x].createCreep(body,{role: role}));
                     break;
                 }
@@ -52,7 +43,6 @@ var maintainCreeps = {
             var multiplier = Math.floor(curRoom.energyCapacityAvailable / 300);
             
             for (let i = 0; i < multiplier; i++) {
-                //console.log(i);
                 if (body.length + WORKERPART.length <= 50) {
                     body = body.concat(WORKERPART);
                 }
@@ -70,7 +60,6 @@ var maintainCreeps = {
             var multiplier = Math.floor(curRoom.energyCapacityAvailable / 150);
             
             for (let i = 0; i < multiplier; i++) {
-//                console.log(i);
                 if (body.length + TRANSFERPART.length <= 50) {
                     body = body.concat(TRANSFERPART);
                 } else {
@@ -101,7 +90,6 @@ var maintainCreeps = {
             curRoom.memory.harvesterMax = Math.round(3 + (pathToNearestSource / 4));
         }
         const HARVESTERMAX = curRoom.memory.harvesterMax;
-        //const HARVESTERMAX = 8;
         const WORKERMAX = Math.ceil(30 / (curRoom.energyCapacityAvailable / bodyCost(WORKERPART)));
         const UPGRADERMAX = 1;
         const FILLERMAX = 1;
