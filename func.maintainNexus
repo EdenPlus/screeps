@@ -6,11 +6,11 @@ var maintainNexus = {
         if (!curRoom.memory.plan && curRoom.memory.plan != false) curRoom.memory.plan = {};
         if (!curRoom.memory.plan.planQueue && curRoom.memory.plan != false) curRoom.memory.plan.planQueue = [];
         if (!curRoom.memory.plan.offset && curRoom.memory.plan != false) curRoom.memory.plan.offset = 1;
-        if (!curRoom.memory.plan.isSorted && curRoom.memory.plan != false) curRoom.memory.plan.isSorted = false;
         if (!curRoom.memory.plan.core && curRoom.memory.plan.core != false && curRoom.memory.plan != false) curRoom.memory.plan.core = false;
         if (!curRoom.memory.plan.labs && !(curRoom.memory.plan.labs >= 0) && curRoom.memory.plan != false) curRoom.memory.plan.labs = 0;
         if (!curRoom.memory.plan.towers && curRoom.memory.plan.towers != false && curRoom.memory.plan != false) curRoom.memory.plan.towers = false;
         if (!curRoom.memory.plan.ramparts && curRoom.memory.plan.ramparts != false && curRoom.memory.plan != false) curRoom.memory.plan.ramparts = false;
+        //if (!curRoom.memory.plan.exitRoads && curRoom.memory.plan.exitRoads != false && curRoom.memory.plan != false) curRoom.memory.plan.exitRoads = {};
         if (!curRoom.memory.plan.NW && curRoom.memory.plan.NW != false && curRoom.memory.plan != false) curRoom.memory.plan.NW = true;
         if (!curRoom.memory.plan.SW && curRoom.memory.plan.SW != false && curRoom.memory.plan != false) curRoom.memory.plan.SW = true;
         if (!curRoom.memory.plan.NE && curRoom.memory.plan.NE != false && curRoom.memory.plan != false) curRoom.memory.plan.NE = true;
@@ -102,8 +102,13 @@ var maintainNexus = {
             }
         }
         
-        function exitRoads() {
-            
+        function planExitRoad() {
+            /*
+            Find room exit
+            findPath to exit
+                queue road to exit based on path and current planQueue
+                    queue road along exit
+            */
         }
         
         function getBoundaries() {
@@ -1049,6 +1054,19 @@ var maintainNexus = {
                 queueArea(boundaries.top, boundaries.left, boundaries.bottom, boundaries.right);
                 curRoom.memory.plan.ramparts = true;
             }
+            /*else if (curRoom.memory.plan.exitRoads != true) {
+                if (!curRoom.memory.plan.exitRoads.direction) curRoom.memory.plan.exitRoads.direction = 0;
+                
+                / *switch (curRoom.memory.plan.exitRoads.direction) {
+                    
+                }* /
+                / *
+                switch room exit direction
+                    findExit
+                    planExitRoad for current exit
+                * /
+                curRoom.memory.plan.exitRoads = true;
+            }*/
             else if (curRoom.memory.plan.planQueue.length == 0) {
                 curRoom.memory.plan = false;
             }
