@@ -18,6 +18,7 @@ var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
 
 module.exports.loop = function () {
+    if (!Memory.tickSpeedReport && Memory.tickSpeedReport !== false) Memory.tickSpeedReport = true;
     var startLoopTime = new Date().getTime();
     var startRoomLoopTime = new Date().getTime();
     for (var a in Game.rooms) {
@@ -64,15 +65,17 @@ module.exports.loop = function () {
             // Tower AI end
             
             // Room Execution Time Report Start
-            console.log("-===== ROOM MANAGEMENT TIMES =====-")
-            console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
-            console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
-            console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
-            if (!(Game.time % 10)) {
-                console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
+            if (Memory.tickSpeedReport) {
+                console.log("-===== ROOM MANAGEMENT TIMES =====-");
+                console.log("Status Report - Start: " + startStatusReportTime + " | End: " + endStatusReportTime + " | Split: " + (endStatusReportTime - startStatusReportTime));
+                console.log("Creep Management - Start: " + startCreepMainTime + " | End: " + endCreepMainTime + " | Split: " + (endCreepMainTime - startCreepMainTime));
+                console.log("Nexus Management - Start: " + startNexusMainTime + " | End: " + endNexusMainTime + " | Split: " + (endNexusMainTime - startNexusMainTime));
+                if (!(Game.time % 10)) {
+                    console.log("Structure Management - Start: " + startStructMainTime + " | End: " + endStructMainTime + " | Split: " + (endStructMainTime - startStructMainTime));
+                }
+                console.log("Plans Visual - Start: " + startPlansVisualTime + " | End: " + endPlansVisualTime + " | Split: " + (endPlansVisualTime - startPlansVisualTime));
+                console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
             }
-            console.log("Plans Visual - Start: " + startPlansVisualTime + " | End: " + endPlansVisualTime + " | Split: " + (endPlansVisualTime - startPlansVisualTime));
-            console.log("Tower AI Management - Start: " + startTowerLoopTime + " | End: " + endTowerLoopTime + " | Split: " + (endTowerLoopTime - startTowerLoopTime));
             // Room Execution Time Report End
         }
     }
@@ -126,71 +129,73 @@ module.exports.loop = function () {
     // Unit AI end
     
     // Global Execution Time Report Start
-    var endLoopTime = new Date().getTime();
-    console.log("-====== SCRIPT EXECUTION TIME ======-");
-    console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
-    console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
-    console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
-    
-    if (!Memory.bucket) Memory.bucket = 0;
-    if (!Memory.execTimes) Memory.execTimes = [];
-    
-    var CPU_LIMIT = Game.cpu.limit; // Base MS allowed per tick
-    var CPU_LIMIT_CAP = 300; // Cap for CPU_LIMIT
-    var CPU_TICK_LIMIT = Game.cpu.tickLimit; // MS allowed per tick w/ bucket
-    var BUCKET = Game.cpu.bucket; // MS in bucket
-    var BUCKET_LIMIT = 10000; // Bucket MS cap
-    var BUCKET_TICK_LIMIT = 500; // MS in bucket allowed to be used per tick
-    var EXEC_TIMES_LIMIT = 50; // Limit to how many global execution times can be stored
-    
-    // Set CPU_LIMIT if sim
-    if ((!CPU_LIMIT && CPU_LIMIT != 0) || CPU_LIMIT == "Infinity") {
-        CPU_LIMIT = 30 + ((Game.gcl.level - 1) * 10);
-        if (CPU_LIMIT > CPU_LIMIT_CAP) {
-            CPU_LIMIT = CPU_LIMIT_CAP;
+    if (Memory.tickSpeedReport) {
+        var endLoopTime = new Date().getTime();
+        console.log("-====== SCRIPT EXECUTION TIME ======-");
+        console.log("Room Management - Start: " + startRoomLoopTime + " | End: " + endRoomLoopTime + " | Split: " + (endRoomLoopTime - startRoomLoopTime));
+        console.log("Creep AI Management - Start: " + startAILoopTime + " | End: " + endAILoopTime + " | Split: " + (endAILoopTime - startAILoopTime));
+        console.log("Execution time - Start: " + startLoopTime + " | End: " + endLoopTime + " | Split: " + (endLoopTime - startLoopTime));
+        
+        if (!Memory.bucket) Memory.bucket = 0;
+        if (!Memory.execTimes) Memory.execTimes = [];
+        
+        var CPU_LIMIT = Game.cpu.limit; // Base MS allowed per tick
+        var CPU_LIMIT_CAP = 300; // Cap for CPU_LIMIT
+        var CPU_TICK_LIMIT = Game.cpu.tickLimit; // MS allowed per tick w/ bucket
+        var BUCKET = Game.cpu.bucket; // MS in bucket
+        var BUCKET_LIMIT = 10000; // Bucket MS cap
+        var BUCKET_TICK_LIMIT = 500; // MS in bucket allowed to be used per tick
+        var EXEC_TIMES_LIMIT = 50; // Limit to how many global execution times can be stored
+        
+        // Set CPU_LIMIT if sim
+        if ((!CPU_LIMIT && CPU_LIMIT != 0) || CPU_LIMIT == "Infinity") {
+            CPU_LIMIT = 30 + ((Game.gcl.level - 1) * 10);
+            if (CPU_LIMIT > CPU_LIMIT_CAP) {
+                CPU_LIMIT = CPU_LIMIT_CAP;
+            }
         }
-    }
-    
-    // Set BUCKET if sim
-    if ((!BUCKET && BUCKET != 0) || BUCKET == "Infinity") {
-        BUCKET = 0 + Memory.bucket;
-    }
-    
-    // Set CPU_TICK_LIMIT is sim
-    if ((!CPU_TICK_LIMIT && CPU_TICK_LIMIT != 0) || CPU_TICK_LIMIT == "Infinity") {
-        CPU_TICK_LIMIT = CPU_LIMIT + BUCKET;
-        if (CPU_TICK_LIMIT > CPU_LIMIT + BUCKET_TICK_LIMIT) {
-            CPU_TICK_LIMIT = CPU_LIMIT + BUCKET_TICK_LIMIT;
+        
+        // Set BUCKET if sim
+        if ((!BUCKET && BUCKET != 0) || BUCKET == "Infinity") {
+            BUCKET = 0 + Memory.bucket;
         }
-    }
-    
-    var execTime = (endLoopTime - startLoopTime); // Last split
-    
-    if (execTime <= CPU_LIMIT) {
-        Memory.bucket += (CPU_LIMIT - execTime);
-        if (Memory.bucket > BUCKET_LIMIT) {
-            Memory.bucket = BUCKET_LIMIT;
+        
+        // Set CPU_TICK_LIMIT is sim
+        if ((!CPU_TICK_LIMIT && CPU_TICK_LIMIT != 0) || CPU_TICK_LIMIT == "Infinity") {
+            CPU_TICK_LIMIT = CPU_LIMIT + BUCKET;
+            if (CPU_TICK_LIMIT > CPU_LIMIT + BUCKET_TICK_LIMIT) {
+                CPU_TICK_LIMIT = CPU_LIMIT + BUCKET_TICK_LIMIT;
+            }
         }
-    }
-    else if (execTime > CPU_LIMIT) {
-        Memory.bucket -= (execTime - CPU_LIMIT);
-        if (Memory.bucket < 0) {
-            Memory.bucket = 0;
+        
+        var execTime = (endLoopTime - startLoopTime); // Last split
+        
+        if (execTime <= CPU_LIMIT) {
+            Memory.bucket += (CPU_LIMIT - execTime);
+            if (Memory.bucket > BUCKET_LIMIT) {
+                Memory.bucket = BUCKET_LIMIT;
+            }
         }
+        else if (execTime > CPU_LIMIT) {
+            Memory.bucket -= (execTime - CPU_LIMIT);
+            if (Memory.bucket < 0) {
+                Memory.bucket = 0;
+            }
+        }
+        BUCKET = Memory.bucket;
+        
+        Memory.execTimes.push(execTime);
+        while (Memory.execTimes.length > EXEC_TIMES_LIMIT) {
+            Memory.execTimes.splice(0, 1);
+        }
+        
+        var tempSum = 0;
+        for (var i in Memory.execTimes) {
+            tempSum += Memory.execTimes[i];
+        }
+        
+        console.log("Average (of past " + EXEC_TIMES_LIMIT + ") execution cost (Should be below limit): " + (tempSum / Memory.execTimes.length) + "/" + CPU_LIMIT);
+        console.log("CPU_LIMIT: " + CPU_LIMIT + " | CPU_LIMIT_CAP: " + CPU_LIMIT_CAP + " | CPU_TICK_LIMIT: " + CPU_TICK_LIMIT + " | BUCKET: " + BUCKET + " | BUCKET_LIMIT: " + BUCKET_LIMIT + " | BUCKET_TICK_LIMIT: " + BUCKET_TICK_LIMIT);
     }
-    BUCKET = Memory.bucket;
-    
-    Memory.execTimes.push(execTime);
-    while (Memory.execTimes.length > EXEC_TIMES_LIMIT) {
-        Memory.execTimes.splice(0, 1);
-    }
-    
-    var tempSum = 0;
-    for (var i in Memory.execTimes) {
-        tempSum += Memory.execTimes[i];
-    }
-    
-    console.log("Average (of past " + EXEC_TIMES_LIMIT + ") execution cost (Should be below limit): " + (tempSum / Memory.execTimes.length) + "/" + CPU_LIMIT);
-    console.log("CPU_LIMIT: " + CPU_LIMIT + " | CPU_LIMIT_CAP: " + CPU_LIMIT_CAP + " | CPU_TICK_LIMIT: " + CPU_TICK_LIMIT + " | BUCKET: " + BUCKET + " | BUCKET_LIMIT: " + BUCKET_LIMIT + " | BUCKET_TICK_LIMIT: " + BUCKET_TICK_LIMIT);
     // Global Execution Time Report End
 }
