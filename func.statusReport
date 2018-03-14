@@ -84,21 +84,6 @@ var statusReport = {
                 }
             }
             // Energy report end
-            
-            // Nexus report start
-            var curSpawn = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN)[0];
-            if (!curSpawn.memory.nexus) curSpawn.memory.nexus = [];
-            if (curSpawn.memory.nexus.length) {
-                console.log('  -=======  NEXUS REPORT  =======-   ');
-                var nexusReport = "Nexus Coords: ";
-                for (var i in curSpawn.memory.nexus) {
-                    nexusReport += "[" + curSpawn.memory.nexus[i].x + "," + curSpawn.memory.nexus[i].y + "] ";
-                }
-                console.log(nexusReport);
-                var quickExt = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_EXTENSION);
-                console.log("Extensions Built: " + quickExt.length + "/" + curSpawn.memory.nexus.length);
-            }
-            // Nexus report end
         }
         /*
         Why does this exist?
