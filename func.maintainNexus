@@ -104,23 +104,26 @@ var maintainNexus = {
         function getBoundaries() {
             var boundaries = {top: storageLoc.y, left: storageLoc.x, bottom: storageLoc.y, right: storageLoc.x};
             for (var a in curRoom.memory.plan.planQueue) {
-                if (curRoom.memory.plan.planQueue[a].y < boundaries.top) {
-                    boundaries.top = curRoom.memory.plan.planQueue[a].y;
-                }
-                else if (curRoom.memory.plan.planQueue[a].y > boundaries.bottom) {
-                    boundaries.bottom = curRoom.memory.plan.planQueue[a].y;
-                }
-                if (curRoom.memory.plan.planQueue[a].x < boundaries.left) {
-                    boundaries.left = curRoom.memory.plan.planQueue[a].x;
-                }
-                else if (curRoom.memory.plan.planQueue[a].x > boundaries.right) {
-                    boundaries.right = curRoom.memory.plan.planQueue[a].x;
+                if (curRoom.memory.plan.planQueue[a].type != 2) {
+                    if (curRoom.memory.plan.planQueue[a].y < boundaries.top) {
+                        boundaries.top = curRoom.memory.plan.planQueue[a].y;
+                    }
+                    else if (curRoom.memory.plan.planQueue[a].y > boundaries.bottom) {
+                        boundaries.bottom = curRoom.memory.plan.planQueue[a].y;
+                    }
+                    if (curRoom.memory.plan.planQueue[a].x < boundaries.left) {
+                        boundaries.left = curRoom.memory.plan.planQueue[a].x;
+                    }
+                    else if (curRoom.memory.plan.planQueue[a].x > boundaries.right) {
+                        boundaries.right = curRoom.memory.plan.planQueue[a].x;
+                    }
                 }
             }
-            boundaries.top -= 1;
-            boundaries.left -= 1;
-            boundaries.bottom += 1;
-            boundaries.right += 1;
+            var pad = 2;
+            boundaries.top -= pad;
+            boundaries.left -= pad;
+            boundaries.bottom += pad;
+            boundaries.right += pad;
             return boundaries;
         }
         
@@ -298,11 +301,6 @@ var maintainNexus = {
                 curRoom.memory.plan.offset++;
             }
             else if (curRoom.memory.plan.core != true) {
-                //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
-                // D  Tower: 5       | D  Spawn: 6        |    Power Spawn: 7  | D  Storage: 8
-                //    Link: 9        | D  Lab: 10         | D  Terminal: 11    |    Observer: 12 
-                //    Extractor: 13  | D  Container: 14
-                
                 // Storage
                 curRoom.memory.plan.planQueue.push({x: (storageLoc.x), y: (storageLoc.y), type: 8});
                 
