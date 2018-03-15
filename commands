@@ -10,7 +10,11 @@ require('commands').visualizeBoundary(Game.rooms['sim']);
 */
 
 /*
+Parameters:
 targetRoom - Room object
+
+Usage:
+require('commands').visualizeBoundary({Room object});
 */
 function visualizeBoundary(targetRoom) {
     var firstSpawn = targetRoom.find(FIND_MY_SPAWNS)[0];
@@ -42,8 +46,12 @@ function visualizeBoundary(targetRoom) {
 }
 
 /*
+Parameters:
 targetRoom - Room object
 targetPlan - String (look to case statements for the list)
+
+Usage:
+require('commands').resetPlan({Room object}, String);
 */
 function resetPlan(targetRoom, targetPlan) {
     //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
