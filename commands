@@ -1,12 +1,5 @@
 /*
-The method to using these commands in the console follows this structure:
-
-require('commands').functionName(function parameters);
-
-For example:
-
-require('commands').visualizeBoundary(Game.rooms['sim']);
-
+This script allows for control over things through the console
 */
 
 /*
@@ -15,6 +8,9 @@ targetRoom - Room object
 
 Usage:
 require('commands').visualizeBoundary({Room object});
+
+Example:
+require('commands').visualizeBoundary(Game.rooms['sim']);
 */
 function visualizeBoundary(targetRoom) {
     var firstSpawn = targetRoom.find(FIND_MY_SPAWNS)[0];
@@ -52,6 +48,9 @@ targetPlan - String (look to case statements for the list)
 
 Usage:
 require('commands').resetPlan({Room object}, String);
+
+Example:
+require('commands').resetPlan(Game.rooms['sim'], 'ramparts');
 */
 function resetPlan(targetRoom, targetPlan) {
     //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
@@ -83,6 +82,7 @@ function resetPlan(targetRoom, targetPlan) {
     }
 }
 
+// Whenever a command is added to this script, it needs to be referenced in this export, following the already listed function's format
 module.exports = {
     visualizeBoundaries: visualizeBoundaries,
     resetPlan: resetPlan
