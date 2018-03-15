@@ -9,6 +9,9 @@ require('commands').visualizeBoundary(Game.rooms['sim']);
 
 */
 
+/*
+targetRoom - Room object
+*/
 function visualizeBoundary(targetRoom) {
     var firstSpawn = targetRoom.find(FIND_MY_SPAWNS)[0];
     var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
@@ -38,6 +41,10 @@ function visualizeBoundary(targetRoom) {
     return boundaries;
 }
 
+/*
+targetRoom - Room object
+targetPlan - String (look to case statements for the list)
+*/
 function resetPlan(targetRoom, targetPlan) {
     //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
     // D  Tower: 5       | D  Spawn: 6        |    Power Spawn: 7  | D  Storage: 8
