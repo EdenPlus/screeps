@@ -217,11 +217,13 @@ var maintainStructures = {
                                                         if (checkLimit(STRUCTURE_ROAD, 1)) {
                                                             queueFirst(STRUCTURE_ROAD, 1);
                                                         }
-                                                        else if (checkLimit(STRUCTURE_RAMPART, 2)) {
-                                                            queueFirst(STRUCTURE_RAMPART, 2);
-                                                        }
-                                                        else if (checkLimit(STRUCTURE_WALL, 3)) {
-                                                            queueFirst(STRUCTURE_WALL, 3);
+                                                        else if (curRoom.controller.level >= 3) {
+                                                            if (checkLimit(STRUCTURE_RAMPART, 2)) {
+                                                                queueFirst(STRUCTURE_RAMPART, 2);
+                                                            }
+                                                            else if (checkLimit(STRUCTURE_WALL, 3)) {
+                                                                queueFirst(STRUCTURE_WALL, 3);
+                                                            }
                                                         }
                                                     }
                                                 }
