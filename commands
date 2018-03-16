@@ -44,7 +44,7 @@ function visualizeBoundary(targetRoom) {
 /*
 Parameters:
 targetRoom - Room object
-targetPlan - String (look to switch statements for the list)
+targetPlan - String (look to switch statement for the list)
 
 Usage:
 require('commands').resetPlan({Room object}, String);
