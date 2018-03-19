@@ -91,7 +91,7 @@ function resetPlan(targetRoom, targetPlan) {
 
 /*
 Description:
-An alternative to finding out if Memory.tickSpeedReport is true/false then setting it to the opposite via console
+Shorthand for: Memory.tickSpeedReport = (true/false)
 
 Parameters:
 N/A
