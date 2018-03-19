@@ -54,21 +54,6 @@ var roleTransfer = {
             }
             */
             
-            /*
-            if (creep.room.memory.tickCheck.time != Game.time) {
-                creep.room.memory.tickCheck.time = Game.time;
-                creep.room.memory.tickCheck.jobs = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return ((structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_TOWER) &&
-                        (structure.energy < structure.energyCapacity) &&
-                        (!structure.spawning));
-                    }
-                });
-            }
-            */
-            
             if (creep.room.memory.tickCheck.time != Game.time) {
                 creep.room.memory.tickCheck.time = Game.time;
                 var temp = creep.room.find(FIND_STRUCTURES, {
@@ -81,9 +66,9 @@ var roleTransfer = {
                 });
                 var temp2 = [];
                 for (var a in temp) {
-                    temp2 += {id: temp[a].id, structureType: temp[a].structureType, energy: temp[a].energy, energyCapacity: temp[a].energyCapacity};
+                    temp2.push({id: temp[a].id, pos: temp[a].pos, structureType: temp[a].structureType, energy: temp[a].energy, energyCapacity: temp[a].energyCapacity});
                 }
-                creep.room.memory.tickCheck.jobs = temp2
+                creep.room.memory.tickCheck.jobs = temp2;
             }
             
             var jobs = creep.room.memory.tickCheck.jobs;
