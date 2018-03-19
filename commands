@@ -84,6 +84,6 @@ function resetPlan(targetRoom, targetPlan) {
 
 // Whenever a command is added to this script, it needs to be referenced in this export, following the already listed function's format
 module.exports = {
-    visualizeBoundaries: visualizeBoundaries,
+    visualizeBoundary: visualizeBoundary,
     resetPlan: resetPlan
 };
