@@ -1049,6 +1049,7 @@ var maintainNexus = {
                 queueArea(boundaries.top, boundaries.left, boundaries.bottom, boundaries.right);
                 curRoom.memory.plan.ramparts = true;
             }
+            // Start PlanQueue source roads
             else if (curRoom.memory.plan.sourceRoads != true) {
                 var sourceRoadQueue = [];
                 var towerTrial = _.filter(curRoom.find(FIND_STRUCTURES), (structure) => structure.structureType == STRUCTURE_TOWER);
@@ -1162,6 +1163,7 @@ var maintainNexus = {
                     curRoom.memory.plan.sourceRoads = true;
                 }
             }
+            // End PlanQueue source roads
             else if (curRoom.memory.plan.planQueue.length == 0) {
                 curRoom.memory.plan = false;
             }
