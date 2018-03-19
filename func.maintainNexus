@@ -3,18 +3,18 @@ var maintainNexus = {
     run: function(curRoom) {
         var firstSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
         var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
-        if (!curRoom.memory.plan                            && curRoom.memory.plan !== false                                                ) curRoom.memory.plan = {};
-        if (!curRoom.memory.plan.planQueue                  && curRoom.memory.plan !== false                                                ) curRoom.memory.plan.planQueue = [];
-        if (!curRoom.memory.plan.offset                     && curRoom.memory.plan !== false                                                ) curRoom.memory.plan.offset = 1;
-        if (!curRoom.memory.plan.core                       && curRoom.memory.plan.core !== false                       && curRoom.memory.plan !== false) curRoom.memory.plan.core = false;
-        if (!curRoom.memory.plan.labs                       && !(curRoom.memory.plan.labs >= 0)                         && curRoom.memory.plan !== false) curRoom.memory.plan.labs = 0;
-        if (!curRoom.memory.plan.towers                     && curRoom.memory.plan.towers !== false                     && curRoom.memory.plan !== false) curRoom.memory.plan.towers = false;
-        if (!curRoom.memory.plan.ramparts                   && curRoom.memory.plan.ramparts !== false                   && curRoom.memory.plan !== false) curRoom.memory.plan.ramparts = false;
-        if (!curRoom.memory.plan.sourceRoads                && curRoom.memory.plan.sourceRoads !== false                && curRoom.memory.plan !== false) curRoom.memory.plan.sourceRoads = {};
-        if (!curRoom.memory.plan.NW                         && curRoom.memory.plan.NW !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.NW = true;
-        if (!curRoom.memory.plan.SW                         && curRoom.memory.plan.SW !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.SW = true;
-        if (!curRoom.memory.plan.NE                         && curRoom.memory.plan.NE !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.NE = true;
-        if (!curRoom.memory.plan.SE                         && curRoom.memory.plan.SE !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.SE = true;
+        if (!curRoom.memory.plan                && curRoom.memory.plan !== false                                                ) curRoom.memory.plan = {};
+        if (!curRoom.memory.plan.planQueue      && curRoom.memory.plan !== false                                                ) curRoom.memory.plan.planQueue = [];
+        if (!curRoom.memory.plan.offset         && curRoom.memory.plan !== false                                                ) curRoom.memory.plan.offset = 1;
+        if (!curRoom.memory.plan.core           && curRoom.memory.plan.core !== false           && curRoom.memory.plan !== false) curRoom.memory.plan.core = false;
+        if (!curRoom.memory.plan.labs           && !(curRoom.memory.plan.labs >= 0)             && curRoom.memory.plan !== false) curRoom.memory.plan.labs = 0;
+        if (!curRoom.memory.plan.towers         && curRoom.memory.plan.towers !== false         && curRoom.memory.plan !== false) curRoom.memory.plan.towers = false;
+        if (!curRoom.memory.plan.ramparts       && curRoom.memory.plan.ramparts !== false       && curRoom.memory.plan !== false) curRoom.memory.plan.ramparts = false;
+        if (!curRoom.memory.plan.sourceRoads    && curRoom.memory.plan.sourceRoads !== false    && curRoom.memory.plan !== false) curRoom.memory.plan.sourceRoads = {};
+        if (!curRoom.memory.plan.NW             && curRoom.memory.plan.NW !== false             && curRoom.memory.plan !== false) curRoom.memory.plan.NW = true;
+        if (!curRoom.memory.plan.SW             && curRoom.memory.plan.SW !== false             && curRoom.memory.plan !== false) curRoom.memory.plan.SW = true;
+        if (!curRoom.memory.plan.NE             && curRoom.memory.plan.NE !== false             && curRoom.memory.plan !== false) curRoom.memory.plan.NE = true;
+        if (!curRoom.memory.plan.SE             && curRoom.memory.plan.SE !== false             && curRoom.memory.plan !== false) curRoom.memory.plan.SE = true;
         
         function mapExtensions(roadPos, xA, xB, xC, yA, yB, yC) {
             var xShift = true;
