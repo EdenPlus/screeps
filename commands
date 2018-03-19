@@ -67,6 +67,9 @@ function resetPlan(targetRoom, targetPlan) {
         case "labs":
             return "Sorry, but that plan reset hasn't been made";
             break;
+        case "sourceRoads":
+            return "Sorry, but that plan reset hasn't been made";
+            break;
         case "towers":
             var temp = _.filter(targetRoom.memory.plan.planQueue, (schematic) => schematic.type != 5);
             targetRoom.memory.plan.planQueue = temp;
