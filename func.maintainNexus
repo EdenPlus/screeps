@@ -1146,6 +1146,7 @@ var maintainNexus = {
                                 }
                             } else {
                                 planItems.push({x: path[i].x,y: path[i].y, type: 14});
+                                planItems.push({x: path[i].x,y: path[i].y, type: 2});
                             }
                         }
                         for (var b in planItems) {
@@ -1166,7 +1167,7 @@ var maintainNexus = {
             }
         }
         
-        //    Road: 1        | D  Rampart: 2      |    Wall: 3         | D  Extension: 4
+        //    Road: 1        | D  Rampart: 2      | D  Wall: 3         | D  Extension: 4
         // D  Tower: 5       | D  Spawn: 6        |    Power Spawn: 7  | D  Storage: 8
         //    Link: 9        | D  Lab: 10         | D  Terminal: 11    |    Observer: 12 
         //    Extractor: 13  | D  Container: 14
