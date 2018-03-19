@@ -3,6 +3,9 @@ This script allows for control over things through the console
 */
 
 /*
+Description:
+Visualizes the boundary of the nexus (Theorized to break once the source roads are added to the plan queue)
+
 Parameters:
 targetRoom - Room object
 
@@ -18,7 +21,7 @@ function visualizeBoundary(targetRoom) {
     var boundaries = {top: storageLoc.y, left: storageLoc.x, bottom: storageLoc.y, right: storageLoc.x};
     var planQueue = targetRoom.memory.plan.planQueue;
     for (var a in planQueue) {
-        if (planQueue[a].type != 2) {
+        if (planQueue[a].type > 2) {
             if (planQueue[a].y < boundaries.top) {
                 boundaries.top = planQueue[a].y;
             }
@@ -42,6 +45,9 @@ function visualizeBoundary(targetRoom) {
 }
 
 /*
+Description:
+Used to reset a section of the planning
+
 Parameters:
 targetRoom - Room object
 targetPlan - String (look to switch statement for the list)
@@ -85,8 +91,31 @@ function resetPlan(targetRoom, targetPlan) {
     }
 }
 
+/*
+Description:
+An alternative to finding out if Memory.tickSpeedReport is true/false then setting it to the opposite via console
+
+Parameters:
+N/A
+
+Usage:
+require('commands').toggleTSR();
+
+Example:
+require('commands').toggleTSR();
+*/
+function toggleTSR() {
+    if (Memory.tickSpeedReport == true) {
+        Memory.tickSpeedReport = false;
+    }
+    else {
+        Memory.tickSpeedReport = true;
+    }
+}
+
 // Whenever a command is added to this script, it needs to be referenced in this export, following the already listed function's format
 module.exports = {
     visualizeBoundary: visualizeBoundary,
-    resetPlan: resetPlan
+    resetPlan: resetPlan,
+    toggleTSR: toggleTSR
 };
