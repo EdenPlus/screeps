@@ -3,17 +3,18 @@ var maintainNexus = {
     run: function(curRoom) {
         var firstSpawn = curRoom.find(FIND_MY_SPAWNS)[0];
         var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
-        if (!curRoom.memory.plan            && curRoom.memory.plan !== false                                          ) curRoom.memory.plan = {};
-        if (!curRoom.memory.plan.planQueue  && curRoom.memory.plan !== false                                          ) curRoom.memory.plan.planQueue = [];
-        if (!curRoom.memory.plan.offset     && curRoom.memory.plan !== false                                          ) curRoom.memory.plan.offset = 1;
-        if (!curRoom.memory.plan.core       && curRoom.memory.plan.core !== false     && curRoom.memory.plan !== false) curRoom.memory.plan.core = false;
-        if (!curRoom.memory.plan.labs       && !(curRoom.memory.plan.labs >= 0)       && curRoom.memory.plan !== false) curRoom.memory.plan.labs = 0;
-        if (!curRoom.memory.plan.towers     && curRoom.memory.plan.towers !== false   && curRoom.memory.plan !== false) curRoom.memory.plan.towers = false;
-        if (!curRoom.memory.plan.ramparts   && curRoom.memory.plan.ramparts !== false && curRoom.memory.plan !== false) curRoom.memory.plan.ramparts = false;
-        if (!curRoom.memory.plan.NW         && curRoom.memory.plan.NW !== false       && curRoom.memory.plan !== false) curRoom.memory.plan.NW = true;
-        if (!curRoom.memory.plan.SW         && curRoom.memory.plan.SW !== false       && curRoom.memory.plan !== false) curRoom.memory.plan.SW = true;
-        if (!curRoom.memory.plan.NE         && curRoom.memory.plan.NE !== false       && curRoom.memory.plan !== false) curRoom.memory.plan.NE = true;
-        if (!curRoom.memory.plan.SE         && curRoom.memory.plan.SE !== false       && curRoom.memory.plan !== false) curRoom.memory.plan.SE = true;
+        if (!curRoom.memory.plan                            && curRoom.memory.plan !== false                                                ) curRoom.memory.plan = {};
+        if (!curRoom.memory.plan.planQueue                  && curRoom.memory.plan !== false                                                ) curRoom.memory.plan.planQueue = [];
+        if (!curRoom.memory.plan.offset                     && curRoom.memory.plan !== false                                                ) curRoom.memory.plan.offset = 1;
+        if (!curRoom.memory.plan.core                       && curRoom.memory.plan.core !== false                       && curRoom.memory.plan !== false) curRoom.memory.plan.core = false;
+        if (!curRoom.memory.plan.labs                       && !(curRoom.memory.plan.labs >= 0)                         && curRoom.memory.plan !== false) curRoom.memory.plan.labs = 0;
+        if (!curRoom.memory.plan.towers                     && curRoom.memory.plan.towers !== false                     && curRoom.memory.plan !== false) curRoom.memory.plan.towers = false;
+        if (!curRoom.memory.plan.ramparts                   && curRoom.memory.plan.ramparts !== false                   && curRoom.memory.plan !== false) curRoom.memory.plan.ramparts = false;
+        if (!curRoom.memory.plan.sourceRoads                && curRoom.memory.plan.sourceRoads !== false                && curRoom.memory.plan !== false) curRoom.memory.plan.sourceRoads = {};
+        if (!curRoom.memory.plan.NW                         && curRoom.memory.plan.NW !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.NW = true;
+        if (!curRoom.memory.plan.SW                         && curRoom.memory.plan.SW !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.SW = true;
+        if (!curRoom.memory.plan.NE                         && curRoom.memory.plan.NE !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.NE = true;
+        if (!curRoom.memory.plan.SE                         && curRoom.memory.plan.SE !== false                         && curRoom.memory.plan !== false) curRoom.memory.plan.SE = true;
         
         function mapExtensions(roadPos, xA, xB, xC, yA, yB, yC) {
             var xShift = true;
@@ -1047,6 +1048,118 @@ var maintainNexus = {
                 var boundaries = getBoundaries();
                 queueArea(boundaries.top, boundaries.left, boundaries.bottom, boundaries.right);
                 curRoom.memory.plan.ramparts = true;
+            }
+            else if (curRoom.memory.plan.sourceRoads != true) {
+                var sourceRoadQueue = [];
+                var towerTrial = _.filter(curRoom.find(FIND_STRUCTURES), (structure) => structure.structureType == STRUCTURE_TOWER);
+                if (!curRoom.memory.plan.sourceRoads.safeSources) curRoom.memory.plan.sourceRoads.safeSources = [];
+                if (!curRoom.memory.plan.sourceRoads.riskySources) curRoom.memory.plan.sourceRoads.riskySources = [];
+                if (!curRoom.memory.plan.sourceRoads.sourceCheck) {
+                    var sources = curRoom.find(FIND_SOURCES);
+                    for (var a in sources) {
+                        var sourceRange = 3;
+                        var areaCreeps = curRoom.lookForAtArea(LOOK_CREEPS, (sources[a].pos.y - sourceRange), (sources[a].pos.x - sourceRange), (sources[a].pos.y + sourceRange), (sources[a].pos.x + sourceRange), true);
+                        var enemyCreeps = false;
+                        creepCheck:
+                        for (var b in areaCreeps) {
+                            if (!areaCreeps[b].my) {
+                                enemyCreeps = true;
+                                break creepCheck;
+                            }
+                        }
+                        if (!enemyCreeps) {
+                            curRoom.memory.plan.sourceRoads.safeSources.push(sources[a]);
+                        }
+                        else {
+                            curRoom.memory.plan.sourceRoads.riskySources.push(sources[a]);
+                        }
+                    }
+                    curRoom.memory.plan.sourceRoads.sourceCheck = true;
+                }
+                if (trial3.length >= 5 && curRoom.memory.plan.sourceRoads.safeSources.length && !curRoom.memory.plan.sourceRoads.safeSourcesPlan) {
+                    for (var a in curRoom.memory.plan.sourceRoads.safeSources) {
+                        var path = curRoom.findPath(new RoomPosition(storageLoc.x, storageLoc.y, curRoom.name), curRoom.memory.plan.sourceRoads.safeSources[a].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
+                            var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.type >= 3));
+                            var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => (schematic.type == STRUCTURE_SPAWN || schematic.type == STRUCTURE_WALL || schematic.type == STRUCTURE_EXTENSION || schematic.type == STRUCTURE_LINK || schematic.type == STRUCTURE_STORAGE || schematic.type == STRUCTURE_TOWER || schematic.type == STRUCTURE_OBSERVER || schematic.type == STRUCTURE_POWER_SPAWN || schematic.type == STRUCTURE_LAB || schematic.type == STRUCTURE_TERMINAL || schematic.type == STRUCTURE_NUKER));
+                            var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
+                            var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
+                            
+                            for (var a in trial) {
+                                costMatrix.set(trial[a].x, trial[a].y, 255);
+                            }
+                            for (var a in trial2) {
+                                costMatrix.set(trial2[a].x, trial2[a].y, 255);
+                            }
+                            for (var a in trial3) {
+                                costMatrix.set(trial3[a].pos.x, trial3[a].pos.y, 255);
+                            }
+                            for (var a in trial4) {
+                                costMatrix.set(trial4[a].pos.x, trial4[a].pos.y, 255);
+                            }
+                        }});
+                        var planItems = [];
+                        var roads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type === 1);
+                        for (let i in path) {
+                            if (i < (path.length - 2)) {
+                                var dupes = _.filter(roads, (schematic) => schematic.x === path[i].x && schematic.y === path[i].y).length;
+                                if (!dupes) {
+                                    planItems.push({x: path[i].x,y: path[i].y, type: 1});
+                                }
+                            } else {
+                                planItems.push({x: path[i].x,y: path[i].y, type: 14});
+                            }
+                        }
+                        for (var b in planItems) {
+                            sourceRoadQueue.push(planItems[b]);
+                        }
+                    }
+                    curRoom.memory.plan.sourceRoads.safeSourcesPlan = true;
+                }
+                if (towerTrial.length && curRoom.memory.plan.sourceRoads.riskySources.length && !curRoom.memory.plan.sourceRoads.riskySourcesPlan) {
+                    for (var a in curRoom.memory.plan.sourceRoads.riskySources) {
+                        var path = curRoom.findPath(new RoomPosition(storageLoc.x, storageLoc.y, curRoom.name), curRoom.memory.plan.sourceRoads.riskySources[a].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
+                            var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.type >= 3));
+                            var trial2 = _.filter(curRoom.memory.buildQueue, (schematic) => (schematic.type == STRUCTURE_SPAWN || schematic.type == STRUCTURE_WALL || schematic.type == STRUCTURE_EXTENSION || schematic.type == STRUCTURE_LINK || schematic.type == STRUCTURE_STORAGE || schematic.type == STRUCTURE_TOWER || schematic.type == STRUCTURE_OBSERVER || schematic.type == STRUCTURE_POWER_SPAWN || schematic.type == STRUCTURE_LAB || schematic.type == STRUCTURE_TERMINAL || schematic.type == STRUCTURE_NUKER));
+                            var trial3 = _.filter(curRoom.find(FIND_STRUCTURES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
+                            var trial4 = _.filter(curRoom.find(FIND_CONSTRUCTION_SITES), (schematic) => (schematic.structureType == STRUCTURE_SPAWN || schematic.structureType == STRUCTURE_WALL || schematic.structureType == STRUCTURE_EXTENSION || schematic.structureType == STRUCTURE_LINK || schematic.structureType == STRUCTURE_STORAGE || schematic.structureType == STRUCTURE_TOWER || schematic.structureType == STRUCTURE_OBSERVER || schematic.structureType == STRUCTURE_POWER_SPAWN || schematic.structureType == STRUCTURE_LAB || schematic.structureType == STRUCTURE_TERMINAL || schematic.structureType == STRUCTURE_NUKER));
+                            
+                            for (var a in trial) {
+                                costMatrix.set(trial[a].x, trial[a].y, 255);
+                            }
+                            for (var a in trial2) {
+                                costMatrix.set(trial2[a].x, trial2[a].y, 255);
+                            }
+                            for (var a in trial3) {
+                                costMatrix.set(trial3[a].pos.x, trial3[a].pos.y, 255);
+                            }
+                            for (var a in trial4) {
+                                costMatrix.set(trial4[a].pos.x, trial4[a].pos.y, 255);
+                            }
+                        }});
+                        var planItems = [];
+                        var roads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type === 1);
+                        for (let i in path) {
+                            if (i < (path.length - 2)) {
+                                var dupes = _.filter(roads, (schematic) => schematic.x === path[i].x && schematic.y === path[i].y).length;
+                                if (!dupes) {
+                                    planItems.push({x: path[i].x,y: path[i].y, type: 1});
+                                }
+                            } else {
+                                planItems.push({x: path[i].x,y: path[i].y, type: 14});
+                            }
+                        }
+                        for (var b in planItems) {
+                            sourceRoadQueue.push(planItems[b]);
+                        }
+                    }
+                    curRoom.memory.plan.sourceRoads.riskySourcesPlan = true;
+                }
+                for (var a in sourceRoadQueue) {
+                    curRoom.memory.plan.planQueue.splice(a, 0, sourceRoadQueue[a]);
+                }
+                if ((!curRoom.memory.plan.sourceRoads.safeSources.length || curRoom.memory.plan.sourceRoads.safeSourcesPlan) && (!curRoom.memory.plan.sourceRoads.riskySources.length || curRoom.memory.plan.sourceRoads.riskySourcesPlan)) {
+                    curRoom.memory.plan.sourceRoads = true;
+                }
             }
             else if (curRoom.memory.plan.planQueue.length == 0) {
                 curRoom.memory.plan = false;
