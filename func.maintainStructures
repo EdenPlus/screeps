@@ -163,10 +163,14 @@ var maintainStructures = {
                 if (structMarker == 2 || structMarker == 3) {
                     var tile = curRoom.lookForAt(LOOK_STRUCTURES, curRoom.memory.plan.planQueue.x, curRoom.memory.plan.planQueue.y);
                     var tileQueue = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == curRoom.memory.plan.planQueue[i].x && schematic.y == curRoom.memory.plan.planQueue[i].y && schematic.type != 2 && schematic.type != 3);
-                    if (!tile.length && !tileQueue.length) {
-                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_WALL);
-                        curRoom.memory.plan.planQueue.splice(i, 1);
-                        break findFirst;
+                    var controllerArea = 3;
+                    if (!tile.length &&
+                        !tileQueue.length &&
+                        (curRoom.memory.plan.planQueue[i].x >= curRoom.controller.pos.x + controllerArea || curRoom.memory.plan.planQueue[i].x <= curRoom.controller.pos.x - controllerArea) &&
+                        (curRoom.memory.plan.planQueue[i].y >= curRoom.controller.pos.y + controllerArea || curRoom.memory.plan.planQueue[i].y <= curRoom.controller.pos.y - controllerArea)) {
+                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_WALL);
+                            curRoom.memory.plan.planQueue.splice(i, 1);
+                            break findFirst;
                     }
                     else {
                         queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, structType);
