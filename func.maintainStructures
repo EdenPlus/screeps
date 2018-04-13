@@ -160,25 +160,7 @@ var maintainStructures = {
         function queueFirst(structType, structMarker) {
             findFirst:
             for (var i in curRoom.memory.plan.planQueue) {
-                /* Chop from here */ if (structMarker == 2 || structMarker == 3) {
-                    var tile = curRoom.lookForAt(LOOK_STRUCTURES, curRoom.memory.plan.planQueue.x, curRoom.memory.plan.planQueue.y);
-                    var tileQueue = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.x == curRoom.memory.plan.planQueue[i].x && schematic.y == curRoom.memory.plan.planQueue[i].y && schematic.type != 2 && schematic.type != 3);
-                    var controllerArea = 3;
-                    if (!tile.length &&
-                        !tileQueue.length &&
-                        (curRoom.memory.plan.planQueue[i].x >= curRoom.controller.pos.x + controllerArea || curRoom.memory.plan.planQueue[i].x <= curRoom.controller.pos.x - controllerArea) &&
-                        (curRoom.memory.plan.planQueue[i].y >= curRoom.controller.pos.y + controllerArea || curRoom.memory.plan.planQueue[i].y <= curRoom.controller.pos.y - controllerArea)) {
-                            queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, STRUCTURE_WALL);
-                            curRoom.memory.plan.planQueue.splice(i, 1);
-                            break findFirst;
-                    }
-                    else {
-                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, structType);
-                        curRoom.memory.plan.planQueue.splice(i, 1);
-                        break findFirst;
-                    }
-                }
-                else /* to here to get rid of this prototype code */ if (curRoom.memory.plan.planQueue[i].type == structMarker) {
+                if (curRoom.memory.plan.planQueue[i].type == structMarker) {
                     queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, structType);
                     curRoom.memory.plan.planQueue.splice(i, 1);
                     break findFirst;
@@ -257,8 +239,7 @@ var maintainStructures = {
         }
         
         /*
-        Commented out as there is a prototype of the source road logic in func.maintainNexus
-        If that code results in full functionality, this code should be deleted
+        THIS IS SLATED FOR DELETION IN THE NEAR FUTURE AS AN IMPROVED OPTION IS LOCATED IN THE PLANNING LOGIC
         
         if (extensions.length >= 5 && !curRoom.memory.sourceRoad[0]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
