@@ -9,7 +9,7 @@ var maintainNexus = {
         if (!curRoom.memory.plan.core         && curRoom.memory.plan.core !== false         && curRoom.memory.plan !== false) curRoom.memory.plan.core = false;
         if (!curRoom.memory.plan.labs         && !(curRoom.memory.plan.labs >= 0)           && curRoom.memory.plan !== false) curRoom.memory.plan.labs = 0;
         if (!curRoom.memory.plan.towers       && curRoom.memory.plan.towers !== false       && curRoom.memory.plan !== false) curRoom.memory.plan.towers = false;
-        if (!curRoom.memory.plan.ramparts     && curRoom.memory.plan.ramparts !== false     && curRoom.memory.plan !== false) curRoom.memory.plan.ramparts = false;
+        if (!curRoom.memory.plan.barricades   && curRoom.memory.plan.barricades !== false   && curRoom.memory.plan !== false) curRoom.memory.plan.barricades = false;
         if (!curRoom.memory.plan.sourceRoads  && curRoom.memory.plan.sourceRoads !== false  && curRoom.memory.plan !== false) curRoom.memory.plan.sourceRoads = {};
         if (!curRoom.memory.plan.NW           && curRoom.memory.plan.NW !== false           && curRoom.memory.plan !== false) curRoom.memory.plan.NW = true;
         if (!curRoom.memory.plan.SW           && curRoom.memory.plan.SW !== false           && curRoom.memory.plan !== false) curRoom.memory.plan.SW = true;
@@ -99,63 +99,6 @@ var maintainNexus = {
             }
             if (!xShift && !yShift) {
                 return;
-            }
-        }
-        
-        function getBoundaries() {
-            var boundaries = {top: storageLoc.y, left: storageLoc.x, bottom: storageLoc.y, right: storageLoc.x};
-            for (var a in curRoom.memory.plan.planQueue) {
-                if (curRoom.memory.plan.planQueue[a].type != 2) {
-                    if (curRoom.memory.plan.planQueue[a].y < boundaries.top) {
-                        boundaries.top = curRoom.memory.plan.planQueue[a].y;
-                    }
-                    else if (curRoom.memory.plan.planQueue[a].y > boundaries.bottom) {
-                        boundaries.bottom = curRoom.memory.plan.planQueue[a].y;
-                    }
-                    if (curRoom.memory.plan.planQueue[a].x < boundaries.left) {
-                        boundaries.left = curRoom.memory.plan.planQueue[a].x;
-                    }
-                    else if (curRoom.memory.plan.planQueue[a].x > boundaries.right) {
-                        boundaries.right = curRoom.memory.plan.planQueue[a].x;
-                    }
-                }
-            }
-            var pad = 2;
-            boundaries.top -= pad;
-            boundaries.left -= pad;
-            boundaries.bottom += pad;
-            boundaries.right += pad;
-            return boundaries;
-        }
-        
-        function queueArea(top, left, bottom, right) {
-            for (var a = left; a <= right; a++) {
-                for (var b = top; b <= bottom; b++) {
-                    if (Game.map.getTerrainAt(a, b, curRoom.name) !== 'wall') {
-                        var tile = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.x == a) && (schematic.y == b)).length;
-                        if (!tile) {
-                            var tileArea = _.filter(curRoom.memory.plan.planQueue, (schematic) => (schematic.x <= a + 2) && (schematic.x >= a - 2) && (schematic.y <= b + 2) && (schematic.y >= b - 2) && (schematic.type != 2));
-                            if (tileArea.length) {
-                                var innerTileArea = _.filter(tileArea, (schematic) => (schematic.x <= a + 1) && (schematic.x >= a - 1) && (schematic.y <= b + 1) && (schematic.y >= b - 1) && (schematic.type != 2));
-                                if (innerTileArea.length) {
-                                    var extensions = _.filter(innerTileArea, (schematic) => (schematic.type == 4)).length;
-                                    if (extensions) {
-                                        var roads = _.filter(innerTileArea, (schematic) => (schematic.type == 1)).length;
-                                        if (roads < 4) {
-                                            curRoom.memory.plan.planQueue.push({x: a, y: b, type: 2});
-                                        }
-                                    }
-                                    else {
-                                        curRoom.memory.plan.planQueue.push({x: a, y: b, type: 2});
-                                    }
-                                }
-                                else {
-                                    curRoom.memory.plan.planQueue.push({x: a, y: b, type: 2});
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
         
@@ -1044,12 +987,57 @@ var maintainNexus = {
                     }
                 }
             }
-            else if (curRoom.memory.plan.ramparts != true) {
-                var boundaries = getBoundaries();
-                queueArea(boundaries.top, boundaries.left, boundaries.bottom, boundaries.right);
-                curRoom.memory.plan.ramparts = true;
+            else if (curRoom.memory.plan.barricades != true) {
+                // x = 1
+                for (var a = 0; a < 50; a++) {
+                    var spot = Game.map.getTerrainAt(1, a);
+                    if (spot != 'wall') {
+                        var area = curRoom.lookAtArea(Math.max(a - 1, 0), 0, Math.min(a + 1, 49), 0, true);
+                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                        if (exitSpots > 0) {
+                            curRoom.memory.plan.planQueue.push({x: 1, y: a, type: 3});
+                        }
+                    }
+                }
+                // x = 48
+                for (var a = 0; a < 50; a++) {
+                    var spot = Game.map.getTerrainAt(48, a);
+                    if (spot != 'wall') {
+                        var area = curRoom.lookAtArea(Math.max(a - 1, 0), 49, Math.min(a + 1, 49), 49, true);
+                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                        if (exitSpots > 0) {
+                            curRoom.memory.plan.planQueue.push({x: 48, y: a, type: 3});
+                        }
+                    }
+                }
+                // y = 1
+                for (var a = 0; a < 50; a++) {
+                    var spot = Game.map.getTerrainAt(a, 1);
+                    if (spot != 'wall') {
+                        var area = curRoom.lookAtArea(0, Math.max(a - 1, 0), 0, Math.min(a + 1, 49), true);
+                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                        if (exitSpots > 0) {
+                            curRoom.memory.plan.planQueue.push({x: a, y: 1, type: 3});
+                        }
+                    }
+                }
+                // y = 48
+                for (var a = 0; a < 50; a++) {
+                    var spot = Game.map.getTerrainAt(a, 48);
+                    if (spot != 'wall') {
+                        var area = curRoom.lookAtArea(49, Math.max(a - 1, 0), 49, Math.min(a + 1, 49), true);
+                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                        if (exitSpots > 0) {
+                            curRoom.memory.plan.planQueue.push({x: a, y: 48, type: 3});
+                        }
+                    }
+                }
+                curRoom.memory.plan.barricades = true;
             }
-            // Start PlanQueue source roads
             else if (curRoom.memory.plan.sourceRoads != true) {
                 var sourceRoadQueue = [];
                 var towerTrial = _.filter(curRoom.find(FIND_STRUCTURES), (structure) => structure.structureType == STRUCTURE_TOWER);
@@ -1101,7 +1089,7 @@ var maintainNexus = {
                         var planItems = [];
                         var roads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type === 1);
                         for (let i in path) {
-                            if (i < (path.length - 2)) {
+                            if (i < (path.length - 1)) {
                                 var dupes = _.filter(roads, (schematic) => schematic.x === path[i].x && schematic.y === path[i].y).length;
                                 if (!dupes) {
                                     planItems.push({x: path[i].x,y: path[i].y, type: 1});
@@ -1140,7 +1128,7 @@ var maintainNexus = {
                         var planItems = [];
                         var roads = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type === 1);
                         for (let i in path) {
-                            if (i < (path.length - 2)) {
+                            if (i < (path.length - 1)) {
                                 var dupes = _.filter(roads, (schematic) => schematic.x === path[i].x && schematic.y === path[i].y).length;
                                 if (!dupes) {
                                     planItems.push({x: path[i].x,y: path[i].y, type: 1});
@@ -1163,7 +1151,6 @@ var maintainNexus = {
                     curRoom.memory.plan.sourceRoads = true;
                 }
             }
-            // End PlanQueue source roads
             else if (curRoom.memory.plan.planQueue.length == 0) {
                 curRoom.memory.plan = false;
             }
@@ -1175,7 +1162,7 @@ var maintainNexus = {
         //    Extractor: 13  | D  Container: 14
         
         if (!curRoom.memory.structuresAtRisk) curRoom.memory.structuresAtRisk = [];
-        
+        /*
         var damagedStructures = curRoom.find(FIND_STRUCTURES, {
             filter: function (object) {
                 return (((object.hits / object.hitsMax) <= 0.25) && (object.hitsMax));
@@ -1201,7 +1188,7 @@ var maintainNexus = {
                 curRoom.memory.structuresAtRisk.push({x: curStructure.x, y: curStructure.y, type: curStructure.type});
             }
         }
-        
+        */
     }
 }
 
