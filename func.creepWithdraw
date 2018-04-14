@@ -1,6 +1,9 @@
 // This function handles creep energy withdrawal
 // creepWithdraw.run(creep);
 
+var roleHarvester = require('role.harvester');
+var roleTransfer = require('role.transfer');
+
 var creepWithdraw = {
     
     run: function(creep) {
@@ -47,7 +50,8 @@ var creepWithdraw = {
                 }
                 
             } else {
-                creep.moveTo(creep.room.controller);
+                // creep.moveTo(creep.room.controller);
+                roleTransfer.run(creep);
             }
             
             if (creep.memory.job) {
