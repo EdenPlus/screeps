@@ -989,68 +989,88 @@ var maintainNexus = {
             }
             else if (curRoom.memory.plan.barricades != true) {
                 // x = 1
+                var hasRampart = false;
                 for (var a = 0; a < 50; a++) {
-                    var spot = Game.map.getTerrainAt(2, a);
+                    var spot = Game.map.getTerrainAt(2, a, curRoom.name);
                     if (spot != 'wall') {
                         var area = curRoom.lookAtArea(Math.max(a - 1, 0), 0, Math.min(a + 1, 49), 0, true);
                         var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
                         var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
+                        if ((exitSpots > 1) && !hasRampart) {
+                            curRoom.memory.plan.planQueue.push({x: 2, y: a, type: 2});
+                            hasRampart = true;
+                        }
+                        else if (exitSpots > 0) {
                             curRoom.memory.plan.planQueue.push({x: 2, y: a, type: 3});
                         }
                         if (exitSpots == 1) {
-                            if (Game.map.getTerrainAt(1, a) != 'wall') {
+                            if (Game.map.getTerrainAt(1, a, curRoom.name) != 'wall') {
                                 curRoom.memory.plan.planQueue.push({x: 1, y: a, type: 3});
                             }
                         }
                     }
                 }
                 // x = 48
+                hasRampart = false;
                 for (var a = 0; a < 50; a++) {
-                    var spot = Game.map.getTerrainAt(47, a);
+                    var spot = Game.map.getTerrainAt(47, a, curRoom.name);
                     if (spot != 'wall') {
                         var area = curRoom.lookAtArea(Math.max(a - 1, 0), 49, Math.min(a + 1, 49), 49, true);
                         var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
                         var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
+                        if ((exitSpots > 1) && !hasRampart) {
+                            curRoom.memory.plan.planQueue.push({x: 47, y: a, type: 2});
+                            hasRampart = true;
+                        }
+                        else if (exitSpots > 0) {
                             curRoom.memory.plan.planQueue.push({x: 47, y: a, type: 3});
                         }
                         if (exitSpots == 1) {
-                            if (Game.map.getTerrainAt(48, a) != 'wall') {
+                            if (Game.map.getTerrainAt(48, a, curRoom.name) != 'wall') {
                                 curRoom.memory.plan.planQueue.push({x: 48, y: a, type: 3});
                             }
                         }
                     }
                 }
                 // y = 1
+                hasRampart = false;
                 for (var a = 0; a < 50; a++) {
-                    var spot = Game.map.getTerrainAt(a, 2);
+                    var spot = Game.map.getTerrainAt(a, 2, curRoom.name);
                     if (spot != 'wall') {
                         var area = curRoom.lookAtArea(0, Math.max(a - 1, 0), 0, Math.min(a + 1, 49), true);
                         var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
                         var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
+                        if ((exitSpots > 1) && !hasRampart) {
+                            curRoom.memory.plan.planQueue.push({x: a, y: 2, type: 2});
+                            hasRampart = true;
+                        }
+                        else if (exitSpots > 0) {
                             curRoom.memory.plan.planQueue.push({x: a, y: 2, type: 3});
                         }
                         if (exitSpots == 1) {
-                            if (Game.map.getTerrainAt(a, 1) != 'wall') {
+                            if (Game.map.getTerrainAt(a, 1, curRoom.name) != 'wall') {
                                 curRoom.memory.plan.planQueue.push({x: a, y: 1, type: 3});
                             }
                         }
                     }
                 }
                 // y = 48
+                hasRampart = false;
                 for (var a = 0; a < 50; a++) {
-                    var spot = Game.map.getTerrainAt(a, 47);
+                    var spot = Game.map.getTerrainAt(a, 47, curRoom.name);
                     if (spot != 'wall') {
                         var area = curRoom.lookAtArea(49, Math.max(a - 1, 0), 49, Math.min(a + 1, 49), true);
                         var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
                         var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
+                        if ((exitSpots > 1) && !hasRampart) {
+                            curRoom.memory.plan.planQueue.push({x: a, y: 47, type: 2});
+                            hasRampart = true;
+                        }
+                        else if (exitSpots > 0) {
                             curRoom.memory.plan.planQueue.push({x: a, y: 47, type: 3});
                         }
                         if (exitSpots == 1) {
-                            if (Game.map.getTerrainAt(a, 48) != 'wall') {
+                            if (Game.map.getTerrainAt(a, 48, curRoom.name) != 'wall') {
                                 curRoom.memory.plan.planQueue.push({x: a, y: 48, type: 3});
                             }
                         }
