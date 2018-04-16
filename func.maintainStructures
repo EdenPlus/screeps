@@ -245,8 +245,7 @@ var maintainStructures = {
         }
         
         /*
-        Commented out as there is a prototype of the source road logic in func.maintainNexus
-        If that code results in full functionality, this code should be deleted
+        THIS IS SLATED FOR DELETION IN THE NEAR FUTURE AS AN IMPROVED OPTION IS LOCATED IN THE PLANNING LOGIC
         
         if (extensions.length >= 5 && !curRoom.memory.sourceRoad[0]) {
             buildRoad(curRoom.findPath(spawns[0].pos,sources[0].pos, {ignoreCreeps: true, costCallback: function(roomName, costMatrix) {
