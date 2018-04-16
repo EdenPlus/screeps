@@ -30,33 +30,16 @@ var roleFiller = {
                 creep.room.memory.tickCheck = {time:-1};
             }
             
-            // does filler need to use tick check? I'm not sure it does.
             if (creep.room.memory.tickCheck.time != Game.time) {
-                
-                // if spawn1 is spawning, prevent storage of circular object spawn
-                // this should be generalized to include any spawn that will trigger this error for the current creep
-                if (Game.spawns["Spawn1"].spawning) {
-                    creep.room.memory.tickCheck.time = Game.time;
-                    creep.room.memory.tickCheck.jobs = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return ((structure.structureType == STRUCTURE_EXTENSION ||
-                            structure.structureType == STRUCTURE_TOWER) &&
-                            (structure.energy < structure.energyCapacity));
-                        }
-                    });
-                } else { // if not spawning, spawn is not circular, we are free to store it in memory
-                    creep.room.memory.tickCheck.time = Game.time;
-                    creep.room.memory.tickCheck.jobs = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return ((structure.structureType == STRUCTURE_SPAWN ||
-                            structure.structureType == STRUCTURE_EXTENSION ||
-                            structure.structureType == STRUCTURE_TOWER) &&
-                            (structure.energy < structure.energyCapacity));
-                        }
-                    });
-                }
-                
-                
+                creep.room.memory.tickCheck.time = Game.time;
+                creep.room.memory.tickCheck.jobs = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return ((structure.structureType == STRUCTURE_SPAWN ||
+                        structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_TOWER) &&
+                        (structure.energy < structure.energyCapacity));
+                    }
+                });
             }
             
             var jobs = creep.room.memory.tickCheck.jobs;
