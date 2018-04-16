@@ -27,9 +27,9 @@ var maintainStructures = {
         if (!(Game.time % 100) && !sites) {
              var repairSites = _.filter(allStructuresInRoom, (structure) => {
                     if (curRoom.find(FIND_HOSTILE_CREEPS).length) {
-                        return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART);
+                        return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART && structure.structureType != STRUCTURE_WALL);
                     } else {
-                        return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART); //  Fix anything below %
+                        return (structure.hits < (structure.hitsMax * .9) && structure.structureType != STRUCTURE_RAMPART && structure.structureType != STRUCTURE_WALL); //  Fix anything below %
                     }
                 });
             curRoom.memory.repairSites = [];
@@ -104,7 +104,7 @@ var maintainStructures = {
             }
         }
         
-        // Function to work through the structures that may be destroyed
+        /*/ Function to work through the structures that may be destroyed
         if (!(Game.time % 5)) {
             if (curRoom.memory.structuresAtRisk.length) {
                 for (var a in curRoom.memory.structuresAtRisk) {
@@ -140,6 +140,7 @@ var maintainStructures = {
                 }
             }
         }
+        */
         
         // Function to test if we are below the limit of a given structure
         function checkLimit(structType, structMarker) {
@@ -236,6 +237,11 @@ var maintainStructures = {
                     }
                 }
             }
+        }
+        
+        /*/ This builds the Controller Road. Condition should be when all safe source roads are finished.
+        if (containers.length == 2) {
+            buildControllerRoad();
         }
         
         /*
