@@ -104,7 +104,8 @@ var maintainStructures = {
             }
         }
         
-        /*/ Function to work through the structures that may be destroyed
+        /*/ SLATED FOR REMOVAL DUE TO THE DISINTEREST IN THE USE OF THIS CODE AND IT'S UNLIKELY SUCCESS
+        Function to work through the structures that may be destroyed
         if (!(Game.time % 5)) {
             if (curRoom.memory.structuresAtRisk.length) {
                 for (var a in curRoom.memory.structuresAtRisk) {
