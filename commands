@@ -111,9 +111,29 @@ function toggleTSR() {
     }
 }
 
+/*
+Description:
+Used to governs which room our room will attempt to take over
+
+Parameters:
+startingRoom - name of room to initiate attack
+targetRoom - name of room we wish to attack
+
+Usage:
+require('commands').setAttackTarget(String, String);
+
+Example:
+require('commands').setAttackTarget('E11N53', 'E11N52');
+*/
+function setAttackTarget(startingRoom, targetRoom) {
+    
+    Game.rooms[startingRoom].memory.target = targetRoom;
+}
+
 // Whenever a command is added to this script, it needs to be referenced in this export, following the already listed function's format
 module.exports = {
     visualizeBoundary: visualizeBoundary,
     resetPlan: resetPlan,
-    toggleTSR: toggleTSR
+    toggleTSR: toggleTSR,
+    setAttackTarget: setAttackTarget
 };
