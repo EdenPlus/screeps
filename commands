@@ -19,7 +19,7 @@ function visualizeBoundary(targetRoom) {
     var boundaries = {top: storageLoc.y, left: storageLoc.x, bottom: storageLoc.y, right: storageLoc.x};
     var planQueue = targetRoom.memory.plan.planQueue;
     for (var a in planQueue) {
-        if (planQueue[a].type > 2) {
+        if (planQueue[a].type > 3) {
             if (planQueue[a].y < boundaries.top) {
                 boundaries.top = planQueue[a].y;
             }
@@ -34,12 +34,35 @@ function visualizeBoundary(targetRoom) {
             }
         }
     }
-    boundaries.top -= 2;
-    boundaries.left -= 2;
-    boundaries.bottom += 2;
-    boundaries.right += 2;
-    new RoomVisual(targetRoom.name).rect((boundaries.top - 0.5), (boundaries.left - 0.5), (boundaries.bottom - boundaries.top + 1), (boundaries.right - boundaries.left + 1), {fill: 'transparent', stroke: 'red'});
+    var padding = 4;
+    boundaries.top -= padding;
+    boundaries.left -= padding;
+    boundaries.bottom += padding;
+    boundaries.right += padding;
+    new RoomVisual(targetRoom.name).rect((boundaries.left - 0.5), (boundaries.top - 0.5), (boundaries.right - boundaries.left + 1), (boundaries.bottom - boundaries.top + 1), {fill: 'transparent', stroke: 'red'});
     return boundaries;
+}
+
+/*
+Description:
+Used to reset a section of the planning
+
+Parameters:
+roomPos - RoomPosition object
+integer - An integer for the padding around the spot
+
+Usage:
+require('commands').drawArea({RoomPosition object}, integer);
+
+Example:
+require('commands').drawArea(Game.rooms['sim'].controller.pos, 4);
+*/
+function drawArea(roomPos, padding) {
+    var top = roomPos.y - padding;
+    var left = roomPos.x - padding;
+    var bottom = roomPos.y + padding;
+    var right = roomPos.x + padding;
+    new RoomVisual(roomPos.name).rect((left - 0.5), (top - 0.5), (right - left + 1), (bottom - top + 1), {fill: 'transparent', stroke: 'red'});
 }
 
 /*
@@ -115,5 +138,6 @@ function toggleTSR() {
 module.exports = {
     visualizeBoundary: visualizeBoundary,
     resetPlan: resetPlan,
-    toggleTSR: toggleTSR
+    toggleTSR: toggleTSR,
+    drawArea: drawArea
 };
