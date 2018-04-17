@@ -1251,8 +1251,9 @@ var maintainNexus = {
         //    Link: 9        | D  Lab: 10         | D  Terminal: 11    |    Observer: 12 
         //    Extractor: 13  | D  Container: 14
         
+        /* SLATED FOR REMOVAL
         if (!curRoom.memory.structuresAtRisk) curRoom.memory.structuresAtRisk = [];
-        /*
+        
         var damagedStructures = curRoom.find(FIND_STRUCTURES, {
             filter: function (object) {
                 return (((object.hits / object.hitsMax) <= 0.25) && (object.hitsMax));
