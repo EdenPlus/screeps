@@ -1,6 +1,7 @@
 var visualizePlans = {
     
     run: function(curRoom) {
+        
         // Function to visualize the planQueue
         function visualizeBlueprint(curRoomName, queueType, structType, x, y) {
             var rads = 0.5;
@@ -12,7 +13,7 @@ var visualizePlans = {
                                 powerSpawn: '#ff0000',  storage: '#dbff16',     link: '#deff5b',
                                 lab: '#7c39ff',         terminal: '#55ff91',    observer: '#5bff86',
                                 extractor: '#a0a0a0',   container: '#ffe847'                        };
-            var queueColors = {planQueue: '#6200ff', buildQueue: '#dfea38', riskQueue: '#ff640a'};
+            var queueColors = {planQueue: '#6200ff', buildQueue: '#dfea38'};
             // End Color Refs
                  if (structType ==  1 || structType == STRUCTURE_ROAD        ) fillColor = structColors.road        ;
             else if (structType ==  2 || structType == STRUCTURE_RAMPART     ) fillColor = structColors.rampart     ;
@@ -36,32 +37,22 @@ var visualizePlans = {
                 case 'buildQueue':
                     strokeColor = queueColors.buildQueue;
                     break;
-                case 'riskQueue':
-                    strokeColor = queueColors.riskQueue;
-                    break;
                 default:
                     break;
             }
             if (fillColor) new RoomVisual(curRoomName).circle(x, y, {fill: fillColor, radius: rads, stroke: strokeColor});
         }
+        
         // Visualize planQueue
         if (curRoom.memory.plan.planQueue.length) {
             for (var a in curRoom.memory.plan.planQueue) {
                 visualizeBlueprint(curRoom.name, 'planQueue', curRoom.memory.plan.planQueue[a].type, curRoom.memory.plan.planQueue[a].x, curRoom.memory.plan.planQueue[a].y);
             }
         }
-        
         // Visualize buildQueue
         if (curRoom.memory.buildQueue.length) {
             for (var a in curRoom.memory.buildQueue) {
                 visualizeBlueprint(curRoom.name, 'buildQueue', curRoom.memory.buildQueue[a].type, curRoom.memory.buildQueue[a].x, curRoom.memory.buildQueue[a].y);
-            }
-        }
-        
-        // Visualize structuresAtRisk
-        if (curRoom.memory.structuresAtRisk.length) {
-            for (var a in curRoom.memory.structuresAtRisk) {
-                visualizeBlueprint(curRoom.name, 'riskQueue', curRoom.memory.structuresAtRisk[a].type, curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
             }
         }
     }
