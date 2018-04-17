@@ -104,45 +104,6 @@ var maintainStructures = {
             }
         }
         
-        /*/ SLATED FOR REMOVAL DUE TO THE DISINTEREST IN THE USE OF THIS CODE AND IT'S UNLIKELY SUCCESS
-        Function to work through the structures that may be destroyed
-        if (!(Game.time % 5)) {
-            if (curRoom.memory.structuresAtRisk.length) {
-                for (var a in curRoom.memory.structuresAtRisk) {
-                    var curTile = curRoom.lookAt(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y);
-                    var isDestroyed = true;
-                    var isQueued = false;
-                    tileChecker:
-                    for (var b in curTile) {
-                        if (curTile[b].type === 'structure' && curTile[b].structure.structureType === curRoom.memory.structuresAtRisk[a].type) {
-                            if (((object.hits / object.hitsMax) >= 0.25)) {
-                                curRoom.memory.structuresAtRisk.splice(a, 1);
-                                isDestroyed = false;
-                                break tileChecker;
-                            }
-                        }
-                        else if (curTile[b].type === 'constructionSite' && curTile[b].constructionSite.structureType === curRoom.memory.structuresAtRisk[a].type) {
-                            isDestroyed = false;
-                            break tileChecker;
-                        }
-                    }
-                    if (curRoom.memory.buildQueue.length) {
-                        dupeChecker:
-                        for (var b in curRoom.memory.buildQueue) {
-                            if (curRoom.memory.buildQueue[b].x == curRoom.memory.structuresAtRisk[a].x && curRoom.memory.buildQueue[b].y == curRoom.memory.structuresAtRisk[a].y && curRoom.memory.buildQueue[b].type == curRoom.memory.structuresAtRisk[a].type) {
-                                isQueued = true;
-                                break dupeChecker;
-                            }
-                        }
-                    }
-                    if (isDestroyed && !isQueued) {
-                        queueBuild(curRoom.memory.structuresAtRisk[a].x, curRoom.memory.structuresAtRisk[a].y, curRoom.memory.structuresAtRisk[a].type);
-                    }
-                }
-            }
-        }
-        */
-        
         // Function to test if we are below the limit of a given structure
         function checkLimit(structType, structMarker) {
             var trial = _.filter(curRoom.memory.plan.planQueue, (schematic) => schematic.type === structMarker).length;
@@ -163,15 +124,19 @@ var maintainStructures = {
             findFirst:
             for (var i in curRoom.memory.plan.planQueue) {
                 if (curRoom.memory.plan.planQueue[i].type == structMarker) {
-                    queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, structType);
-                    curRoom.memory.plan.planQueue.splice(i, 1);
-                    break findFirst;
+                    var structMatchs = _.filter(allStructuresInRoom, (schematic) => schematic.pos.x == curRoom.memory.plan.planQueue[i].x && schematic.pos.y == curRoom.memory.plan.planQueue[i].y && schematic.structureType == structType);
+                    var constructMatchs = _.filter(constructionSites, (schematic) => schematic.pos.x == curRoom.memory.plan.planQueue[i].x && schematic.pos.y == curRoom.memory.plan.planQueue[i].y && schematic.structureType == structType);
+                    if (!structMatchs.length && !constructMatchs.length) {
+                        queueBuild(curRoom.memory.plan.planQueue[i].x, curRoom.memory.plan.planQueue[i].y, structType);
+                        //curRoom.memory.plan.planQueue.splice(i, 1);
+                        break findFirst;
+                    }
                 }
             }
         }
         
         // This iterates through the planQueue to move stuff into the build queue
-        if (curRoom.memory.plan.planQueue.length && (curRoom.controller.level >= 2)) {
+        if (curRoom.memory.plan.planQueue.length && (curRoom.controller.level >= 1)) {
             if (checkLimit(STRUCTURE_EXTENSION, 4)) {
                 queueFirst(STRUCTURE_EXTENSION, 4);
             }
