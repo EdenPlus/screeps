@@ -1,3 +1,4 @@
+
 var maintainCreeps = {
     
     run: function(curRoom) {
@@ -16,6 +17,7 @@ var maintainCreeps = {
         
         const WORKERPART = [WORK, CARRY, CARRY, MOVE, MOVE];
         const TRANSFERPART = [CARRY, CARRY, MOVE];
+        const SCHOLARPART = [CLAIM, MOVE];
         
         function bodyCost(body) {
             var cost = 0;
@@ -25,18 +27,34 @@ var maintainCreeps = {
             return cost;
         }
         
-        function makeCreep(body, role) {
+        function makeCreep(body, role, workRoom) {
+            
+            if (!workRoom) {
+                workRoom = curRoom.name;
+            }
+            
+            console.log("MAKE CREEP CALL: " + body + " " + role + " " + workRoom);
             
             let spawns = _.filter(allStructuresInRoom, (structure) => structure.structureType == STRUCTURE_SPAWN);
             
             for (let x in spawns) {
                 if (spawns[x].canCreateCreep(body,{role: role}) == 0) {
-                    console.log('New '+role+': '+spawns[x].createCreep(body,{role: role}));
+                    console.log('New '+role+': '+spawns[x].createCreep(body,{role: role, homeRoom: curRoom.name, workRoom: workRoom}));
                     break;
                 }
             }
             
             return 'No Spawns Available';
+        }
+
+        function makeScholar() {
+            var body = [];
+            
+            while (bodyCost(body) + bodyCost(SCHOLARPART) <= curRoom.energyCapacityAvailable && body.length + SCHOLARPART.length <= 50) {
+                body = body.concat(SCHOLARPART);
+            }
+            
+            makeCreep(body,'scholar');
         }
         
         function makeWorker() {
@@ -74,7 +92,11 @@ var maintainCreeps = {
         
         var allCreepsInRoom = curRoom.find(FIND_MY_CREEPS);
         
+        var numTesters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'tester').length;
+        var numScholars = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'scholar').length;
+        
         var numFighters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'fighter').length;
+        var numInvaders = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'invader').length;
         var numHealers = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'healer').length;
         var numHarvesters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'harvester').length;
         var numWorkers = _.filter(allCreepsInRoom, (creep) => (creep.memory.role == 'builder' || creep.memory.role == 'repairer')).length;
@@ -90,12 +112,20 @@ var maintainCreeps = {
             var pathToNearestSource = firstSpawnPos.findPathTo(firstSpawnPos.findClosestByPath(FIND_SOURCES)).length;
             curRoom.memory.harvesterMax = Math.round(3 + (pathToNearestSource / 4));
         }
+        
+        // change to add a test creep
+        const TESTERMAX = 0;
+        const SCHOLARMAX = 1;
+        
         const HARVESTERMAX = curRoom.memory.harvesterMax;
-        const WORKERMAX = Math.ceil(30 / (curRoom.energyCapacityAvailable / bodyCost(WORKERPART)));
+        const WORKERMAX = Math.ceil(15 / (curRoom.energyCapacityAvailable / bodyCost(WORKERPART)));
         const UPGRADERMAX = 1;
         const FILLERMAX = 1;
         const FIGHTERMAX = 0;
+        const INVADERMAX = 0;
         const HEALERMAX = 0;
+        // const TRANSFERMAX = 1;
+        // todo fix this formula to prevent overspawning transfer creeps
         const TRANSFERMAX = Math.ceil(Math.floor(1.75 * miners.length) / (curRoom.energyCapacityAvailable / (3 * bodyCost(TRANSFERPART))));
         const MINERMAX = containers.length;
         
@@ -225,6 +255,29 @@ var maintainCreeps = {
                 RANGED_ATTACK, RANGED_ATTACK,
                 RANGED_ATTACK, RANGED_ATTACK,                               // RANGED: 10 x 150 = 1500
                 ],'fighter'));                                     // Total:             2700
+        }
+        
+        if (numTesters < TESTERMAX) {
+            console.log('New Tester: '+makeCreep([
+                MOVE
+                ],'tester'));
+        }
+        
+        //conditions for spawning a scholar
+        if (numScholars < SCHOLARMAX
+            && curRoom.memory.status == "unpaused"
+            && (!curRoom.memory.targetTick || (curRoom.memory.targetTick - Game.time) < 75)) {
+            //makeScholar();
+        }
+
+        if (numInvaders < INVADERMAX) {
+            console.log('New Invader: '+makeCreep([
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,
+                MOVE,  MOVE,  MOVE,  MOVE,  MOVE,                           // MOVE    10 x  50 = 500
+                RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK,
+                RANGED_ATTACK, RANGED_ATTACK,                               // RANGED: 5 x 150 = 750
+                ],'invader'));                                     // Total:             1350
         }
         
         if (numHealers < HEALERMAX && curRoom.energyAvailable >= (2700 + 1000)) {
