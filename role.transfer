@@ -2,6 +2,8 @@ var roleTransfer = {
     
     run: function(creep) {
         
+        delete creep.memory.job;
+        
         if (creep.ticksToLive < 60) {
             creep.say(creep.ticksToLive);
         }
@@ -120,14 +122,16 @@ var roleTransfer = {
                     }
                 }
                 
-                if (Game.getObjectById(creep.memory.job).store) {
-                    if (Game.getObjectById(creep.memory.job).store.energy < (creep.carryCapacity / 2)) {
-                        delete creep.memory.job;
-                        for (let d in drops) {
-                            if (drops[d].amount > creep.carryCapacity / 10) {
-                                creep.memory.job = drops[d].id;
-                                creep.say("DROP!");
-                                break;
+                if (Game.getObjectById(creep.memory.job)) {
+                    if (Game.getObjectById(creep.memory.job).store) {
+                        if (Game.getObjectById(creep.memory.job).store.energy < (creep.carryCapacity / 2)) {
+                            delete creep.memory.job;
+                            for (let d in drops) {
+                                if (drops[d].amount > creep.carryCapacity / 10) {
+                                    creep.memory.job = drops[d].id;
+                                    //creep.say("DROP!");
+                                    break;
+                                }
                             }
                         }
                     }
