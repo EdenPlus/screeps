@@ -209,7 +209,8 @@ var maintainStructures = {
         if (containers.length == 2) {
             buildControllerRoad();
         }
-        */
+        /*/
+        
         // Destroy roads under extensions to conserve resources
         if (!(Game.time % 100)) {
             for (let i in extensions) {
