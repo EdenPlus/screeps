@@ -2,48 +2,6 @@
 
 /*
 Description:
-Visualizes the boundary of the nexus (Theorized to break once the source roads are added to the plan queue)
-
-Parameters:
-targetRoom - Room object
-
-Usage:
-require('commands').visualizeBoundary({Room object});
-
-Example:
-require('commands').visualizeBoundary(Game.rooms['sim']);
-*/
-function visualizeBoundary(targetRoom) {
-    var firstSpawn = targetRoom.find(FIND_MY_SPAWNS)[0];
-    var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
-    var boundaries = {top: storageLoc.y, left: storageLoc.x, bottom: storageLoc.y, right: storageLoc.x};
-    var planQueue = targetRoom.memory.plan.planQueue;
-    for (var a in planQueue) {
-        if (planQueue[a].type > 2) {
-            if (planQueue[a].y < boundaries.top) {
-                boundaries.top = planQueue[a].y;
-            }
-            else if (planQueue[a].y > boundaries.bottom) {
-                boundaries.bottom = planQueue[a].y;
-            }
-            if (planQueue[a].x < boundaries.left) {
-                boundaries.left = planQueue[a].x;
-            }
-            else if (planQueue[a].x > boundaries.right) {
-                boundaries.right = planQueue[a].x;
-            }
-        }
-    }
-    boundaries.top -= 2;
-    boundaries.left -= 2;
-    boundaries.bottom += 2;
-    boundaries.right += 2;
-    new RoomVisual(targetRoom.name).rect((boundaries.top - 0.5), (boundaries.left - 0.5), (boundaries.bottom - boundaries.top + 1), (boundaries.right - boundaries.left + 1), {fill: 'transparent', stroke: 'red'});
-    return boundaries;
-}
-
-/*
-Description:
 Used to reset a section of the planning
 
 Parameters:
@@ -132,7 +90,6 @@ function setAttackTarget(startingRoom, targetRoom) {
 
 // Whenever a command is added to this script, it needs to be referenced in this export, following the already listed function's format
 module.exports = {
-    visualizeBoundary: visualizeBoundary,
     resetPlan: resetPlan,
     toggleTSR: toggleTSR,
     setAttackTarget: setAttackTarget
