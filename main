@@ -2,6 +2,7 @@
 var maintainCreeps = require('func.maintainCreeps');
 var maintainStructures = require('func.maintainStructures');
 var maintainNexus = require('func.maintainNexus');
+var expansionControl = require('func.expansionControl');
 var statusReport = require('func.statusReport');
 var visualizePlans = require('func.visualizePlans');
 
@@ -16,6 +17,9 @@ var roleFiller = require('role.filler');
 var roleTower = require('role.tower');
 var roleFighter = require('role.fighter');
 var roleHealer = require('role.healer');
+var roleInvader = require('role.invader');
+var roleScholar = require('role.scholar');
+var roleTest = require('role.testCreep');
 
 module.exports.loop = function () {
     if (!Memory.tickSpeedReport && Memory.tickSpeedReport !== false) Memory.tickSpeedReport = false;
@@ -24,6 +28,7 @@ module.exports.loop = function () {
     for (var a in Game.rooms) {
         if (Game.rooms[a].find(FIND_MY_SPAWNS).length) {
             // Function for status report
+            
             var startStatusReportTime = new Date().getTime();
             statusReport.run(Game.rooms[a]);
             var endStatusReportTime = new Date().getTime(); 
@@ -32,12 +37,14 @@ module.exports.loop = function () {
             var startCreepMainTime = new Date().getTime();
             maintainCreeps.run(Game.rooms[a]);
             var endCreepMainTime = new Date().getTime(); 
-            
+
             // Nexus Maintenance
             var startNexusMainTime = new Date().getTime();
             maintainNexus.run(Game.rooms[a]);
             var endNexusMainTime = new Date().getTime(); 
             
+            expansionControl.run(Game.rooms[a]);
+
             // If statement to reduce resource consumption for building maintenance
             if (!(Game.time % 10)) {
                 var startStructMainTime = new Date().getTime();
@@ -83,15 +90,24 @@ module.exports.loop = function () {
     
     // Unit AI start
     var startAILoopTime = new Date().getTime();
+    
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         //creep.suicide();
+        
+        //var myCpuStart = Game.cpu.getUsed();
         if (creep.memory.role == 'healer') {
             roleHealer.run(creep);
         }
         if (creep.memory.role == 'fighter') {
             delete creep.memory.job;
             roleFighter.run(creep);
+        }
+        if (creep.memory.role == 'invader') {
+            roleInvader.run(creep);
+        }
+        if (creep.memory.role == 'scholar') {
+            roleScholar.run(creep);
         }
         if (creep.memory.role == 'harvester') {
             // creep.suicide();
@@ -116,15 +132,20 @@ module.exports.loop = function () {
             // delete creep.memory.job;
             roleTransfer.run(creep);
             // creep.suicide();
+            //creep.moveTo(new RoomPosition(27,3, "E11N53"));
         }
         if (creep.memory.role == 'filler') {
             // delete creep.memory.job;
             roleFiller.run(creep);
         }
-        if (creep.memory.role == 'test pilot') {
-            creep.moveTo(0,25);
+        if (creep.memory.role == 'tester') {
+            roleTest.run(creep);
         }
+        //console.log(creep.name + ": " + (Game.cpu.getUsed() - myCpuStart));
+        
     }
+    //console.log("-----");
+    
     var endAILoopTime = new Date().getTime();
     // Unit AI end
     
