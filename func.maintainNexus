@@ -988,141 +988,148 @@ var maintainNexus = {
                 }
             }
             else if (curRoom.memory.plan.barricades != true) {
-                // THIS MUST BE IMPROVED IN LIVE IN ORDER FOR THE RAMPART TO BE PLACED BASED ON THE CLOSEST PATH FROM THE STORAGE
-                // x = 1
                 var limiter = [];
                 for (var a = 0; a < 50; a++) {
                     var spot = Game.map.getTerrainAt(2, a, curRoom.name);
-                    if (spot != 'wall') {
-                        var area = curRoom.lookAtArea(Math.max(a - 2, 0), 0, Math.min(a + 2, 49), 0, true);
-                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
-                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
-                            curRoom.memory.plan.planQueue.push({x: 2, y: a, type: 3});
+                    var area = curRoom.lookAtArea(Math.max(a - 2, 0), 0, Math.min(a + 2, 49), 0, true);
+                    var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                    var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                    if (exitSpots > 0) {
+                        if (spot != 'wall') curRoom.memory.plan.planQueue.push({x: 2, y: a, type: 3});
+                    }
+                    if (exitSpots == 1) {
+                        if (limiter.length == 0) {
+                            limiter.push(a);
                         }
-                        if (exitSpots == 1) {
-                            if (limiter.length == 0) {
-                                limiter.push(a);
-                            }
-                            else if (limiter.length == 1) {
-                                limiter.push(a);
-                                var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
-                                for (var b in curRoom.memory.plan.planQueue) {
-                                    if (curRoom.memory.plan.planQueue[b].x == 2 && curRoom.memory.plan.planQueue[b].y == center) {
-                                        curRoom.memory.plan.planQueue[b].type = 2;
+                        else if (limiter.length == 1) {
+                            limiter.push(a);
+                            var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
+                            var path = curRoom.findPath(new RoomPosition(storageLoc.x, storageLoc.y, curRoom.name), new RoomPosition(1, center, curRoom.name));
+                            rampart:
+                            for (var b in path) {
+                                for (var c in curRoom.memory.plan.planQueue) {
+                                    if (curRoom.memory.plan.planQueue[c].x == path[b].x && curRoom.memory.plan.planQueue[c].y == path[b].y && curRoom.memory.plan.planQueue[c].type == 3) {
+                                        curRoom.memory.plan.planQueue[c].type = 2;
+                                        break rampart;
                                     }
                                 }
-                                limiter = [];
                             }
-                            else if (limiter.length == 2) {
-                                limiter = [];
-                                limiter.push(a);
-                            }
-                            if (Game.map.getTerrainAt(1, a, curRoom.name) != 'wall') {
-                                curRoom.memory.plan.planQueue.push({x: 1, y: a, type: 3});
-                            }
+                            limiter = [];
+                        }
+                        else if (limiter.length == 2) {
+                            limiter = [];
+                            limiter.push(a);
+                        }
+                        if (Game.map.getTerrainAt(1, a, curRoom.name) != 'wall') {
+                            curRoom.memory.plan.planQueue.push({x: 1, y: a, type: 3});
                         }
                     }
                 }
-                // x = 48
                 for (var a = 0; a < 50; a++) {
                     var spot = Game.map.getTerrainAt(47, a, curRoom.name);
-                    if (spot != 'wall') {
-                        var area = curRoom.lookAtArea(Math.max(a - 2, 0), 49, Math.min(a + 2, 49), 49, true);
-                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
-                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
-                            curRoom.memory.plan.planQueue.push({x: 47, y: a, type: 3});
+                    var area = curRoom.lookAtArea(Math.max(a - 2, 0), 49, Math.min(a + 2, 49), 49, true);
+                    var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                    var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                    if (exitSpots > 0) {
+                        if (spot != 'wall') curRoom.memory.plan.planQueue.push({x: 47, y: a, type: 3});
+                    }
+                    if (exitSpots == 1) {
+                        if (limiter.length == 0) {
+                            limiter.push(a);
                         }
-                        if (exitSpots == 1) {
-                            if (limiter.length == 0) {
-                                limiter.push(a);
-                            }
-                            else if (limiter.length == 1) {
-                                limiter.push(a);
-                                var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
-                                for (var b in curRoom.memory.plan.planQueue) {
-                                    if (curRoom.memory.plan.planQueue[b].x == 47 && curRoom.memory.plan.planQueue[b].y == center) {
-                                        curRoom.memory.plan.planQueue[b].type = 2;
+                        else if (limiter.length == 1) {
+                            limiter.push(a);
+                            var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
+                            var path = curRoom.findPath(new RoomPosition(storageLoc.x, storageLoc.y, curRoom.name), new RoomPosition(48, center, curRoom.name));
+                            rampart:
+                            for (var b in path) {
+                                for (var c in curRoom.memory.plan.planQueue) {
+                                    if (curRoom.memory.plan.planQueue[c].x == path[b].x && curRoom.memory.plan.planQueue[c].y == path[b].y && curRoom.memory.plan.planQueue[c].type == 3) {
+                                        curRoom.memory.plan.planQueue[c].type = 2;
+                                        break rampart;
                                     }
                                 }
-                                limiter = [];
                             }
-                            else if (limiter.length == 2) {
-                                limiter = [];
-                                limiter.push(a);
-                            }
-                            if (Game.map.getTerrainAt(48, a, curRoom.name) != 'wall') {
-                                curRoom.memory.plan.planQueue.push({x: 48, y: a, type: 3});
-                            }
+                            limiter = [];
+                        }
+                        else if (limiter.length == 2) {
+                            limiter = [];
+                            limiter.push(a);
+                        }
+                        if (Game.map.getTerrainAt(48, a, curRoom.name) != 'wall') {
+                            curRoom.memory.plan.planQueue.push({x: 48, y: a, type: 3});
                         }
                     }
                 }
-                // y = 1
                 for (var a = 0; a < 50; a++) {
                     var spot = Game.map.getTerrainAt(a, 2, curRoom.name);
-                    if (spot != 'wall') {
-                        var area = curRoom.lookAtArea(0, Math.max(a - 2, 0), 0, Math.min(a + 2, 49), true);
-                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
-                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
-                            curRoom.memory.plan.planQueue.push({x: a, y: 2, type: 3});
+                    var area = curRoom.lookAtArea(0, Math.max(a - 2, 0), 0, Math.min(a + 2, 49), true);
+                    var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                    var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                    if (exitSpots > 0) {
+                        if (spot != 'wall') curRoom.memory.plan.planQueue.push({x: a, y: 2, type: 3});
+                    }
+                    if (exitSpots == 1) {
+                        if (limiter.length == 0) {
+                            limiter.push(a);
                         }
-                        if (exitSpots == 1) {
-                            if (limiter.length == 0) {
-                                limiter.push(a);
-                            }
-                            else if (limiter.length == 1) {
-                                limiter.push(a);
-                                var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
-                                for (var b in curRoom.memory.plan.planQueue) {
-                                    if (curRoom.memory.plan.planQueue[b].x == center && curRoom.memory.plan.planQueue[b].y == 2) {
-                                        curRoom.memory.plan.planQueue[b].type = 2;
+                        else if (limiter.length == 1) {
+                            limiter.push(a);
+                            var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
+                            var path = curRoom.findPath(new RoomPosition(storageLoc.x, storageLoc.y, curRoom.name), new RoomPosition(center, 1, curRoom.name));
+                            rampart:
+                            for (var b in path) {
+                                for (var c in curRoom.memory.plan.planQueue) {
+                                    if (curRoom.memory.plan.planQueue[c].x == path[b].x && curRoom.memory.plan.planQueue[c].y == path[b].y && curRoom.memory.plan.planQueue[c].type == 3) {
+                                        curRoom.memory.plan.planQueue[c].type = 2;
+                                        break rampart;
                                     }
                                 }
-                                limiter = [];
                             }
-                            else if (limiter.length == 2) {
-                                limiter = [];
-                                limiter.push(a);
-                            }
-                            if (Game.map.getTerrainAt(a, 1, curRoom.name) != 'wall') {
-                                curRoom.memory.plan.planQueue.push({x: a, y: 1, type: 3});
-                            }
+                            limiter = [];
+                        }
+                        else if (limiter.length == 2) {
+                            limiter = [];
+                            limiter.push(a);
+                        }
+                        if (Game.map.getTerrainAt(a, 1, curRoom.name) != 'wall') {
+                            curRoom.memory.plan.planQueue.push({x: a, y: 1, type: 3});
                         }
                     }
                 }
-                // y = 48
                 for (var a = 0; a < 50; a++) {
                     var spot = Game.map.getTerrainAt(a, 47, curRoom.name);
-                    if (spot != 'wall') {
-                        var area = curRoom.lookAtArea(49, Math.max(a - 2, 0), 49, Math.min(a + 2, 49), true);
-                        var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
-                        var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
-                        if (exitSpots > 0) {
-                            curRoom.memory.plan.planQueue.push({x: a, y: 47, type: 3});
+                    var area = curRoom.lookAtArea(49, Math.max(a - 2, 0), 49, Math.min(a + 2, 49), true);
+                    var terrain = _.filter(area, (schematic) => schematic.type == 'terrain');
+                    var exitSpots = _.filter(terrain, (schematic) => schematic.terrain != 'wall').length;
+                    if (exitSpots > 0) {
+                        if (spot != 'wall') curRoom.memory.plan.planQueue.push({x: a, y: 47, type: 3});
+                    }
+                    if (exitSpots == 1) {
+                        if (limiter.length == 0) {
+                            limiter.push(a);
                         }
-                        if (exitSpots == 1) {
-                            if (limiter.length == 0) {
-                                limiter.push(a);
-                            }
-                            else if (limiter.length == 1) {
-                                limiter.push(a);
-                                var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
-                                for (var b in curRoom.memory.plan.planQueue) {
-                                    if (curRoom.memory.plan.planQueue[b].x == center && curRoom.memory.plan.planQueue[b].y == 47) {
-                                        curRoom.memory.plan.planQueue[b].type = 2;
+                        else if (limiter.length == 1) {
+                            limiter.push(a);
+                            var center = limiter[0] + Math.round((limiter[1] - limiter[0]) / 2);
+                            var path = curRoom.findPath(new RoomPosition(storageLoc.x, storageLoc.y, curRoom.name), new RoomPosition(center, 48, curRoom.name));
+                            rampart:
+                            for (var b in path) {
+                                for (var c in curRoom.memory.plan.planQueue) {
+                                    if (curRoom.memory.plan.planQueue[c].x == path[b].x && curRoom.memory.plan.planQueue[c].y == path[b].y && curRoom.memory.plan.planQueue[c].type == 3) {
+                                        curRoom.memory.plan.planQueue[c].type = 2;
+                                        break rampart;
                                     }
                                 }
-                                limiter = [];
                             }
-                            else if (limiter.length == 2) {
-                                limiter = [];
-                                limiter.push(a);
-                            }
-                            if (Game.map.getTerrainAt(a, 48, curRoom.name) != 'wall') {
-                                curRoom.memory.plan.planQueue.push({x: a, y: 48, type: 3});
-                            }
+                            limiter = [];
+                        }
+                        else if (limiter.length == 2) {
+                            limiter = [];
+                            limiter.push(a);
+                        }
+                        if (Game.map.getTerrainAt(a, 48, curRoom.name) != 'wall') {
+                            curRoom.memory.plan.planQueue.push({x: a, y: 48, type: 3});
                         }
                     }
                 }

@@ -2,71 +2,6 @@
 
 /*
 Description:
-Visualizes the boundary of the nexus (Theorized to break once the source roads are added to the plan queue)
-
-Parameters:
-targetRoom - Room object
-
-Usage:
-require('commands').visualizeBoundary({Room object});
-
-Example:
-require('commands').visualizeBoundary(Game.rooms['sim']);
-*/
-function visualizeBoundary(targetRoom) {
-    var firstSpawn = targetRoom.find(FIND_MY_SPAWNS)[0];
-    var storageLoc = {x: (firstSpawn.pos.x - 1), y: firstSpawn.pos.y};
-    var boundaries = {top: storageLoc.y, left: storageLoc.x, bottom: storageLoc.y, right: storageLoc.x};
-    var planQueue = targetRoom.memory.plan.planQueue;
-    for (var a in planQueue) {
-        if (planQueue[a].type > 3) {
-            if (planQueue[a].y < boundaries.top) {
-                boundaries.top = planQueue[a].y;
-            }
-            else if (planQueue[a].y > boundaries.bottom) {
-                boundaries.bottom = planQueue[a].y;
-            }
-            if (planQueue[a].x < boundaries.left) {
-                boundaries.left = planQueue[a].x;
-            }
-            else if (planQueue[a].x > boundaries.right) {
-                boundaries.right = planQueue[a].x;
-            }
-        }
-    }
-    var padding = 4;
-    boundaries.top -= padding;
-    boundaries.left -= padding;
-    boundaries.bottom += padding;
-    boundaries.right += padding;
-    new RoomVisual(targetRoom.name).rect((boundaries.left - 0.5), (boundaries.top - 0.5), (boundaries.right - boundaries.left + 1), (boundaries.bottom - boundaries.top + 1), {fill: 'transparent', stroke: 'red'});
-    return boundaries;
-}
-
-/*
-Description:
-Used to reset a section of the planning
-
-Parameters:
-roomPos - RoomPosition object
-integer - An integer for the padding around the spot
-
-Usage:
-require('commands').drawArea({RoomPosition object}, integer);
-
-Example:
-require('commands').drawArea(Game.rooms['sim'].controller.pos, 4);
-*/
-function drawArea(roomPos, padding) {
-    var top = roomPos.y - padding;
-    var left = roomPos.x - padding;
-    var bottom = roomPos.y + padding;
-    var right = roomPos.x + padding;
-    new RoomVisual(roomPos.name).rect((left - 0.5), (top - 0.5), (right - left + 1), (bottom - top + 1), {fill: 'transparent', stroke: 'red'});
-}
-
-/*
-Description:
 Used to reset a section of the planning
 
 Parameters:
@@ -134,10 +69,28 @@ function toggleTSR() {
     }
 }
 
+/*
+Description:
+Used to governs which room our room will attempt to take over
+
+Parameters:
+startingRoom - name of room to initiate attack
+targetRoom - name of room we wish to attack
+
+Usage:
+require('commands').setAttackTarget(String, String);
+
+Example:
+require('commands').setAttackTarget('E11N53', 'E11N52');
+*/
+function setAttackTarget(startingRoom, targetRoom) {
+    
+    Game.rooms[startingRoom].memory.target = targetRoom;
+}
+
 // Whenever a command is added to this script, it needs to be referenced in this export, following the already listed function's format
 module.exports = {
-    visualizeBoundary: visualizeBoundary,
     resetPlan: resetPlan,
     toggleTSR: toggleTSR,
-    drawArea: drawArea
+    setAttackTarget: setAttackTarget
 };
