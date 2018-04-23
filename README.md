@@ -18,3 +18,59 @@ var harvesters = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'harv
 var builders = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'builder');
 var upgraders = _.filter(allCreepsInRoom, (creep) => creep.memory.role == 'upgrader');
 ```
+## Auto Upload Code:
+```javascript
+/* Start Requirements */
+const Promise = require("es6-promise").Promise;
+const fs = require('fs');
+const express = require('express');
+const app = express();
+const { ScreepsAPI } = require('screeps-api');
+const Octokit = require("octokit");
+/* End Requirements */
+
+/* Start ScreepsAPI stuff */
+// All options are optional
+const api = new ScreepsAPI({
+  token: '<Screep-Token>',
+  protocol: 'https',
+  hostname: 'screeps.com',
+  port: 443,
+  path: '/' // Do no include '/api', it will be added automatically
+});
+ 
+// You can overwrite parameters if needed
+api.auth('screeps@email.com','notMyPass',{
+  protocol: 'https',
+  hostname: 'screeps.com',
+  port: 443,
+  path: '/' // Do no include '/api', it will be added automatically
+});
+/* End ScreepsAPI stuff */
+
+/* Start GitHub Stuff */
+var gh = Octokit.new({
+  token: "<GitHub-Token>"
+});
+
+var repoowner = "EdenPlus";
+var reponame = "screeps";
+var repo = gh.getRepo(repoowner, reponame);
+var branch = repo.getBranch("prototype");
+/*branch.createBranch("trial")
+.then(function() {});
+branch = repo.getBranch("trial");*/
+
+api.code.get('default').then(function (data) {
+    var contents = {};
+    for (var a in data.modules) {
+        contents[a] = data.modules[a];
+    }
+    var message = "Automated Update";
+    branch.writeMany(contents, message)
+    .then(function() {
+        console.log("Code posted");
+    });
+});
+/* End GitHub Stuff */
+```
