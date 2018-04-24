@@ -43,7 +43,7 @@ module.exports.loop = function () {
             maintainNexus.run(Game.rooms[a]);
             var endNexusMainTime = new Date().getTime(); 
             
-            expansionControl.run(Game.rooms[a]);
+            //expansionControl.run(Game.rooms[a]);
 
             // If statement to reduce resource consumption for building maintenance
             if (!(Game.time % 10)) {
